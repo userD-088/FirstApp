@@ -27,10 +27,12 @@ namespace FirstApp
 
         // ─── Gesture state ─────────────────────────────────────────────────
         private bool _resBusy, _inpBusy;
-        private double _resDrag, _resLast;
-        private double _inpDrag, _inpLast;
-        private long _resPanTick, _inpPanTick;      // Throttle-Timestamps
-        private const long PanFrameMs = 14;          // ~70fps cap
+        private double _resDrag, _inpDrag;
+        private long _resPanTick, _inpPanTick;
+        private bool _resHLocked, _resDirectionSet;
+        private bool _inpHLocked, _inpDirectionSet;
+        private const long PanFrameMs = 14;
+        private const double DirectionThreshold = 5.0;
 
         // ─── Text debounce ─────────────────────────────────────────────────
         private CancellationTokenSource? _textCts;
@@ -280,37 +282,60 @@ namespace FirstApp
         // SWIPE – RESISTOR TYPE
         // ══════════════════════════════════════════════════════════════════
 
-        private void OnResistorPan(object sender, PanUpdatedEventArgs e)
+
+        private async void OnResistorPan(object sender, PanUpdatedEventArgs e)
         {
-            if (ResistorView is null) return;
             switch (e.StatusType)
             {
                 case GestureStatus.Started:
                     if (_resBusy) return;
-                    _resDrag = 0; _resLast = 0; _resPanTick = 0;
+                    _resDrag = 0;
+                    _resHLocked = false;
+                    _resDirectionSet = false;
                     break;
 
                 case GestureStatus.Running:
                     if (_resBusy) return;
-                    _resLast = e.TotalX;
-                    _resDrag = Math.Max(_resDrag, Math.Abs(e.TotalX));
-                    // FIX: Throttle – TranslationX nur ~70× pro Sekunde setzen
-                    long nowR = Environment.TickCount64;
-                    if (nowR - _resPanTick < PanFrameMs) return;
-                    _resPanTick = nowR;
-                    ResistorView.TranslationX = e.TotalX * 0.4;
+
+                    // Richtung noch nicht festgelegt → warten bis genug Bewegung da ist
+                    if (!_resDirectionSet)
+                    {
+                        double absX = Math.Abs(e.TotalX);
+                        double absY = Math.Abs(e.TotalY);
+                        if (absX < DirectionThreshold && absY < DirectionThreshold) return;
+                        _resDirectionSet = true;
+                        _resHLocked = absX >= absY; // horizontal dominiert?
+                    }
+
+                    if (!_resHLocked) return; // vertikaler Swipe → komplett ignorieren
+
+                    long now = Environment.TickCount64;
+                    if (now - _resPanTick < PanFrameMs) return;
+                    _resPanTick = now;
+                    _resDrag = e.TotalX;
+                    ResistorView.TranslationX = _resDrag;
                     break;
 
                 case GestureStatus.Completed:
                 case GestureStatus.Canceled:
-                    if (_resBusy) { ResistorView.TranslationX = 0; return; }
-                    double w = Math.Max(ResistorView.Width, 200);
-                    // FIX: _resLast (Endposition) statt _resDrag (max absolut)
-                    // → Zurückwischen ohne Richtungswechsel löst keinen Swipe mehr aus
-                    if (Math.Abs(_resLast) >= w * 0.18)
-                        _ = AnimateResistorSwipe(_resLast > 0 ? 1 : -1, w);
-                    else
+                    if (_resBusy)
+                    {
                         ResistorView.TranslationX = 0;
+                        return;
+                    }
+                    // Vertikaler Swipe oder noch keine Richtung → sauber zurücksetzen
+                    if (!_resHLocked)
+                    {
+                        ResistorView.TranslationX = 0;
+                        _resDrag = 0;
+                        return;
+                    }
+                    double snapR = _resDrag;
+                    _resDrag = 0;
+                    if (Math.Abs(snapR) > 40)
+                        await AnimateResistorSwipe(Math.Sign(snapR), ResistorView.Width);
+                    else
+                        await ResistorView.TranslateTo(0, 0, 150, Easing.SpringOut);
                     break;
             }
         }
@@ -334,36 +359,57 @@ namespace FirstApp
         // SWIPE – INPUT MODE
         // ══════════════════════════════════════════════════════════════════
 
-        private void OnInputPan(object sender, PanUpdatedEventArgs e)
+        private async void OnInputPan(object sender, PanUpdatedEventArgs e)
         {
-            if (InputModeTitleContainer is null) return;
             switch (e.StatusType)
             {
                 case GestureStatus.Started:
                     if (_inpBusy) return;
-                    _inpDrag = 0; _inpLast = 0; _inpPanTick = 0;
+                    _inpDrag = 0;
+                    _inpHLocked = false;
+                    _inpDirectionSet = false;
                     break;
 
                 case GestureStatus.Running:
                     if (_inpBusy) return;
-                    _inpLast = e.TotalX;
-                    _inpDrag = Math.Max(_inpDrag, Math.Abs(e.TotalX));
-                    // FIX: Throttle – TranslationX nur ~70× pro Sekunde setzen
-                    long nowI = Environment.TickCount64;
-                    if (nowI - _inpPanTick < PanFrameMs) return;
-                    _inpPanTick = nowI;
-                    InputModeTitleContainer.TranslationX = e.TotalX * 0.4;
+
+                    if (!_inpDirectionSet)
+                    {
+                        double absX = Math.Abs(e.TotalX);
+                        double absY = Math.Abs(e.TotalY);
+                        if (absX < DirectionThreshold && absY < DirectionThreshold) return;
+                        _inpDirectionSet = true;
+                        _inpHLocked = absX >= absY;
+                    }
+
+                    if (!_inpHLocked) return;
+
+                    long now = Environment.TickCount64;
+                    if (now - _inpPanTick < PanFrameMs) return;
+                    _inpPanTick = now;
+                    _inpDrag = e.TotalX;
+                    InputModeTitleContainer.TranslationX = _inpDrag;
                     break;
 
                 case GestureStatus.Completed:
                 case GestureStatus.Canceled:
-                    if (_inpBusy) { InputModeTitleContainer.TranslationX = 0; return; }
-                    double w = Math.Max(InputModeTitleContainer.Width, 200);
-                    // FIX: _inpLast (Endposition) statt _inpDrag (max absolut)
-                    if (Math.Abs(_inpLast) >= w * 0.18)
-                        _ = AnimateInputSwipe(_inpLast > 0 ? 1 : -1, w);
-                    else
+                    if (_inpBusy)
+                    {
                         InputModeTitleContainer.TranslationX = 0;
+                        return;
+                    }
+                    if (!_inpHLocked)
+                    {
+                        InputModeTitleContainer.TranslationX = 0;
+                        _inpDrag = 0;
+                        return;
+                    }
+                    double snapI = _inpDrag;
+                    _inpDrag = 0;
+                    if (Math.Abs(snapI) > 40)
+                        await AnimateInputSwipe(Math.Sign(snapI), InputModeTitleContainer.Width);
+                    else
+                        await InputModeTitleContainer.TranslateTo(0, 0, 150, Easing.SpringOut);
                     break;
             }
         }

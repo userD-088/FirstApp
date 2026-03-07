@@ -74,7 +74,6 @@ namespace FirstApp
             (CRed,    "±2%",  CWhite),
             (CGold,   "±5%",  CBlack),
             (CSilver, "±10%", CBlack),
-            // ±20%: CNone signals "draw nothing" to the Drawable
             (CNone,   "±20%", CWhite),
         };
 
