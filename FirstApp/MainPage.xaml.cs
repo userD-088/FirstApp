@@ -11,8 +11,11 @@ namespace FirstApp
 {
     /// <summary>
     /// View only – kein Business-Logic.
-    /// Steuerung ausschließlich per Tap-Buttons (Segmented Controls).
-    /// Swipe-Gesten wurden vollständig entfernt.
+    ///
+    /// Animationen:
+    ///  • Widerstandstyp-Wechsel  → Slide + Fade auf ResistorView (gleiche Logik wie Input-Mode)
+    ///  • Input-Mode-Wechsel      → Slide + Fade auf Inhalt-Layouts
+    ///  • Settings-Panel          → vorab positioniert, dann sofortiger Opacity-Reveal + Slide-In
     /// </summary>
     public partial class MainPage : ContentPage
     {
@@ -26,11 +29,19 @@ namespace FirstApp
         private readonly List<Border> _chipsTol = new();
         private readonly List<Border> _chipsTcr = new();
 
-        // ─── Animation guard ──────────────────────────────────────────────
+        // ─── Animation guards ─────────────────────────────────────────────
+        private bool _resAnimBusy;
         private bool _inputAnimBusy;
+        private bool _settingsOpen;
 
         // ─── Text debounce ─────────────────────────────────────────────────
         private CancellationTokenSource? _textCts;
+
+        // ── Animation-Konstanten ──────────────────────────────────────────
+        // Etwas kürzer als 220 ms damit alles knackig wirkt
+        private const uint SlideMs = 200;
+        // Wie weit der herausgleitende Inhalt in Gegenrichtung wandert (%)
+        private const double OutSlide = 0.30;
 
         // ══════════════════════════════════════════════════════════════════
         // INIT
@@ -60,6 +71,10 @@ namespace FirstApp
 
             ResistorView.Drawable = new ResistorDrawable(_vm.Rings, () => _vm.BodyColor);
 
+            // Settings vorab unsichtbar positionieren (kein IsVisible-Toggle beim ersten Öffnen nötig)
+            SettingsPanel.TranslationY = 2000;
+            SettingsOverlay.Opacity = 0;
+
             _vm.SetMode(_vm.ResistorMode);
         }
 
@@ -74,7 +89,7 @@ namespace FirstApp
             }
         }
 
-        // ── JIT pre-warm ──────────────────────────────────────────────────
+        // ── JIT pre-warm: alle FadeTo/TranslateTo die später benutzt werden ─
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -84,94 +99,110 @@ namespace FirstApp
         private async Task PreWarmJit()
         {
             await Task.Yield();
-            // Vorab-JIT für Settings-Panel-Animation
-            var t1 = SettingsPanel.TranslateTo(0, 0, 1);
-            var t2 = SettingsOverlay.FadeTo(0, 1);
-            // Vorab-JIT für Inhalt-Animation
-            var t3 = ValueToColorLayout.FadeTo(1, 1);
-            var t4 = ColorToValueLayout.FadeTo(1, 1);
-            await Task.WhenAll(t1, t2, t3, t4);
+
+            // Jede Animations-Methode einmal mit Nullwerten aufrufen
+            await Task.WhenAll(
+                ResistorView.FadeTo(1, 1),
+                ResistorView.TranslateTo(0, 0, 1),
+                ValueToColorLayout.FadeTo(1, 1),
+                ValueToColorLayout.TranslateTo(0, 0, 1),
+                ColorToValueLayout.FadeTo(1, 1),
+                ColorToValueLayout.TranslateTo(0, 0, 1),
+                SettingsPanel.TranslateTo(0, SettingsPanel.TranslationY, 1),
+                SettingsOverlay.FadeTo(0, 1)
+            );
         }
 
         // ══════════════════════════════════════════════════════════════════
-        // RESISTOR-TYP TABS  (3-Tab Segmented Control)
+        // RESISTOR-TYP TABS  – Slide + Fade (wie Input-Mode)
         // ══════════════════════════════════════════════════════════════════
 
-        private void OnResTab0Tapped(object? sender, TappedEventArgs e) => SelectResistorMode(0);
-        private void OnResTab1Tapped(object? sender, TappedEventArgs e) => SelectResistorMode(1);
-        private void OnResTab2Tapped(object? sender, TappedEventArgs e) => SelectResistorMode(2);
+        private void OnResTab0Tapped(object? sender, TappedEventArgs e) => _ = SwitchResistorMode(0);
+        private void OnResTab1Tapped(object? sender, TappedEventArgs e) => _ = SwitchResistorMode(1);
+        private void OnResTab2Tapped(object? sender, TappedEventArgs e) => _ = SwitchResistorMode(2);
 
-        private void SelectResistorMode(int mode)
+        private async Task SwitchResistorMode(int newMode)
         {
-            if (_vm.ResistorMode == mode) return;
-            _vm.SetMode(mode);
+            if (_vm.ResistorMode == newMode || _resAnimBusy) return;
+            _resAnimBusy = true;
+
+            int dir = newMode > _vm.ResistorMode ? 1 : -1;
+            double w = ResistorViewContainer.Width > 0 ? ResistorViewContainer.Width : 300;
+
+            // Phase 1: aktuellen Zustand herausschieben
+            await Task.WhenAll(
+                ResistorView.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
+                ResistorView.FadeTo(0, SlideMs, Easing.CubicIn)
+            );
+
+            // Modus wechseln (Rings werden neu befüllt)
+            _vm.SetMode(newMode);
             RebuildToleranceChips();
-            if (mode == 2) RebuildTcrChips();
+            if (newMode == 2) RebuildTcrChips();
             UpdateResistorTypeTabs();
-            ResistorView?.Invalidate();
+            ResistorView.Invalidate();
+
+            // Neuen Zustand von der anderen Seite hereinschieben
+            ResistorView.TranslationX = dir * w;
+            ResistorView.Opacity = 0;
+
+            await Task.WhenAll(
+                ResistorView.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
+                ResistorView.FadeTo(1, SlideMs, Easing.CubicOut)
+            );
+
+            _resAnimBusy = false;
         }
 
         private void UpdateResistorTypeTabs()
         {
-            SetResTab(ResTab0, ResTabLabel0, _vm.ResistorMode == 0);
-            SetResTab(ResTab1, ResTabLabel1, _vm.ResistorMode == 1);
-            SetResTab(ResTab2, ResTabLabel2, _vm.ResistorMode == 2);
-        }
-
-        private static void SetResTab(Border tab, Label lbl, bool active)
-        {
-            tab.BackgroundColor = active
-                ? Color.FromArgb("#2563EB")
-                : Color.FromArgb("#1A2535");
-            lbl.TextColor = active ? Colors.White : Color.FromArgb("#64748B");
-            lbl.FontAttributes = active ? FontAttributes.Bold : FontAttributes.None;
+            SetSegTab(ResTab0, ResTabLabel0, _vm.ResistorMode == 0);
+            SetSegTab(ResTab1, ResTabLabel1, _vm.ResistorMode == 1);
+            SetSegTab(ResTab2, ResTabLabel2, _vm.ResistorMode == 2);
         }
 
         // ══════════════════════════════════════════════════════════════════
-        // INPUT-MODE TABS  (2-Tab Segmented Control + Slide-Animation)
+        // INPUT-MODE TABS  – Slide + Fade (identische Mechanik)
         // ══════════════════════════════════════════════════════════════════
 
-        private void OnInputTab0Tapped(object? sender, TappedEventArgs e)
-            => _ = SwitchInputMode(0);
+        private void OnInputTab0Tapped(object? sender, TappedEventArgs e) => _ = SwitchInputMode(0);
+        private void OnInputTab1Tapped(object? sender, TappedEventArgs e) => _ = SwitchInputMode(1);
 
-        private void OnInputTab1Tapped(object? sender, TappedEventArgs e)
-            => _ = SwitchInputMode(1);
-
-        /// <summary>
-        /// Wechselt den Eingabe-Modus mit einer Slide+Fade-Animation.
-        /// Richtung: links (mode 0 ← mode 1) / rechts (mode 0 → mode 1).
-        /// </summary>
         private async Task SwitchInputMode(int newMode)
         {
             if (_vm.InputMode == newMode || _inputAnimBusy) return;
             _inputAnimBusy = true;
 
-            // Richtung: +1 = nach rechts scrollen (gehe zu niedrigerem Index)
             int dir = newMode > _vm.InputMode ? 1 : -1;
-
-            // Ausgehendes Layout bestimmen
-            var outgoing = _vm.IsValueMode ? ValueToColorLayout : (VisualElement)ColorToValueLayout;
             double w = InputContentGrid.Width > 0 ? InputContentGrid.Width : 300;
+            var outgoing = _vm.IsValueMode
+                ? (VisualElement)ValueToColorLayout
+                : ColorToValueLayout;
 
-            // Eingehendes Layout vorbereiten: ausgeblendet, von der Seite
-            var incoming = newMode == 0 ? ValueToColorLayout : (VisualElement)ColorToValueLayout;
-            incoming.TranslationX = dir * w;
-            incoming.Opacity = 0;
+            // Phase 1: herausschieben
+            await Task.WhenAll(
+                outgoing.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
+                outgoing.FadeTo(0, SlideMs, Easing.CubicIn)
+            );
 
-            // Modus wechseln (IsVisible bindet auf ViewModel)
+            // Modus wechseln
             _vm.SetInputMode(newMode);
             UpdateInputModeTabs();
 
-            // Parallel animieren
-            uint dur = 220;
+            // Eingehendes Layout von der Seite starten
+            var incoming = newMode == 0
+                ? (VisualElement)ValueToColorLayout
+                : ColorToValueLayout;
+            incoming.TranslationX = dir * w;
+            incoming.Opacity = 0;
+
+            // Phase 2: hereinschieben
             await Task.WhenAll(
-                outgoing.TranslateTo(-dir * w * 0.35, 0, dur, Easing.CubicIn),
-                outgoing.FadeTo(0, dur, Easing.CubicIn),
-                incoming.TranslateTo(0, 0, dur, Easing.CubicOut),
-                incoming.FadeTo(1, dur, Easing.CubicOut)
+                incoming.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
+                incoming.FadeTo(1, SlideMs, Easing.CubicOut)
             );
 
-            // Sicherstellen dass outgoing sauber bleibt
+            // Outgoing sauber zurücksetzen
             outgoing.TranslationX = 0;
             outgoing.Opacity = 1;
 
@@ -181,20 +212,18 @@ namespace FirstApp
         private void UpdateInputModeTabs()
         {
             bool v = _vm.IsValueMode;
+            SetSegTab(InputTab0, InputTabLabel0, v);
+            SetSegTab(InputTab1, InputTabLabel1, !v);
+        }
 
-            InputTab0.BackgroundColor = v ? Color.FromArgb("#2563EB") : Colors.Transparent;
-            if (InputTab0.Content is Label l0)
-            {
-                l0.TextColor = v ? Colors.White : Color.FromArgb("#64748B");
-                l0.FontAttributes = v ? FontAttributes.Bold : FontAttributes.None;
-            }
+        // ─── Gemeinsamer Segmented-Tab-Stil ───────────────────────────────
 
-            InputTab1.BackgroundColor = !v ? Color.FromArgb("#2563EB") : Colors.Transparent;
-            if (InputTab1.Content is Label l1)
-            {
-                l1.TextColor = !v ? Colors.White : Color.FromArgb("#64748B");
-                l1.FontAttributes = !v ? FontAttributes.Bold : FontAttributes.None;
-            }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void SetSegTab(Border tab, Label lbl, bool active)
+        {
+            tab.BackgroundColor = active ? Color.FromArgb("#2563EB") : Colors.Transparent;
+            lbl.TextColor = active ? Colors.White : Color.FromArgb("#64748B");
+            lbl.FontAttributes = active ? FontAttributes.Bold : FontAttributes.None;
         }
 
         // ══════════════════════════════════════════════════════════════════
@@ -202,8 +231,7 @@ namespace FirstApp
         // ══════════════════════════════════════════════════════════════════
 
         private void BuildChipRow(
-            HorizontalStackLayout host,
-            List<Border> list,
+            HorizontalStackLayout host, List<Border> list,
             (Color Bg, string Lbl, Color Fg)[] data,
             int band, int sel, bool pill = false)
         {
@@ -224,12 +252,10 @@ namespace FirstApp
         }
 
         private void RebuildToleranceChips() =>
-            BuildChipRow(ToleranceChipsLayout, _chipsTol,
-                         _vm.CurrentTolData, 4, _vm.SelTol, pill: true);
+            BuildChipRow(ToleranceChipsLayout, _chipsTol, _vm.CurrentTolData, 4, _vm.SelTol, pill: true);
 
         private void RebuildTcrChips() =>
-            BuildChipRow(TcrChipsLayout, _chipsTcr,
-                         ResistorViewModel.TcrData, 5, _vm.SelTcr, pill: true);
+            BuildChipRow(TcrChipsLayout, _chipsTcr, ResistorViewModel.TcrData, 5, _vm.SelTcr, pill: true);
 
         private void RebuildSeriesChips()
         {
@@ -242,8 +268,7 @@ namespace FirstApp
                 chip.GestureRecognizers.Add(Tap(() =>
                 {
                     double rounded = _vm.SetSeries(cap, ResistanceEntry.Text);
-                    if (rounded > 0)
-                        ResistanceEntry.Text = ResistorViewModel.FormatR(rounded);
+                    if (rounded > 0) ResistanceEntry.Text = ResistorViewModel.FormatR(rounded);
                     RebuildSeriesChips();
                 }));
                 SeriesChipsMain.Children.Add(chip);
@@ -277,16 +302,10 @@ namespace FirstApp
                         VerticalOptions = LayoutOptions.Center,
                     }
                 };
-                chip.GestureRecognizers.Add(Tap(() =>
-                {
-                    _vm.Lang = cap;
-                    RebuildLangChips();
-                }));
+                chip.GestureRecognizers.Add(Tap(() => { _vm.Lang = cap; RebuildLangChips(); }));
                 LangChipsLayout.Children.Add(chip);
             }
         }
-
-        // ─── Chip-Selektion ───────────────────────────────────────────────
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetSel(List<Border> list, int idx)
@@ -298,8 +317,6 @@ namespace FirstApp
                 list[i].StrokeThickness = on ? 2.5 : 0;
             }
         }
-
-        // ─── Chip-Factories ───────────────────────────────────────────────
 
         private static Border MakeChip(Color bg, string lbl, Color fg, bool pill, bool sel)
         {
@@ -380,25 +397,46 @@ namespace FirstApp
 
         // ══════════════════════════════════════════════════════════════════
         // SETTINGS PANEL
+        //
+        // Performance-Trick:
+        //   • Das Panel liegt IMMER im VisualTree – TranslationY hält es außerhalb
+        //     des sichtbaren Bereichs. IsVisible/InputTransparent steuert nur Hit-Testing.
+        //   • FadeTo auf das Overlay startet sofort parallel zur Panel-Translation,
+        //     ohne vorher einen Layout-Pass durch IsVisible zu erzwingen.
         // ══════════════════════════════════════════════════════════════════
 
         private async void OnOpenSettings(object sender, EventArgs e)
         {
+            if (_settingsOpen) return;
+            _settingsOpen = true;
+
             RebuildLangChips();
+
+            // Hit-Testing aktivieren – kein Opacity-Sprung, Panel ist bereits vorab positioniert
             SettingsOverlay.IsVisible = true;
-            SettingsOverlay.Opacity = 0;
-            SettingsPanel.TranslationY = 700;
+            SettingsOverlay.InputTransparent = false;
+
+            // Parallel: Backdrop einblenden + Panel hochschieben
             await Task.WhenAll(
-                SettingsOverlay.FadeTo(1, 200),
-                SettingsPanel.TranslateTo(0, 0, 280, Easing.CubicOut));
+                SettingsOverlay.FadeTo(1, 220, Easing.CubicOut),
+                SettingsPanel.TranslateTo(0, 0, 260, Easing.CubicOut)
+            );
         }
 
         private async void OnCloseSettings(object sender, EventArgs e)
         {
+            if (!_settingsOpen) return;
+
+            // Hit-Testing sofort deaktivieren → kein versehentliches Antippen
+            SettingsOverlay.InputTransparent = true;
+
             await Task.WhenAll(
-                SettingsOverlay.FadeTo(0, 180),
-                SettingsPanel.TranslateTo(0, 700, 230, Easing.CubicIn));
+                SettingsOverlay.FadeTo(0, 200, Easing.CubicIn),
+                SettingsPanel.TranslateTo(0, 2000, 240, Easing.CubicIn)
+            );
+
             SettingsOverlay.IsVisible = false;
+            _settingsOpen = false;
         }
 
         private void OnSettingsBackdropTapped(object sender, TappedEventArgs e)

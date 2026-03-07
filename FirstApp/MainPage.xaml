@@ -59,66 +59,58 @@
                     </Border.Background>
                     <VerticalStackLayout Spacing="12">
 
-                        <!-- Segmented control – Widerstandstyp (3 Tabs) -->
+                        <!-- Segmented control – Widerstandstyp -->
                         <Border BackgroundColor="#060D1A"
                                 StrokeShape="RoundRectangle 13"
                                 Stroke="#1E3A5F" StrokeThickness="1"
                                 Padding="3">
                             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="3">
-
                                 <Border x:Name="ResTab0" Grid.Column="0"
                                         BackgroundColor="#1A2535"
-                                        StrokeShape="RoundRectangle 10"
-                                        Padding="6,9">
+                                        StrokeShape="RoundRectangle 10" Padding="6,9">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnResTab0Tapped"/>
                                     </Border.GestureRecognizers>
-                                    <Label x:Name="ResTabLabel0"
-                                           Text="{Binding Band4BtnText}"
-                                           FontSize="11" TextColor="#64748B"
-                                           MaxLines="1" LineBreakMode="TailTruncation"
+                                    <Label x:Name="ResTabLabel0" Text="{Binding Band4BtnText}"
+                                           FontSize="11" TextColor="#64748B" MaxLines="1"
+                                           LineBreakMode="TailTruncation"
                                            HorizontalTextAlignment="Center"
                                            VerticalTextAlignment="Center"/>
                                 </Border>
-
                                 <Border x:Name="ResTab1" Grid.Column="1"
                                         BackgroundColor="#2563EB"
-                                        StrokeShape="RoundRectangle 10"
-                                        Padding="6,9">
+                                        StrokeShape="RoundRectangle 10" Padding="6,9">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnResTab1Tapped"/>
                                     </Border.GestureRecognizers>
-                                    <Label x:Name="ResTabLabel1"
-                                           Text="{Binding Band5BtnText}"
-                                           FontSize="11" FontAttributes="Bold"
-                                           TextColor="White"
+                                    <Label x:Name="ResTabLabel1" Text="{Binding Band5BtnText}"
+                                           FontSize="11" FontAttributes="Bold" TextColor="White"
                                            MaxLines="1" LineBreakMode="TailTruncation"
                                            HorizontalTextAlignment="Center"
                                            VerticalTextAlignment="Center"/>
                                 </Border>
-
                                 <Border x:Name="ResTab2" Grid.Column="2"
                                         BackgroundColor="#1A2535"
-                                        StrokeShape="RoundRectangle 10"
-                                        Padding="6,9">
+                                        StrokeShape="RoundRectangle 10" Padding="6,9">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnResTab2Tapped"/>
                                     </Border.GestureRecognizers>
-                                    <Label x:Name="ResTabLabel2"
-                                           Text="{Binding Band6BtnText}"
-                                           FontSize="11" TextColor="#64748B"
-                                           MaxLines="1" LineBreakMode="TailTruncation"
+                                    <Label x:Name="ResTabLabel2" Text="{Binding Band6BtnText}"
+                                           FontSize="11" TextColor="#64748B" MaxLines="1"
+                                           LineBreakMode="TailTruncation"
                                            HorizontalTextAlignment="Center"
                                            VerticalTextAlignment="Center"/>
                                 </Border>
-
                             </Grid>
                         </Border>
 
-                        <!-- Resistor-Grafik -->
-                        <GraphicsView x:Name="ResistorView"
-                                      HeightRequest="80" WidthRequest="300"
-                                      HorizontalOptions="Center"/>
+                        <!-- Resistor-Grafik – Container für Slide-Animation -->
+                        <Grid x:Name="ResistorViewContainer"
+                              HeightRequest="80" WidthRequest="300"
+                              HorizontalOptions="Center"
+                              IsClippedToBounds="True">
+                            <GraphicsView x:Name="ResistorView"/>
+                        </Grid>
 
                     </VerticalStackLayout>
                 </Border>
@@ -130,51 +122,42 @@
                         Stroke="#2563EB" StrokeThickness="1.5">
                     <VerticalStackLayout Spacing="14">
 
-                        <!-- Segmented control – Eingabe-Modus (2 Tabs) -->
+                        <!-- Segmented control – Eingabe-Modus -->
                         <Border BackgroundColor="#060D1A"
                                 StrokeShape="RoundRectangle 13"
                                 Stroke="#1E3A5F" StrokeThickness="1"
                                 Padding="3">
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="3">
-
                                 <Border x:Name="InputTab0" Grid.Column="0"
                                         BackgroundColor="#2563EB"
-                                        StrokeShape="RoundRectangle 10"
-                                        Padding="8,9">
+                                        StrokeShape="RoundRectangle 10" Padding="8,9">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnInputTab0Tapped"/>
                                     </Border.GestureRecognizers>
-                                    <Label x:Name="InputTabLabel0"
-                                           Text="{Binding ValToColTabText}"
-                                           FontSize="12" FontAttributes="Bold"
-                                           TextColor="White" MaxLines="1"
-                                           LineBreakMode="TailTruncation"
+                                    <Label x:Name="InputTabLabel0" Text="{Binding ValToColTabText}"
+                                           FontSize="12" FontAttributes="Bold" TextColor="White"
+                                           MaxLines="1" LineBreakMode="TailTruncation"
                                            HorizontalTextAlignment="Center"
                                            VerticalTextAlignment="Center"/>
                                 </Border>
-
                                 <Border x:Name="InputTab1" Grid.Column="1"
                                         BackgroundColor="Transparent"
-                                        StrokeShape="RoundRectangle 10"
-                                        Padding="8,9">
+                                        StrokeShape="RoundRectangle 10" Padding="8,9">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnInputTab1Tapped"/>
                                     </Border.GestureRecognizers>
-                                    <Label x:Name="InputTabLabel1"
-                                           Text="{Binding ColToValTabText}"
+                                    <Label x:Name="InputTabLabel1" Text="{Binding ColToValTabText}"
                                            FontSize="12" TextColor="#64748B"
                                            MaxLines="1" LineBreakMode="TailTruncation"
                                            HorizontalTextAlignment="Center"
                                            VerticalTextAlignment="Center"/>
                                 </Border>
-
                             </Grid>
                         </Border>
 
                         <BoxView HeightRequest="1" BackgroundColor="#1E2D40"/>
 
-                        <!-- Animierter Inhaltsbereich: beide Layouts liegen übereinander im Grid,
-                             damit TranslateTo/FadeTo zwischen ihnen animieren kann. -->
+                        <!-- Animierter Inhaltsbereich -->
                         <Grid x:Name="InputContentGrid" IsClippedToBounds="True">
 
                             <!-- VALUE → COLOR -->
@@ -187,8 +170,7 @@
                                     <Entry x:Name="ResistanceEntry"
                                            Placeholder="e.g. 4k7 or 470"
                                            Keyboard="Numeric"
-                                           BackgroundColor="#111827"
-                                           TextColor="White"
+                                           BackgroundColor="#111827" TextColor="White"
                                            PlaceholderColor="#4B5563"
                                            HeightRequest="46" FontSize="15"
                                            TextChanged="OnResistanceTextChanged"/>
@@ -208,12 +190,10 @@
                             <VerticalStackLayout x:Name="ColorToValueLayout"
                                                  IsVisible="{Binding IsColorMode}"
                                                  Spacing="10">
-
                                 <Label Text="{Binding ResultText}"
                                        FontSize="26" FontAttributes="Bold"
                                        TextColor="#10B981" HorizontalOptions="Center"
                                        Margin="0,2,0,4"/>
-
                                 <Grid ColumnDefinitions="58,*" ColumnSpacing="6">
                                     <Label Grid.Column="0" Text="{Binding Ring1Text}"
                                            FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
@@ -223,7 +203,6 @@
                                                                Spacing="6" Padding="2,2"/>
                                     </ScrollView>
                                 </Grid>
-
                                 <Grid ColumnDefinitions="58,*" ColumnSpacing="6">
                                     <Label Grid.Column="0" Text="{Binding Ring2Text}"
                                            FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
@@ -233,7 +212,6 @@
                                                                Spacing="6" Padding="2,2"/>
                                     </ScrollView>
                                 </Grid>
-
                                 <Grid IsVisible="{Binding Ring3Visible}"
                                       ColumnDefinitions="58,*" ColumnSpacing="6">
                                     <Label Grid.Column="0" Text="{Binding Ring3Text}"
@@ -244,7 +222,6 @@
                                                                Spacing="6" Padding="2,2"/>
                                     </ScrollView>
                                 </Grid>
-
                                 <Grid ColumnDefinitions="58,*" ColumnSpacing="6">
                                     <Label Grid.Column="0" Text="{Binding MultText}"
                                            FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
@@ -254,7 +231,6 @@
                                                                Spacing="6" Padding="2,2"/>
                                     </ScrollView>
                                 </Grid>
-
                             </VerticalStackLayout>
 
                         </Grid>
@@ -290,8 +266,12 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- ══ SETTINGS OVERLAY ══ -->
-        <Grid x:Name="SettingsOverlay" IsVisible="False" BackgroundColor="#BB000000">
+        <!-- ══ SETTINGS OVERLAY ══
+             Immer im VisualTree (IsVisible=False nur für Hit-Testing),
+             Opacity gesteuert für flüssige Animation ohne Layout-Neuberechnung. -->
+        <Grid x:Name="SettingsOverlay" IsVisible="False"
+              InputTransparent="True"
+              BackgroundColor="#BB000000">
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnSettingsBackdropTapped"/>
             </Grid.GestureRecognizers>
@@ -310,7 +290,6 @@
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnSettingsPanelTapped"/>
                 </Border.GestureRecognizers>
-
                 <VerticalStackLayout Spacing="20">
                     <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2"
                              BackgroundColor="#334155" HorizontalOptions="Center"
