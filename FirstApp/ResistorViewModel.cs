@@ -7,10 +7,6 @@ using Microsoft.Maui.Graphics;
 
 namespace FirstApp
 {
-    /// <summary>
-    /// All business logic, state and localisation.
-    /// View (code-behind) only handles animations and chip building.
-    /// </summary>
     public sealed class ResistorViewModel : INotifyPropertyChanged
     {
         // ═══════════════════════════════════════════════════════════════════
@@ -29,7 +25,7 @@ namespace FirstApp
         }
 
         // ═══════════════════════════════════════════════════════════════════
-        // STATIC COLOR CACHE  – created once at class load, zero allocation on hot path
+        // COLOR CACHE
         // ═══════════════════════════════════════════════════════════════════
 
         internal static readonly Color CBlack = Color.FromRgb(0, 0, 0);
@@ -44,19 +40,19 @@ namespace FirstApp
         internal static readonly Color CWhite = Color.FromRgb(255, 255, 255);
         internal static readonly Color CSilver = Color.FromRgb(180, 180, 180);
         internal static readonly Color CGold = Color.FromRgb(200, 160, 0);
-        internal static readonly Color CNone = Color.FromArgb("#1A1A1A"); // ±20% "invisible"
+        internal static readonly Color CNone = Color.FromArgb("#1A1A1A");
 
         // ═══════════════════════════════════════════════════════════════════
-        // CHIP DATA  (uses cached colors)
+        // CHIP DATA
         // ═══════════════════════════════════════════════════════════════════
 
         public static readonly (Color Bg, string Lbl, Color Fg)[] DigitData =
         {
-            (CBlack,  "0", CWhite),  (CBrown,  "1", CWhite),
-            (CRed,    "2", CWhite),  (COrange, "3", CBlack),
-            (CYellow, "4", CBlack),  (CGreen,  "5", CWhite),
-            (CBlue,   "6", CWhite),  (CViolet, "7", CWhite),
-            (CGray,   "8", CWhite),  (CWhite,  "9", CBlack),
+            (CBlack,  "0", CWhite), (CBrown,  "1", CWhite),
+            (CRed,    "2", CWhite), (COrange, "3", CBlack),
+            (CYellow, "4", CBlack), (CGreen,  "5", CWhite),
+            (CBlue,   "6", CWhite), (CViolet, "7", CWhite),
+            (CGray,   "8", CWhite), (CWhite,  "9", CBlack),
         };
 
         public static readonly (Color Bg, string Lbl, Color Fg)[] MultData =
@@ -92,7 +88,6 @@ namespace FirstApp
             (CBlue,   "10",  CWhite), (CViolet, "5",   CWhite),
         };
 
-        // Languages: (code, flag emoji, short display name)
         public static readonly (string Code, string Flag, string Short)[] Languages =
         {
             ("en","🇬🇧","EN"), ("de","🇩🇪","DE"), ("es","🇪🇸","ES"), ("fr","🇫🇷","FR"),
@@ -104,17 +99,13 @@ namespace FirstApp
         };
 
         // ═══════════════════════════════════════════════════════════════════
-        // RINGS  (shared list – Drawable reads directly, no copy)
+        // RINGS
         // ═══════════════════════════════════════════════════════════════════
 
         public readonly List<Color> Rings = new();
         private Color _bodyColor = Colors.SteelBlue;
         public Color BodyColor => _bodyColor;
-
-        // CNone sentinel: Drawable skips this ring entirely (±20%)
         public static bool IsInvisibleRing(Color c) => c == CNone;
-
-        /// Raised after ring list changes so View can call Invalidate()
         public event Action? RingsChanged;
 
         // ═══════════════════════════════════════════════════════════════════
@@ -127,12 +118,11 @@ namespace FirstApp
         private string _lang = "en";
         private string _resultText = "0 Ω";
 
-        // Band selections – read by View for initial chip highlight
         public int Sel1 = 1;
         public int Sel2 = 0;
         public int Sel3 = 0;
         public int SelMul = 2;
-        public int SelTol = 4;  // ±1% default for 5-band
+        public int SelTol = 4;
         public int SelTcr = 0;
 
         public int ResistorMode
@@ -142,8 +132,11 @@ namespace FirstApp
             {
                 if (_resistorMode == value) return;
                 _resistorMode = value;
-                Notify(); Notify(nameof(Ring3Visible)); Notify(nameof(TcrVisible));
-                Notify(nameof(ModeLabelText)); Notify(nameof(CurrentTolData));
+                Notify();
+                Notify(nameof(Ring3Visible));
+                Notify(nameof(TcrVisible));
+                Notify(nameof(ModeLabelText));
+                Notify(nameof(CurrentTolData));
             }
         }
 
@@ -154,8 +147,9 @@ namespace FirstApp
             {
                 if (_inputMode == value) return;
                 _inputMode = value;
-                Notify(); Notify(nameof(IsColorMode)); Notify(nameof(IsValueMode));
-                Notify(nameof(InputModeTitleText));
+                Notify();
+                Notify(nameof(IsColorMode));
+                Notify(nameof(IsValueMode));
             }
         }
 
@@ -172,7 +166,7 @@ namespace FirstApp
             {
                 if (!Set(ref _lang, value)) return;
                 Preferences.Set("pref_lang", _lang);
-                NotifyAll(); // refreshes every label binding in one shot
+                NotifyAll();
             }
         }
 
@@ -192,13 +186,10 @@ namespace FirstApp
         public (Color Bg, string Lbl, Color Fg)[] CurrentTolData
             => _resistorMode == 0 ? TolData4 : TolData5;
 
-        // ─── Localised label properties ────────────────────────────────────
+        // ─── Lokalisierte Labels ──────────────────────────────────────────
 
         public string TitleText => T("title");
         public string SubtitleText => T("subtitle");
-        public string SwipeTypeHint => T("swipeType");
-        public string SwipeInputHint => T("swipeMode");
-        public string InputModeTitleText => _inputMode == 0 ? T("valToCol") : T("colToVal");
         public string ModeLabelText => _resistorMode switch { 0 => T("band4"), 1 => T("band5"), _ => T("band6") };
         public string ResistanceLabelText => T("resistance");
         public string NormSeriesLabelText => T("normSeries");
@@ -217,17 +208,15 @@ namespace FirstApp
         public string WarningTitle => T("warning");
         public string OutOfRangeText => T("outOfRange");
 
-        /// <summary>
-        /// Liest die Version direkt aus AppInfo (= ApplicationDisplayVersion in der .csproj).
-        /// Nie mehr manuell anpassen nötig.
-        /// </summary>
-        public string AppVersionText =>
-            $"Resistor Calculator v{AppInfo.VersionString}";
+        // Tab-Button-Texte (kurz für Segmented Controls)
+        public string ValToColTabText => T("valToCol");
+        public string ColToValTabText => T("colToVal");
+        public string Band4BtnText => T("band4");
+        public string Band5BtnText => T("band5");
+        public string Band6BtnText => T("band6");
 
-        /// <summary>
-        /// Adaptive title font size – shrinks for longer translated strings
-        /// so the header never overflows on any language.
-        /// </summary>
+        public string AppVersionText => $"Resistor Calculator v{AppInfo.VersionString}";
+
         public double TitleFontSize
         {
             get
@@ -253,7 +242,7 @@ namespace FirstApp
         }
 
         // ═══════════════════════════════════════════════════════════════════
-        // PUBLIC API  (called by View)
+        // PUBLIC API
         // ═══════════════════════════════════════════════════════════════════
 
         public void SetMode(int mode)
@@ -262,7 +251,6 @@ namespace FirstApp
             _bodyColor = mode == 0 ? Color.FromArgb("#D2B48C") : Colors.SteelBlue;
             int count = mode switch { 0 => 4, 1 => 5, _ => 6 };
             for (int i = 0; i < count; i++) Rings.Add(CBlack);
-
             SelTol = mode == 0 ? 1 : 4;
             SelTcr = 0;
             Preferences.Set("pref_mode", mode);
@@ -293,11 +281,8 @@ namespace FirstApp
         public void RecalcFromText(string? text)
         {
             ResultText = "";
-
             double v = ParseInput(text);
-
             if (v < 0) return;
-
             FillRingsFromValue(v);
             ApplyTolRing();
             if (_resistorMode == 2) ApplyTcrRing();
@@ -357,7 +342,7 @@ namespace FirstApp
             var tolData = CurrentTolData;
             string tolStr = SelTol < tolData.Length ? tolData[SelTol].Lbl : "";
             string tcrStr = (_resistorMode == 2 && SelTcr < TcrData.Length)
-                                ? $" {TcrData[SelTcr].Lbl}ppm" : "";
+                                 ? $" {TcrData[SelTcr].Lbl}ppm" : "";
             ResultText = $"{FormatR(final)}Ω  {tolStr}{tcrStr}";
             RingsChanged?.Invoke();
         }
@@ -395,7 +380,7 @@ namespace FirstApp
         {
             int tolIdx = _resistorMode == 0 ? 3 : 4;
             var data = CurrentTolData;
-            if (SelTol < data.Length) SafeSet(tolIdx, data[SelTol].Bg); // CNone = skip drawing
+            if (SelTol < data.Length) SafeSet(tolIdx, data[SelTol].Bg);
         }
 
         private void ApplyTcrRing()
@@ -403,7 +388,6 @@ namespace FirstApp
             if (SelTcr < TcrData.Length) SafeSet(5, TcrData[SelTcr].Bg);
         }
 
-        // Bounds-checked ring setter – prevents any index-out-of-range crash
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SafeSet(int idx, Color c)
         {
@@ -450,7 +434,7 @@ namespace FirstApp
         }
 
         // ═══════════════════════════════════════════════════════════════════
-        // COLOR LOOKUPS  – use cached statics, zero allocation
+        // COLOR LOOKUPS
         // ═══════════════════════════════════════════════════════════════════
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -489,7 +473,6 @@ namespace FirstApp
 
         // ═══════════════════════════════════════════════════════════════════
         // LOCALISATION  – 23 languages
-        // To add a language: add one entry per inner dictionary + to Languages[]
         // ═══════════════════════════════════════════════════════════════════
 
         private string T(string key) =>
@@ -549,67 +532,16 @@ namespace FirstApp
                 ["hi"] = "रंग कोड कनवर्टर",
                 ["ro"] = "Convertor cod culori",
             },
-            ["swipeType"] = new()
-            {
-                ["en"] = "❮  swipe to change type  ❯",
-                ["de"] = "❮  wischen zum Wechseln  ❯",
-                ["es"] = "❮  deslizar para cambiar  ❯",
-                ["fr"] = "❮  glisser pour changer  ❯",
-                ["pt"] = "❮  deslize para mudar  ❯",
-                ["it"] = "❮  scorri per cambiare  ❯",
-                ["ja"] = "❮  スワイプで変更  ❯",
-                ["zh"] = "❮  滑动更改类型  ❯",
-                ["ru"] = "❮  свайп для смены  ❯",
-                ["nl"] = "❮  veeg om te wisselen  ❯",
-                ["ko"] = "❮  스와이프로 변경  ❯",
-                ["tr"] = "❮  kaydır  ❯",
-                ["pl"] = "❮  przesuń aby zmienić  ❯",
-                ["sv"] = "❮  svep för att ändra  ❯",
-                ["da"] = "❮  stryg for at skifte  ❯",
-                ["no"] = "❮  sveip for å endre  ❯",
-                ["fi"] = "❮  pyyhkäise vaihtaaksesi  ❯",
-                ["cs"] = "❮  přejeďte pro změnu  ❯",
-                ["el"] = "❮  σύρτε για αλλαγή  ❯",
-                ["uk"] = "❮  свайп для зміни  ❯",
-                ["ar"] = "❮  اسحب للتغيير  ❯",
-                ["hi"] = "❮  बदलने के लिए स्वाइप करें  ❯",
-                ["ro"] = "❮  glisați pentru schimbare  ❯",
-            },
-            ["swipeMode"] = new()
-            {
-                ["en"] = "❮  swipe to swap mode  ❯",
-                ["de"] = "❮  wischen zum Wechseln  ❯",
-                ["es"] = "❮  deslizar para modo  ❯",
-                ["fr"] = "❮  glisser pour mode  ❯",
-                ["pt"] = "❮  deslize para trocar  ❯",
-                ["it"] = "❮  scorri per modo  ❯",
-                ["ja"] = "❮  スワイプでモード変更  ❯",
-                ["zh"] = "❮  滑动切换模式  ❯",
-                ["ru"] = "❮  свайп для режима  ❯",
-                ["nl"] = "❮  veeg voor modus  ❯",
-                ["ko"] = "❮  모드 변경 스와이프  ❯",
-                ["tr"] = "❮  modu değiştir  ❯",
-                ["pl"] = "❮  przesuń tryb  ❯",
-                ["sv"] = "❮  svep för läge  ❯",
-                ["da"] = "❮  stryg for mode  ❯",
-                ["no"] = "❮  sveip for modus  ❯",
-                ["fi"] = "❮  pyyhkäise tila  ❯",
-                ["cs"] = "❮  přejeďte pro režim  ❯",
-                ["el"] = "❮  σύρτε για λειτουργία  ❯",
-                ["uk"] = "❮  свайп для режиму  ❯",
-                ["ar"] = "❮  اسحب لتغيير الوضع  ❯",
-                ["hi"] = "❮  मोड बदलने के लिए स्वाइप करें  ❯",
-                ["ro"] = "❮  glisați pentru mod  ❯",
-            },
+            // Tab-Texte – kurz (kein "Mode"-Suffix)
             ["valToCol"] = new()
             {
-                ["en"] = "Value ➞ Color Mode",
-                ["de"] = "Wert ➞ Farbe Modus",
+                ["en"] = "Value ➞ Color",
+                ["de"] = "Wert ➞ Farbe",
                 ["es"] = "Valor ➞ Color",
                 ["fr"] = "Valeur ➞ Couleur",
                 ["pt"] = "Valor ➞ Cor",
                 ["it"] = "Valore ➞ Colore",
-                ["ja"] = "値 ➞ カラーコード",
+                ["ja"] = "値 ➞ カラー",
                 ["zh"] = "阻值 ➞ 色环",
                 ["ru"] = "Значение ➞ Цвет",
                 ["nl"] = "Waarde ➞ Kleur",
@@ -629,13 +561,13 @@ namespace FirstApp
             },
             ["colToVal"] = new()
             {
-                ["en"] = "Color ➞ Value Mode",
-                ["de"] = "Farbe ➞ Wert Modus",
+                ["en"] = "Color ➞ Value",
+                ["de"] = "Farbe ➞ Wert",
                 ["es"] = "Color ➞ Valor",
                 ["fr"] = "Couleur ➞ Valeur",
                 ["pt"] = "Cor ➞ Valor",
                 ["it"] = "Colore ➞ Valore",
-                ["ja"] = "カラーコード ➞ 値",
+                ["ja"] = "カラー ➞ 値",
                 ["zh"] = "色环 ➞ 阻值",
                 ["ru"] = "Цвет ➞ Значение",
                 ["nl"] = "Kleur ➞ Waarde",
@@ -705,10 +637,10 @@ namespace FirstApp
                 ["hi"] = "E श्रृंखला",
                 ["ro"] = "Seria E",
             },
-            ["ring1"] = new() { ["en"] = "Ring 1", ["de"] = "Ring 1", ["es"] = "Anillo 1", ["fr"] = "Bande 1", ["pt"] = "Anel 1", ["it"] = "Anello 1", ["ja"] = "リング 1", ["zh"] = "环 1", ["ru"] = "Кольцо 1", ["nl"] = "Ring 1", ["ko"] = "링 1", ["tr"] = "Halka 1", ["pl"] = "Pierścień 1", ["sv"] = "Ring 1", ["da"] = "Ring 1", ["no"] = "Ring 1", ["fi"] = "Rengas 1", ["cs"] = "Pruh 1", ["el"] = "Δαχτυλίδι 1", ["uk"] = "Кільце 1", ["ar"] = "حلقة 1", ["hi"] = "रिंग 1", ["ro"] = "Inel 1" },
-            ["ring2"] = new() { ["en"] = "Ring 2", ["de"] = "Ring 2", ["es"] = "Anillo 2", ["fr"] = "Bande 2", ["pt"] = "Anel 2", ["it"] = "Anello 2", ["ja"] = "リング 2", ["zh"] = "环 2", ["ru"] = "Кольцо 2", ["nl"] = "Ring 2", ["ko"] = "링 2", ["tr"] = "Halka 2", ["pl"] = "Pierścień 2", ["sv"] = "Ring 2", ["da"] = "Ring 2", ["no"] = "Ring 2", ["fi"] = "Rengas 2", ["cs"] = "Pruh 2", ["el"] = "Δαχτυλίδι 2", ["uk"] = "Кільце 2", ["ar"] = "حلقة 2", ["hi"] = "रिंग 2", ["ro"] = "Inel 2" },
-            ["ring3"] = new() { ["en"] = "Ring 3", ["de"] = "Ring 3", ["es"] = "Anillo 3", ["fr"] = "Bande 3", ["pt"] = "Anel 3", ["it"] = "Anello 3", ["ja"] = "リング 3", ["zh"] = "环 3", ["ru"] = "Кольцо 3", ["nl"] = "Ring 3", ["ko"] = "링 3", ["tr"] = "Halka 3", ["pl"] = "Pierścień 3", ["sv"] = "Ring 3", ["da"] = "Ring 3", ["no"] = "Ring 3", ["fi"] = "Rengas 3", ["cs"] = "Pruh 3", ["el"] = "Δαχτυλίδι 3", ["uk"] = "Кільце 3", ["ar"] = "حلقة 3", ["hi"] = "रिंग 3", ["ro"] = "Inel 3" },
-            ["mult"] = new() { ["en"] = "Mult.", ["de"] = "Mult.", ["es"] = "Mult.", ["fr"] = "Mult.", ["pt"] = "Mult.", ["it"] = "Molt.", ["ja"] = "乗数", ["zh"] = "倍率", ["ru"] = "Множ.", ["nl"] = "Mult.", ["ko"] = "배율", ["tr"] = "Çarp.", ["pl"] = "Mnożnik", ["sv"] = "Mult.", ["da"] = "Mult.", ["no"] = "Mult.", ["fi"] = "Kerroin", ["cs"] = "Násobič", ["el"] = "Πολλαπλ.", ["uk"] = "Множ.", ["ar"] = "مضاعف", ["hi"] = "गुणक", ["ro"] = "Mult." },
+            ["ring1"] = new() { ["en"] = "Ring 1", ["de"] = "Ring 1", ["es"] = "Anillo 1", ["fr"] = "Bande 1", ["pt"] = "Anel 1", ["it"] = "Anello 1", ["ja"] = "リング 1", ["zh"] = "环 1", ["ru"] = "Кольцо 1", ["nl"] = "Ring 1", ["ko"] = "링 1", ["tr"] = "Halka 1", ["pl"] = "Pierścień 1", ["sv"] = "Ring 1", ["da"] = "Ring 1", ["no"] = "Ring 1", ["fi"] = "Rengas 1", ["cs"] = "Pruh 1", ["el"] = "Δαχτ. 1", ["uk"] = "Кільце 1", ["ar"] = "حلقة 1", ["hi"] = "रिंग 1", ["ro"] = "Inel 1" },
+            ["ring2"] = new() { ["en"] = "Ring 2", ["de"] = "Ring 2", ["es"] = "Anillo 2", ["fr"] = "Bande 2", ["pt"] = "Anel 2", ["it"] = "Anello 2", ["ja"] = "リング 2", ["zh"] = "环 2", ["ru"] = "Кольцо 2", ["nl"] = "Ring 2", ["ko"] = "링 2", ["tr"] = "Halka 2", ["pl"] = "Pierścień 2", ["sv"] = "Ring 2", ["da"] = "Ring 2", ["no"] = "Ring 2", ["fi"] = "Rengas 2", ["cs"] = "Pruh 2", ["el"] = "Δαχτ. 2", ["uk"] = "Кільце 2", ["ar"] = "حلقة 2", ["hi"] = "रिंग 2", ["ro"] = "Inel 2" },
+            ["ring3"] = new() { ["en"] = "Ring 3", ["de"] = "Ring 3", ["es"] = "Anillo 3", ["fr"] = "Bande 3", ["pt"] = "Anel 3", ["it"] = "Anello 3", ["ja"] = "リング 3", ["zh"] = "环 3", ["ru"] = "Кольцо 3", ["nl"] = "Ring 3", ["ko"] = "링 3", ["tr"] = "Halka 3", ["pl"] = "Pierścień 3", ["sv"] = "Ring 3", ["da"] = "Ring 3", ["no"] = "Ring 3", ["fi"] = "Rengas 3", ["cs"] = "Pruh 3", ["el"] = "Δαχτ. 3", ["uk"] = "Кільце 3", ["ar"] = "حلقة 3", ["hi"] = "रिंग 3", ["ro"] = "Inel 3" },
+            ["mult"] = new() { ["en"] = "Mult.", ["de"] = "Mult.", ["es"] = "Mult.", ["fr"] = "Mult.", ["pt"] = "Mult.", ["it"] = "Molt.", ["ja"] = "乗数", ["zh"] = "倍率", ["ru"] = "Множ.", ["nl"] = "Mult.", ["ko"] = "배율", ["tr"] = "Çarp.", ["pl"] = "Mnożnik", ["sv"] = "Mult.", ["da"] = "Mult.", ["no"] = "Mult.", ["fi"] = "Kerroin", ["cs"] = "Násobič", ["el"] = "Πολλ.", ["uk"] = "Множ.", ["ar"] = "مضاعف", ["hi"] = "गुणक", ["ro"] = "Mult." },
             ["tol"] = new() { ["en"] = "Tol.", ["de"] = "Tol.", ["es"] = "Tol.", ["fr"] = "Tol.", ["pt"] = "Tol.", ["it"] = "Tol.", ["ja"] = "公差", ["zh"] = "误差", ["ru"] = "Доп.", ["nl"] = "Tol.", ["ko"] = "허용오차", ["tr"] = "Tol.", ["pl"] = "Tol.", ["sv"] = "Tol.", ["da"] = "Tol.", ["no"] = "Tol.", ["fi"] = "Tol.", ["cs"] = "Tol.", ["el"] = "Ανοχή", ["uk"] = "Допуск", ["ar"] = "تفاوت", ["hi"] = "सहनशीलता", ["ro"] = "Tol." },
             ["tcr"] = new() { ["en"] = "TCR", ["de"] = "TCR", ["es"] = "TCR", ["fr"] = "TCR", ["pt"] = "TCR", ["it"] = "TCR", ["ja"] = "TCR", ["zh"] = "TCR", ["ru"] = "TCR", ["nl"] = "TCR", ["ko"] = "TCR", ["tr"] = "TCR", ["pl"] = "TCR", ["sv"] = "TCR", ["da"] = "TCR", ["no"] = "TCR", ["fi"] = "TCR", ["cs"] = "TCR", ["el"] = "TCR", ["uk"] = "TCR", ["ar"] = "TCR", ["hi"] = "TCR", ["ro"] = "TCR" },
             ["settings"] = new() { ["en"] = "Settings", ["de"] = "Einstellungen", ["es"] = "Ajustes", ["fr"] = "Paramètres", ["pt"] = "Configurações", ["it"] = "Impostazioni", ["ja"] = "設定", ["zh"] = "设置", ["ru"] = "Настройки", ["nl"] = "Instellingen", ["ko"] = "설정", ["tr"] = "Ayarlar", ["pl"] = "Ustawienia", ["sv"] = "Inställningar", ["da"] = "Indstillinger", ["no"] = "Innstillinger", ["fi"] = "Asetukset", ["cs"] = "Nastavení", ["el"] = "Ρυθμίσεις", ["uk"] = "Налаштування", ["ar"] = "الإعدادات", ["hi"] = "सेटिंग्स", ["ro"] = "Setări" },
@@ -740,7 +672,6 @@ namespace FirstApp
                 ["hi"] = "रेज़िस्टर के लिए रंग कोड कैलकुलेटर",
                 ["ro"] = "Calculator cod culori pentru rezistențe",
             },
-            // FIX: 2025 → 2026
             ["copyright"] = new()
             {
                 ["en"] = "© 2026 – All rights reserved",
@@ -768,9 +699,10 @@ namespace FirstApp
                 ["ro"] = "© 2026 – Toate drepturile rezervate",
             },
             ["close"] = new() { ["en"] = "Close", ["de"] = "Schließen", ["es"] = "Cerrar", ["fr"] = "Fermer", ["pt"] = "Fechar", ["it"] = "Chiudi", ["ja"] = "閉じる", ["zh"] = "关闭", ["ru"] = "Закрыть", ["nl"] = "Sluiten", ["ko"] = "닫기", ["tr"] = "Kapat", ["pl"] = "Zamknij", ["sv"] = "Stäng", ["da"] = "Luk", ["no"] = "Lukk", ["fi"] = "Sulje", ["cs"] = "Zavřít", ["el"] = "Κλείσιμο", ["uk"] = "Закрити", ["ar"] = "إغلاق", ["hi"] = "बंद करें", ["ro"] = "Închide" },
-            ["band4"] = new() { ["en"] = "4-Band (Standard)", ["de"] = "4-Band (Standard)", ["es"] = "4 bandas (Estándar)", ["fr"] = "4 bandes (Standard)", ["pt"] = "4 bandas (Padrão)", ["it"] = "4 bande (Standard)", ["ja"] = "4バンド（標準）", ["zh"] = "4环（标准）", ["ru"] = "4-полосный (Стандарт)", ["nl"] = "4-bands (Standaard)", ["ko"] = "4밴드 (표준)", ["tr"] = "4 Bantlı (Standart)", ["pl"] = "4-pasmowy (Standard)", ["sv"] = "4-bands (Standard)", ["da"] = "4-bands (Standard)", ["no"] = "4-bands (Standard)", ["fi"] = "4-kaista (Vakio)", ["cs"] = "4-pásmový (Standard)", ["el"] = "4 λωρίδες (Τυπικό)", ["uk"] = "4-смуговий (Стандарт)", ["ar"] = "4 أشرطة (قياسي)", ["hi"] = "4-बैंड (मानक)", ["ro"] = "4 benzi (Standard)" },
-            ["band5"] = new() { ["en"] = "5-Band (Precision)", ["de"] = "5-Band (Präzision)", ["es"] = "5 bandas (Precisión)", ["fr"] = "5 bandes (Précision)", ["pt"] = "5 bandas (Precisão)", ["it"] = "5 bande (Precisione)", ["ja"] = "5バンド（精密）", ["zh"] = "5环（精密）", ["ru"] = "5-полосный (Точный)", ["nl"] = "5-bands (Precisie)", ["ko"] = "5밴드 (정밀)", ["tr"] = "5 Bantlı (Hassas)", ["pl"] = "5-pasmowy (Precyzja)", ["sv"] = "5-bands (Precision)", ["da"] = "5-bands (Præcision)", ["no"] = "5-bands (Presisjon)", ["fi"] = "5-kaista (Tarkkuus)", ["cs"] = "5-pásmový (Přesnost)", ["el"] = "5 λωρίδες (Ακρίβεια)", ["uk"] = "5-смуговий (Точний)", ["ar"] = "5 أشرطة (دقيق)", ["hi"] = "5-बैंड (सटीक)", ["ro"] = "5 benzi (Precizie)" },
-            ["band6"] = new() { ["en"] = "6-Band (TCR)", ["de"] = "6-Band (TCR)", ["es"] = "6 bandas (TCR)", ["fr"] = "6 bandes (TCR)", ["pt"] = "6 bandas (TCR)", ["it"] = "6 bande (TCR)", ["ja"] = "6バンド（TCR）", ["zh"] = "6环（TCR）", ["ru"] = "6-полосный (TCR)", ["nl"] = "6-bands (TCR)", ["ko"] = "6밴드 (TCR)", ["tr"] = "6 Bantlı (TCR)", ["pl"] = "6-pasmowy (TCR)", ["sv"] = "6-bands (TCR)", ["da"] = "6-bands (TCR)", ["no"] = "6-bands (TCR)", ["fi"] = "6-kaista (TCR)", ["cs"] = "6-pásmový (TCR)", ["el"] = "6 λωρίδες (TCR)", ["uk"] = "6-смуговий (TCR)", ["ar"] = "6 أشرطة (TCR)", ["hi"] = "6-बैंड (TCR)", ["ro"] = "6 benzi (TCR)" },
+            // Band-Texte – kompakt für 3-Tab Segmented Control
+            ["band4"] = new() { ["en"] = "4-Band", ["de"] = "4-Band", ["es"] = "4 bandas", ["fr"] = "4 bandes", ["pt"] = "4 bandas", ["it"] = "4 bande", ["ja"] = "4バンド", ["zh"] = "4环", ["ru"] = "4-пол.", ["nl"] = "4-bands", ["ko"] = "4밴드", ["tr"] = "4 Bantlı", ["pl"] = "4-pasmo", ["sv"] = "4-bands", ["da"] = "4-bands", ["no"] = "4-bands", ["fi"] = "4-kaista", ["cs"] = "4-pásmo", ["el"] = "4 λωρ.", ["uk"] = "4-смуга", ["ar"] = "4 أشرطة", ["hi"] = "4-बैंड", ["ro"] = "4 benzi" },
+            ["band5"] = new() { ["en"] = "5-Band", ["de"] = "5-Band", ["es"] = "5 bandas", ["fr"] = "5 bandes", ["pt"] = "5 bandas", ["it"] = "5 bande", ["ja"] = "5バンド", ["zh"] = "5环", ["ru"] = "5-пол.", ["nl"] = "5-bands", ["ko"] = "5밴드", ["tr"] = "5 Bantlı", ["pl"] = "5-pasmo", ["sv"] = "5-bands", ["da"] = "5-bands", ["no"] = "5-bands", ["fi"] = "5-kaista", ["cs"] = "5-pásmo", ["el"] = "5 λωρ.", ["uk"] = "5-смуга", ["ar"] = "5 أشرطة", ["hi"] = "5-बैंड", ["ro"] = "5 benzi" },
+            ["band6"] = new() { ["en"] = "6-Band (TCR)", ["de"] = "6-Band (TCR)", ["es"] = "6 bandas (TCR)", ["fr"] = "6 bandes (TCR)", ["pt"] = "6 bandas (TCR)", ["it"] = "6 bande (TCR)", ["ja"] = "6バンド(TCR)", ["zh"] = "6环(TCR)", ["ru"] = "6-пол.(TCR)", ["nl"] = "6-bands(TCR)", ["ko"] = "6밴드(TCR)", ["tr"] = "6 Bantlı(TCR)", ["pl"] = "6-pasmo(TCR)", ["sv"] = "6-bands(TCR)", ["da"] = "6-bands(TCR)", ["no"] = "6-bands(TCR)", ["fi"] = "6-kaista(TCR)", ["cs"] = "6-pásmo(TCR)", ["el"] = "6 λωρ.(TCR)", ["uk"] = "6-смуга(TCR)", ["ar"] = "6 أشرطة(TCR)", ["hi"] = "6-बैंड(TCR)", ["ro"] = "6 benzi(TCR)" },
             ["warning"] = new() { ["en"] = "Warning!", ["de"] = "Warnung!", ["es"] = "¡Advertencia!", ["fr"] = "Attention !", ["pt"] = "Aviso!", ["it"] = "Attenzione!", ["ja"] = "警告！", ["zh"] = "警告！", ["ru"] = "Предупреждение!", ["nl"] = "Waarschuwing!", ["ko"] = "경고!", ["tr"] = "Uyarı!", ["pl"] = "Ostrzeżenie!", ["sv"] = "Varning!", ["da"] = "Advarsel!", ["no"] = "Advarsel!", ["fi"] = "Varoitus!", ["cs"] = "Varování!", ["el"] = "Προειδοποίηση!", ["uk"] = "Попередження!", ["ar"] = "تحذير!", ["hi"] = "चेतावनी!", ["ro"] = "Atenție!" },
             ["outOfRange"] = new()
             {

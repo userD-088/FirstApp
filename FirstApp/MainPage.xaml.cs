@@ -10,14 +10,15 @@ using Microsoft.Maui.Graphics;
 namespace FirstApp
 {
     /// <summary>
-    /// View only – no business logic.
-    /// Handles: JIT pre-warm, animations, chip building, gesture recognition.
+    /// View only – kein Business-Logic.
+    /// Steuerung ausschließlich per Tap-Buttons (Segmented Controls).
+    /// Swipe-Gesten wurden vollständig entfernt.
     /// </summary>
     public partial class MainPage : ContentPage
     {
         private readonly ResistorViewModel _vm;
 
-        // ─── Chip lists (built once, selection toggled in-place) ───────────
+        // ─── Chip lists ────────────────────────────────────────────────────
         private readonly List<Border> _chips1 = new();
         private readonly List<Border> _chips2 = new();
         private readonly List<Border> _chips3 = new();
@@ -25,14 +26,8 @@ namespace FirstApp
         private readonly List<Border> _chipsTol = new();
         private readonly List<Border> _chipsTcr = new();
 
-        // ─── Gesture state ─────────────────────────────────────────────────
-        private bool _resBusy, _inpBusy;
-        private double _resDrag, _inpDrag;
-        private long _resPanTick, _inpPanTick;
-        private bool _resHLocked, _resDirectionSet;
-        private bool _inpHLocked, _inpDirectionSet;
-        private const long PanFrameMs = 14;
-        private const double DirectionThreshold = 5.0;
+        // ─── Animation guard ──────────────────────────────────────────────
+        private bool _inputAnimBusy;
 
         // ─── Text debounce ─────────────────────────────────────────────────
         private CancellationTokenSource? _textCts;
@@ -49,8 +44,8 @@ namespace FirstApp
             BindingContext = _vm;
 
             _vm.RingsChanged += () => ResistorView?.Invalidate();
+            _vm.PropertyChanged += OnVmPropertyChanged;
 
-            // Build chip rows – digit + multiplier never change between modes
             BuildChipRow(Band1ChipsLayout, _chips1, ResistorViewModel.DigitData, 0, _vm.Sel1);
             BuildChipRow(Band2ChipsLayout, _chips2, ResistorViewModel.DigitData, 1, _vm.Sel2);
             BuildChipRow(Band3ChipsLayout, _chips3, ResistorViewModel.DigitData, 2, _vm.Sel3);
@@ -60,16 +55,26 @@ namespace FirstApp
             RebuildSeriesChips();
             RebuildLangChips();
 
+            UpdateResistorTypeTabs();
+            UpdateInputModeTabs();
+
             ResistorView.Drawable = new ResistorDrawable(_vm.Rings, () => _vm.BodyColor);
 
-            // Trigger initial ring population
             _vm.SetMode(_vm.ResistorMode);
         }
 
-        // ── JIT pre-warm: runs BEFORE the user can touch anything ──────────
-        // .NET MAUI JIT-compiles TranslateTo / FadeTo on first call.
-        // Running zero-length invisible animations in OnAppearing forces the
-        // compiler to do its work now, so real animations are instant later.
+        // ── Sprach-Änderung ────────────────────────────────────────────────
+        private void OnVmPropertyChanged(object? sender,
+            System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is "" or nameof(ResistorViewModel.Lang))
+            {
+                UpdateResistorTypeTabs();
+                UpdateInputModeTabs();
+            }
+        }
+
+        // ── JIT pre-warm ──────────────────────────────────────────────────
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -78,16 +83,118 @@ namespace FirstApp
 
         private async Task PreWarmJit()
         {
-            // Wait one frame so the page has rendered before we begin
             await Task.Yield();
-
-            // Animate views that will be used in gesture swipes later.
-            // Duration = 1ms, delta = 0 → invisible to the user.
-            var t1 = ResistorView.TranslateTo(0, 0, 1);
-            var t2 = InputModeTitleContainer.TranslateTo(0, 0, 1);
-            var t3 = SettingsPanel.TranslateTo(0, 0, 1);
-            var t4 = SettingsOverlay.FadeTo(0, 1);
+            // Vorab-JIT für Settings-Panel-Animation
+            var t1 = SettingsPanel.TranslateTo(0, 0, 1);
+            var t2 = SettingsOverlay.FadeTo(0, 1);
+            // Vorab-JIT für Inhalt-Animation
+            var t3 = ValueToColorLayout.FadeTo(1, 1);
+            var t4 = ColorToValueLayout.FadeTo(1, 1);
             await Task.WhenAll(t1, t2, t3, t4);
+        }
+
+        // ══════════════════════════════════════════════════════════════════
+        // RESISTOR-TYP TABS  (3-Tab Segmented Control)
+        // ══════════════════════════════════════════════════════════════════
+
+        private void OnResTab0Tapped(object? sender, TappedEventArgs e) => SelectResistorMode(0);
+        private void OnResTab1Tapped(object? sender, TappedEventArgs e) => SelectResistorMode(1);
+        private void OnResTab2Tapped(object? sender, TappedEventArgs e) => SelectResistorMode(2);
+
+        private void SelectResistorMode(int mode)
+        {
+            if (_vm.ResistorMode == mode) return;
+            _vm.SetMode(mode);
+            RebuildToleranceChips();
+            if (mode == 2) RebuildTcrChips();
+            UpdateResistorTypeTabs();
+            ResistorView?.Invalidate();
+        }
+
+        private void UpdateResistorTypeTabs()
+        {
+            SetResTab(ResTab0, ResTabLabel0, _vm.ResistorMode == 0);
+            SetResTab(ResTab1, ResTabLabel1, _vm.ResistorMode == 1);
+            SetResTab(ResTab2, ResTabLabel2, _vm.ResistorMode == 2);
+        }
+
+        private static void SetResTab(Border tab, Label lbl, bool active)
+        {
+            tab.BackgroundColor = active
+                ? Color.FromArgb("#2563EB")
+                : Color.FromArgb("#1A2535");
+            lbl.TextColor = active ? Colors.White : Color.FromArgb("#64748B");
+            lbl.FontAttributes = active ? FontAttributes.Bold : FontAttributes.None;
+        }
+
+        // ══════════════════════════════════════════════════════════════════
+        // INPUT-MODE TABS  (2-Tab Segmented Control + Slide-Animation)
+        // ══════════════════════════════════════════════════════════════════
+
+        private void OnInputTab0Tapped(object? sender, TappedEventArgs e)
+            => _ = SwitchInputMode(0);
+
+        private void OnInputTab1Tapped(object? sender, TappedEventArgs e)
+            => _ = SwitchInputMode(1);
+
+        /// <summary>
+        /// Wechselt den Eingabe-Modus mit einer Slide+Fade-Animation.
+        /// Richtung: links (mode 0 ← mode 1) / rechts (mode 0 → mode 1).
+        /// </summary>
+        private async Task SwitchInputMode(int newMode)
+        {
+            if (_vm.InputMode == newMode || _inputAnimBusy) return;
+            _inputAnimBusy = true;
+
+            // Richtung: +1 = nach rechts scrollen (gehe zu niedrigerem Index)
+            int dir = newMode > _vm.InputMode ? 1 : -1;
+
+            // Ausgehendes Layout bestimmen
+            var outgoing = _vm.IsValueMode ? ValueToColorLayout : (VisualElement)ColorToValueLayout;
+            double w = InputContentGrid.Width > 0 ? InputContentGrid.Width : 300;
+
+            // Eingehendes Layout vorbereiten: ausgeblendet, von der Seite
+            var incoming = newMode == 0 ? ValueToColorLayout : (VisualElement)ColorToValueLayout;
+            incoming.TranslationX = dir * w;
+            incoming.Opacity = 0;
+
+            // Modus wechseln (IsVisible bindet auf ViewModel)
+            _vm.SetInputMode(newMode);
+            UpdateInputModeTabs();
+
+            // Parallel animieren
+            uint dur = 220;
+            await Task.WhenAll(
+                outgoing.TranslateTo(-dir * w * 0.35, 0, dur, Easing.CubicIn),
+                outgoing.FadeTo(0, dur, Easing.CubicIn),
+                incoming.TranslateTo(0, 0, dur, Easing.CubicOut),
+                incoming.FadeTo(1, dur, Easing.CubicOut)
+            );
+
+            // Sicherstellen dass outgoing sauber bleibt
+            outgoing.TranslationX = 0;
+            outgoing.Opacity = 1;
+
+            _inputAnimBusy = false;
+        }
+
+        private void UpdateInputModeTabs()
+        {
+            bool v = _vm.IsValueMode;
+
+            InputTab0.BackgroundColor = v ? Color.FromArgb("#2563EB") : Colors.Transparent;
+            if (InputTab0.Content is Label l0)
+            {
+                l0.TextColor = v ? Colors.White : Color.FromArgb("#64748B");
+                l0.FontAttributes = v ? FontAttributes.Bold : FontAttributes.None;
+            }
+
+            InputTab1.BackgroundColor = !v ? Color.FromArgb("#2563EB") : Colors.Transparent;
+            if (InputTab1.Content is Label l1)
+            {
+                l1.TextColor = !v ? Colors.White : Color.FromArgb("#64748B");
+                l1.FontAttributes = !v ? FontAttributes.Bold : FontAttributes.None;
+            }
         }
 
         // ══════════════════════════════════════════════════════════════════
@@ -98,9 +205,7 @@ namespace FirstApp
             HorizontalStackLayout host,
             List<Border> list,
             (Color Bg, string Lbl, Color Fg)[] data,
-            int band,
-            int sel,
-            bool pill = false)
+            int band, int sel, bool pill = false)
         {
             host.Children.Clear();
             list.Clear();
@@ -108,7 +213,6 @@ namespace FirstApp
             {
                 int idx = i;
                 var chip = MakeChip(data[i].Bg, data[i].Lbl, data[i].Fg, pill, i == sel);
-                // FIX: Invalidate() entfernt – RingsChanged-Event im ViewModel macht das bereits
                 chip.GestureRecognizers.Add(Tap(() =>
                 {
                     SetSel(list, idx);
@@ -119,17 +223,13 @@ namespace FirstApp
             }
         }
 
-        private void RebuildToleranceChips()
-        {
+        private void RebuildToleranceChips() =>
             BuildChipRow(ToleranceChipsLayout, _chipsTol,
                          _vm.CurrentTolData, 4, _vm.SelTol, pill: true);
-        }
 
-        private void RebuildTcrChips()
-        {
+        private void RebuildTcrChips() =>
             BuildChipRow(TcrChipsLayout, _chipsTcr,
                          ResistorViewModel.TcrData, 5, _vm.SelTcr, pill: true);
-        }
 
         private void RebuildSeriesChips()
         {
@@ -186,7 +286,7 @@ namespace FirstApp
             }
         }
 
-        // ─── Chip selection helper ────────────────────────────────────────
+        // ─── Chip-Selektion ───────────────────────────────────────────────
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetSel(List<Border> list, int idx)
@@ -199,7 +299,7 @@ namespace FirstApp
             }
         }
 
-        // ─── Chip factories ───────────────────────────────────────────────
+        // ─── Chip-Factories ───────────────────────────────────────────────
 
         private static Border MakeChip(Color bg, string lbl, Color fg, bool pill, bool sel)
         {
@@ -279,152 +379,6 @@ namespace FirstApp
         }
 
         // ══════════════════════════════════════════════════════════════════
-        // SWIPE – RESISTOR TYPE
-        // ══════════════════════════════════════════════════════════════════
-
-
-        private async void OnResistorPan(object sender, PanUpdatedEventArgs e)
-        {
-            switch (e.StatusType)
-            {
-                case GestureStatus.Started:
-                    if (_resBusy) return;
-                    _resDrag = 0;
-                    _resHLocked = false;
-                    _resDirectionSet = false;
-                    break;
-
-                case GestureStatus.Running:
-                    if (_resBusy) return;
-
-                    // Richtung noch nicht festgelegt → warten bis genug Bewegung da ist
-                    if (!_resDirectionSet)
-                    {
-                        double absX = Math.Abs(e.TotalX);
-                        double absY = Math.Abs(e.TotalY);
-                        if (absX < DirectionThreshold && absY < DirectionThreshold) return;
-                        _resDirectionSet = true;
-                        _resHLocked = absX >= absY; // horizontal dominiert?
-                    }
-
-                    if (!_resHLocked) return; // vertikaler Swipe → komplett ignorieren
-
-                    long now = Environment.TickCount64;
-                    if (now - _resPanTick < PanFrameMs) return;
-                    _resPanTick = now;
-                    _resDrag = e.TotalX;
-                    ResistorView.TranslationX = _resDrag;
-                    break;
-
-                case GestureStatus.Completed:
-                case GestureStatus.Canceled:
-                    if (_resBusy)
-                    {
-                        ResistorView.TranslationX = 0;
-                        return;
-                    }
-                    // Vertikaler Swipe oder noch keine Richtung → sauber zurücksetzen
-                    if (!_resHLocked)
-                    {
-                        ResistorView.TranslationX = 0;
-                        _resDrag = 0;
-                        return;
-                    }
-                    double snapR = _resDrag;
-                    _resDrag = 0;
-                    if (Math.Abs(snapR) > 40)
-                        await AnimateResistorSwipe(Math.Sign(snapR), ResistorView.Width);
-                    else
-                        await ResistorView.TranslateTo(0, 0, 150, Easing.SpringOut);
-                    break;
-            }
-        }
-
-        private async Task AnimateResistorSwipe(int dir, double w)
-        {
-            _resBusy = true;
-            await ResistorView.TranslateTo(dir * w * 1.1, 0, 130, Easing.CubicIn);
-
-            int newMode = (_vm.ResistorMode + (dir == 1 ? -1 : 1) + 3) % 3;
-            _vm.SetMode(newMode);
-            RebuildToleranceChips();
-            if (newMode == 2) RebuildTcrChips();
-
-            ResistorView.TranslationX = -dir * w * 1.1;
-            await ResistorView.TranslateTo(0, 0, 200, Easing.CubicOut);
-            _resBusy = false;
-        }
-
-        // ══════════════════════════════════════════════════════════════════
-        // SWIPE – INPUT MODE
-        // ══════════════════════════════════════════════════════════════════
-
-        private async void OnInputPan(object sender, PanUpdatedEventArgs e)
-        {
-            switch (e.StatusType)
-            {
-                case GestureStatus.Started:
-                    if (_inpBusy) return;
-                    _inpDrag = 0;
-                    _inpHLocked = false;
-                    _inpDirectionSet = false;
-                    break;
-
-                case GestureStatus.Running:
-                    if (_inpBusy) return;
-
-                    if (!_inpDirectionSet)
-                    {
-                        double absX = Math.Abs(e.TotalX);
-                        double absY = Math.Abs(e.TotalY);
-                        if (absX < DirectionThreshold && absY < DirectionThreshold) return;
-                        _inpDirectionSet = true;
-                        _inpHLocked = absX >= absY;
-                    }
-
-                    if (!_inpHLocked) return;
-
-                    long now = Environment.TickCount64;
-                    if (now - _inpPanTick < PanFrameMs) return;
-                    _inpPanTick = now;
-                    _inpDrag = e.TotalX;
-                    InputModeTitleContainer.TranslationX = _inpDrag;
-                    break;
-
-                case GestureStatus.Completed:
-                case GestureStatus.Canceled:
-                    if (_inpBusy)
-                    {
-                        InputModeTitleContainer.TranslationX = 0;
-                        return;
-                    }
-                    if (!_inpHLocked)
-                    {
-                        InputModeTitleContainer.TranslationX = 0;
-                        _inpDrag = 0;
-                        return;
-                    }
-                    double snapI = _inpDrag;
-                    _inpDrag = 0;
-                    if (Math.Abs(snapI) > 40)
-                        await AnimateInputSwipe(Math.Sign(snapI), InputModeTitleContainer.Width);
-                    else
-                        await InputModeTitleContainer.TranslateTo(0, 0, 150, Easing.SpringOut);
-                    break;
-            }
-        }
-
-        private async Task AnimateInputSwipe(int dir, double w)
-        {
-            _inpBusy = true;
-            await InputModeTitleContainer.TranslateTo(dir * w * 1.1, 0, 130, Easing.CubicIn);
-            _vm.SetInputMode(_vm.InputMode == 0 ? 1 : 0);
-            InputModeTitleContainer.TranslationX = -dir * w * 1.1;
-            await InputModeTitleContainer.TranslateTo(0, 0, 200, Easing.CubicOut);
-            _inpBusy = false;
-        }
-
-        // ══════════════════════════════════════════════════════════════════
         // SETTINGS PANEL
         // ══════════════════════════════════════════════════════════════════
 
@@ -471,27 +425,21 @@ namespace FirstApp
                 float bx = cx - Bw / 2;
                 float by = cy - Bh / 2;
 
-                // Lead wires
                 canvas.StrokeColor = Colors.Silver;
                 canvas.StrokeSize = 5;
                 canvas.StrokeLineCap = LineCap.Round;
                 canvas.DrawLine(bx - 65, cy, bx, cy);
                 canvas.DrawLine(bx + Bw, cy, bx + Bw + 65, cy);
 
-                // Drop shadow
                 canvas.FillColor = Colors.Black.WithAlpha(0.22f);
                 canvas.FillRoundedRectangle(bx, by + 5, Bw, Bh, 28);
 
-                // Body
                 canvas.FillColor = _body();
                 canvas.FillRoundedRectangle(bx, by, Bw, Bh, 28);
 
-                // Specular highlight
                 canvas.FillColor = Colors.White.WithAlpha(0.12f);
                 canvas.FillRoundedRectangle(bx + 10, by + 7, Bw - 20, Bh / 3f, 18);
 
-                // Color rings
-                // Rings with CNone sentinel are skipped → ±20% shows no ring
                 float x = bx + 30;
                 foreach (var c in _rings)
                 {
