@@ -9,19 +9,11 @@ using Microsoft.Maui.Graphics;
 
 namespace FirstApp
 {
-    /// <summary>
-    /// View only – kein Business-Logic.
-    ///
-    /// Animationen:
-    ///  • Widerstandstyp-Wechsel  → Slide + Fade auf ResistorView (gleiche Logik wie Input-Mode)
-    ///  • Input-Mode-Wechsel      → Slide + Fade auf Inhalt-Layouts
-    ///  • Settings-Panel          → vorab positioniert, dann sofortiger Opacity-Reveal + Slide-In
-    /// </summary>
     public partial class MainPage : ContentPage
     {
         private readonly ResistorViewModel _vm;
 
-        // ─── Chip lists ────────────────────────────────────────────────────
+        // ─── Chip lists ───────────────────────────────────────────────────
         private readonly List<Border> _chips1 = new();
         private readonly List<Border> _chips2 = new();
         private readonly List<Border> _chips3 = new();
@@ -34,14 +26,12 @@ namespace FirstApp
         private bool _inputAnimBusy;
         private bool _settingsOpen;
 
-        // ─── Text debounce ─────────────────────────────────────────────────
+        // ─── Text debounce ────────────────────────────────────────────────
         private CancellationTokenSource? _textCts;
 
-        // ── Animation-Konstanten ──────────────────────────────────────────
-        // Etwas kürzer als 220 ms damit alles knackig wirkt
-        private const uint SlideMs = 200;
-        // Wie weit der herausgleitende Inhalt in Gegenrichtung wandert (%)
-        private const double OutSlide = 0.30;
+        // ── Animation-Constants ─-─────────────────────────────────────────
+        private const uint SlideMs = 200;     // Animation duration
+        private const double OutSlide = 0.30; // Backslide percantage
 
         // ══════════════════════════════════════════════════════════════════
         // INIT
@@ -71,14 +61,14 @@ namespace FirstApp
 
             ResistorView.Drawable = new ResistorDrawable(_vm.Rings, () => _vm.BodyColor);
 
-            // Settings vorab unsichtbar positionieren (kein IsVisible-Toggle beim ersten Öffnen nötig)
+            // Settings inivisible
             SettingsPanel.TranslationY = 2000;
             SettingsOverlay.Opacity = 0;
 
             _vm.SetMode(_vm.ResistorMode);
         }
 
-        // ── Sprach-Änderung ────────────────────────────────────────────────
+        // ── Language Change ────────────────────────────────────────────────
         private void OnVmPropertyChanged(object? sender,
             System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -89,7 +79,7 @@ namespace FirstApp
             }
         }
 
-        // ── JIT pre-warm: alle FadeTo/TranslateTo die später benutzt werden ─
+        // ── JIT pre-warm ───────────────────────────────────────────────────
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -100,7 +90,7 @@ namespace FirstApp
         {
             await Task.Yield();
 
-            // Jede Animations-Methode einmal mit Nullwerten aufrufen
+            // Call each animation method once with null values
             await Task.WhenAll(
                 ResistorView.FadeTo(1, 1),
                 ResistorView.TranslateTo(0, 0, 1),
@@ -114,7 +104,7 @@ namespace FirstApp
         }
 
         // ══════════════════════════════════════════════════════════════════
-        // RESISTOR-TYP TABS  – Slide + Fade (wie Input-Mode)
+        // RESISTOR-TYPE TABS  – Slide + Fade
         // ══════════════════════════════════════════════════════════════════
 
         private void OnResTab0Tapped(object? sender, TappedEventArgs e) => _ = SwitchResistorMode(0);
@@ -129,20 +119,20 @@ namespace FirstApp
             int dir = newMode > _vm.ResistorMode ? 1 : -1;
             double w = ResistorViewContainer.Width > 0 ? ResistorViewContainer.Width : 300;
 
-            // Phase 1: aktuellen Zustand herausschieben
+            // Phase 1: Slide + Fade to the left or right, depending on direction
             await Task.WhenAll(
                 ResistorView.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
                 ResistorView.FadeTo(0, SlideMs, Easing.CubicIn)
             );
 
-            // Modus wechseln (Rings werden neu befüllt)
+            // Change Mode + Chips
             _vm.SetMode(newMode);
             RebuildToleranceChips();
             if (newMode == 2) RebuildTcrChips();
             UpdateResistorTypeTabs();
             ResistorView.Invalidate();
 
-            // Neuen Zustand von der anderen Seite hereinschieben
+            // Slide new view from the opposite side + Fade in
             ResistorView.TranslationX = dir * w;
             ResistorView.Opacity = 0;
 
@@ -162,7 +152,7 @@ namespace FirstApp
         }
 
         // ══════════════════════════════════════════════════════════════════
-        // INPUT-MODE TABS  – Slide + Fade (identische Mechanik)
+        // INPUT-MODE TABS  – Slide + Fade 
         // ══════════════════════════════════════════════════════════════════
 
         private void OnInputTab0Tapped(object? sender, TappedEventArgs e) => _ = SwitchInputMode(0);
@@ -179,30 +169,30 @@ namespace FirstApp
                 ? (VisualElement)ValueToColorLayout
                 : ColorToValueLayout;
 
-            // Phase 1: herausschieben
+            // Phase 1: Slide + Fade to the left or right, depending on direction
             await Task.WhenAll(
                 outgoing.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
                 outgoing.FadeTo(0, SlideMs, Easing.CubicIn)
             );
 
-            // Modus wechseln
+            // Change Mode
             _vm.SetInputMode(newMode);
             UpdateInputModeTabs();
 
-            // Eingehendes Layout von der Seite starten
+            // Incoming layout initialized
             var incoming = newMode == 0
                 ? (VisualElement)ValueToColorLayout
                 : ColorToValueLayout;
             incoming.TranslationX = dir * w;
             incoming.Opacity = 0;
 
-            // Phase 2: hereinschieben
+            // Phase 2: slide + fade incoming layout in
             await Task.WhenAll(
                 incoming.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
                 incoming.FadeTo(1, SlideMs, Easing.CubicOut)
             );
 
-            // Outgoing sauber zurücksetzen
+            // Reset outgoing
             outgoing.TranslationX = 0;
             outgoing.Opacity = 1;
 
@@ -216,7 +206,7 @@ namespace FirstApp
             SetSegTab(InputTab1, InputTabLabel1, !v);
         }
 
-        // ─── Gemeinsamer Segmented-Tab-Stil ───────────────────────────────
+        // ─── Common segmented tab style ───────────────────────────────────
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetSegTab(Border tab, Label lbl, bool active)
@@ -397,12 +387,6 @@ namespace FirstApp
 
         // ══════════════════════════════════════════════════════════════════
         // SETTINGS PANEL
-        //
-        // Performance-Trick:
-        //   • Das Panel liegt IMMER im VisualTree – TranslationY hält es außerhalb
-        //     des sichtbaren Bereichs. IsVisible/InputTransparent steuert nur Hit-Testing.
-        //   • FadeTo auf das Overlay startet sofort parallel zur Panel-Translation,
-        //     ohne vorher einen Layout-Pass durch IsVisible zu erzwingen.
         // ══════════════════════════════════════════════════════════════════
 
         private async void OnOpenSettings(object sender, EventArgs e)
@@ -412,11 +396,11 @@ namespace FirstApp
 
             RebuildLangChips();
 
-            // Hit-Testing aktivieren – kein Opacity-Sprung, Panel ist bereits vorab positioniert
+            // Activate hit testing – no opacity jump, panel is already positioned in advance
             SettingsOverlay.IsVisible = true;
             SettingsOverlay.InputTransparent = false;
 
-            // Parallel: Backdrop einblenden + Panel hochschieben
+            // Parallel: Show backdrop + move panel up
             await Task.WhenAll(
                 SettingsOverlay.FadeTo(1, 220, Easing.CubicOut),
                 SettingsPanel.TranslateTo(0, 0, 260, Easing.CubicOut)
@@ -427,7 +411,7 @@ namespace FirstApp
         {
             if (!_settingsOpen) return;
 
-            // Hit-Testing sofort deaktivieren → kein versehentliches Antippen
+            // Deactivate hit testing immediately → no accidental tapping
             SettingsOverlay.InputTransparent = true;
 
             await Task.WhenAll(
