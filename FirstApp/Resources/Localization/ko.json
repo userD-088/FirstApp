@@ -21,5 +21,7 @@
     "band5": "5밴드",
     "band6": "6밴드(TCR)",
     "warning": "경고!",
-    "outOfRange": "값이 표준 저항 색코드 범위를 벗어났습니다."
+    "outOfRange": "값이 표준 저항 색코드 범위를 벗어났습니다.",
+    "moreLangs": "더 많은 언어",
+    "lessLangs": "언어 줄이기"
 }

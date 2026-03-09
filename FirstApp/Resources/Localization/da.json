@@ -21,5 +21,7 @@
     "band5": "5-bands",
     "band6": "6-bands(TCR)",
     "warning": "Advarsel!",
-    "outOfRange": "Værdien er uden for området for standard modstandsfarver."
+    "outOfRange": "Værdien er uden for området for standard modstandsfarver.",
+    "moreLangs": "Flere sprog",
+    "lessLangs": "Færre sprog"
 }

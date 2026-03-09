@@ -74,15 +74,40 @@ namespace FirstApp
         // ──────────────────────────────────────────────────────────────
         // SUPPORTED UI LANGUAGES
         // ──────────────────────────────────────────────────────────────
-        public static readonly (string Code, string Flag, string Short)[] Languages =
+
+        /// <summary>
+        /// Create a custom language by (code, flag emoji, short label).
+        /// The code is used to load the corresponding JSON in \Resources\Localization, so it must match the filename (without .json)
+        /// Emoji "emoji" can be used, rare languages use png "" (empty string) and png is in format flag_{code}.png in Images\Flags
+        /// </summary>
+
+        // Main languages
+        public static readonly (string Code, string Flag, string Short)[] PrimaryLanguages =
         {
-            ("en","🇬🇧","EN"),("de","🇩🇪","DE"),("es","🇪🇸","ES"),("fr","🇫🇷","FR"),
-            ("pt","🇵🇹","PT"),("it","🇮🇹","IT"),("ja","🇯🇵","JA"),("zh","🇨🇳","ZH"),
-            ("ru","🇷🇺","RU"),("nl","🇳🇱","NL"),("ko","🇰🇷","KO"),("tr","🇹🇷","TR"),
-            ("pl","🇵🇱","PL"),("sv","🇸🇪","SV"),("da","🇩🇰","DA"),("no","🇳🇴","NO"),
-            ("fi","🇫🇮","FI"),("cs","🇨🇿","CS"),("el","🇬🇷","EL"),("uk","🇺🇦","UK"),
-            ("ar","🇸🇦","AR"),("hi","🇮🇳","HI"),("ro","🇷🇴","RO"),
+            ("en","🇬🇧","EN"), ("de","🇩🇪","DE"), ("es","🇪🇸","ES"), ("fr","🇫🇷","FR"),
+            ("pt","🇵🇹","PT"), ("it","🇮🇹","IT"), ("ja","🇯🇵","JA"), ("zh","🇨🇳","ZH"), 
+            ("ru","🇷🇺","RU"),
         };
+
+        // Secondary languages (not loaded by default to save memory and load time – only loaded when user clicks "More languages")
+        public static readonly (string Code, string Flag, string Short)[] SecondaryLanguages =
+        {
+            ("nl","🇳🇱","NL"), ("ko","🇰🇷","KO"), ("tr","🇹🇷","TR"), ("pl","🇵🇱","PL"),
+            ("sv","🇸🇪","SV"), ("da","🇩🇰","DA"), ("no","🇳🇴","NO"), ("fi","🇫🇮","FI"),
+            ("cs","🇨🇿","CS"), ("el","🇬🇷","EL"), ("uk","🇺🇦","UK"), ("ar","🇸🇦","AR"),
+            ("hi","🇮🇳","HI"), ("ro","🇷🇴","RO"), ("hu","🇭🇺","HU"), ("he","🇮🇱","HE"),
+            ("id","🇮🇩","ID"), ("vi","🇻🇳","VI"), ("th","🇹🇭","TH"), ("bn","🇧🇩","BN"),
+            ("ta","🇮🇳","TA"), ("te","🇮🇳","TE"), ("fa","🇮🇷","FA"), ("ur","🇵🇰","UR"),
+            ("sw","🇰🇪","SW"), ("sk","🇸🇰","SK"), ("sl","🇸🇮","SL"), ("hr","🇭🇷","HR"),
+            ("bg","🇧🇬","BG"), ("lt","🇱🇹","LT"), ("lv","🇱🇻","LV"), ("et","🇪🇪","ET"),
+            ("ms","🇲🇾","MS"), ("gl","","GL"), ("ca","","CA"), ("eu","","EU"),
+            ("la","🇻🇦","LA"), ("cy","🇬🇧","CY"), ("af","🇿🇦","AF"), ("sq","🇦🇱","SQ"),
+            ("am","🇪🇹","AM"), ("is","🇮🇸","IS"), ("eo","","EO"), ("ha","","HA")
+        };
+
+        // Combined – used only for default-language detection
+        private static readonly (string Code, string Flag, string Short)[] _allLanguages
+            = [.. PrimaryLanguages, .. SecondaryLanguages];
 
         // ──────────────────────────────────────────────────────────────
         // RESISTOR STATE (BAND COLORS, etc.)
@@ -139,7 +164,6 @@ namespace FirstApp
         }
         public string ResultText { get => _resultText; private set => Set(ref _resultText, value); }
 
-
         // ──────────────────────────────────────────────────────────────
         // UI VISIBILITY FLAGS
         // ──────────────────────────────────────────────────────────────
@@ -151,7 +175,8 @@ namespace FirstApp
         // ──────────────────────────────────────────────────────────────
         // DATA SOURCES DEPENDING ON MODE
         // ──────────────────────────────────────────────────────────────
-        public (Color Bg, string Lbl, Color Fg)[] CurrentTolData => _resistorMode == 0 ? TolData4 : TolData5;
+        public (Color Bg, string Lbl, Color Fg)[] CurrentTolData
+            => _resistorMode == 0 ? TolData4 : TolData5;
 
         // ──────────────────────────────────────────────────────────────
         // LOCALIZED UI TEXT PROPERTIES
@@ -180,12 +205,17 @@ namespace FirstApp
         public string Band4BtnText => T("band4");
         public string Band5BtnText => T("band5");
         public string Band6BtnText => T("band6");
+        public string MoreLangsText => T("moreLangs");
+        public string LessLangsText => T("lessLangs");
 
         // ──────────────────────────────────────────────────────────────
         // APP INFO
         // ──────────────────────────────────────────────────────────────
         public string AppVersionText => $"Resistor Calculator v{AppInfo.VersionString}";
-        public double TitleFontSize { get { int l = TitleText.Length; return l > 28 ? 17.0 : l > 22 ? 20.0 : l > 16 ? 22.0 : 24.0; } }
+        public double TitleFontSize
+        {
+            get { int l = TitleText.Length; return l > 28 ? 17.0 : l > 22 ? 20.0 : l > 16 ? 22.0 : 24.0; }
+        }
 
         // ══════════════════════════════════════════════════════════════
         // CONSTRUCTOR
@@ -207,7 +237,6 @@ namespace FirstApp
             _bodyColor = mode == 0 ? Color.FromArgb("#D2B48C") : Colors.SteelBlue;
 
             int count = mode switch { 0 => 4, 1 => 5, _ => 6 };
-
             for (int i = 0; i < count; i++) Rings.Add(CBlack);
 
             SelTol = mode == 0 ? 1 : 4; SelTcr = 0;
@@ -237,7 +266,6 @@ namespace FirstApp
 
             FillRingsFromValue(v);
             ApplyTolRing();
-
             if (_resistorMode == 2) ApplyTcrRing();
             RingsChanged?.Invoke();
         }
@@ -250,7 +278,6 @@ namespace FirstApp
 
             double rounded = RoundToSeries(v, series);
             RecalcFromText(FormatR(rounded));
-
             return rounded;
         }
 
@@ -261,7 +288,6 @@ namespace FirstApp
         {
             Rings.Clear();
             int count = _resistorMode switch { 0 => 4, 1 => 5, _ => 6 };
-
             for (int i = 0; i < count; i++) Rings.Add(CBlack);
         }
         private void Recalc() => RecalcColorToValue();
@@ -324,10 +350,21 @@ namespace FirstApp
                 SafeSet(2, MultColor(mulExp));
             }
         }
-        private void ApplyTolRing() { int ti = _resistorMode == 0 ? 3 : 4; var d = CurrentTolData; if (SelTol < d.Length) SafeSet(ti, d[SelTol].Bg); }
-        private void ApplyTcrRing() { if (SelTcr < TcrData.Length) SafeSet(5, TcrData[SelTcr].Bg); }
+        private void ApplyTolRing()
+        {
+            int ti = _resistorMode == 0 ? 3 : 4;
+            var d = CurrentTolData;
+            if (SelTol < d.Length) SafeSet(ti, d[SelTol].Bg);
+        }
+        private void ApplyTcrRing()
+        {
+            if (SelTcr < TcrData.Length) SafeSet(5, TcrData[SelTcr].Bg);
+        }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SafeSet(int idx, Color c) { if ((uint)idx < (uint)Rings.Count) Rings[idx] = c; }
+        private void SafeSet(int idx, Color c)
+        {
+            if ((uint)idx < (uint)Rings.Count) Rings[idx] = c;
+        }
 
         // ══════════════════════════════════════════════════════════════
         // VALUE PARSING / FORMATTING
@@ -343,7 +380,8 @@ namespace FirstApp
             else if (s.EndsWith("M")) { mul = 1e6; s = s[..^1]; }
             else if (s.EndsWith("G")) { mul = 1e9; s = s[..^1]; }
 
-            return double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out double r) ? r * mul : -1;
+            return double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out double r)
+                ? r * mul : -1;
         }
         public static string FormatR(double v) => v switch
         {
@@ -362,11 +400,8 @@ namespace FirstApp
             for (int n = 0; n <= series; n++)
             {
                 double c = Math.Round(Math.Pow(10, (double)n / series), 2);
-                double d = Math.Abs(c - norm); if (d < minD)
-                {
-                    minD = d;
-                    best = c;
-                }
+                double d = Math.Abs(c - norm);
+                if (d < minD) { minD = d; best = c; }
             }
             return Math.Round(best * decade, 3);
         }
@@ -408,18 +443,17 @@ namespace FirstApp
         };
 
         // ══════════════════════════════════════════════════════════════
-        // COLOR LOOKUP HELPERS
+        // LOCALIZATION ENGINE
         // ══════════════════════════════════════════════════════════════
 
+        // Cache: only loaded languages live here – secondary languages are
+        // never loaded until the user actually expands the "More" row.
         private static readonly Dictionary<string, Dictionary<string, string>> _langCache = new();
 
         private static string GetDefaultLanguage()
         {
-            // Systemlanguage in ISO 639-1 format (e.g. "en", "de", "fr")
             var sys = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-
-            // Only use if supported, otherwise fallback to English
-            bool supported = Array.Exists(Languages, l => l.Code == sys);
+            bool supported = Array.Exists(_allLanguages, l => l.Code == sys);
             return supported ? sys : "en";
         }
 
@@ -430,7 +464,7 @@ namespace FirstApp
 
             if (dict.TryGetValue(key, out var val)) return val;
 
-            // Fallback to Englisch
+            // Fallback to English
             if (_lang != "en")
             {
                 if (!_langCache.TryGetValue("en", out var en))
@@ -438,7 +472,7 @@ namespace FirstApp
                 if (en.TryGetValue(key, out var enVal)) return enVal;
             }
 
-            return key;
+            return key; // last resort: return the key itself
         }
 
         private static Dictionary<string, string> LoadLang(string code)
@@ -458,6 +492,17 @@ namespace FirstApp
                 _langCache[code] = new Dictionary<string, string>();
                 return _langCache[code];
             }
+        }
+
+        /// <summary>
+        /// Pre-loads the JSON for a given language code into the cache.
+        /// Call this from a background thread when the user expands "More languages"
+        /// so that switching feels instant afterwards.
+        /// </summary>
+        public static void PreloadLang(string code)
+        {
+            if (!_langCache.ContainsKey(code))
+                LoadLang(code);
         }
     }
 }

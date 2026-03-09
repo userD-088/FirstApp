@@ -21,5 +21,7 @@
     "band5": "5-pasmo",
     "band6": "6-pasmo(TCR)",
     "warning": "Ostrzeżenie!",
-    "outOfRange": "Wartość poza zakresem standardowych kolorów rezystorów."
+    "outOfRange": "Wartość poza zakresem standardowych kolorów rezystorów.",
+    "moreLangs": "Więcej języków",
+    "lessLangs": "Mniej języków"
 }

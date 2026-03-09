@@ -21,5 +21,7 @@
     "band5": "5-kaista",
     "band6": "6-kaista(TCR)",
     "warning": "Varoitus!",
-    "outOfRange": "Arvo on standardivastusvärien alueen ulkopuolella."
+    "outOfRange": "Arvo on standardivastusvärien alueen ulkopuolella.",
+    "moreLangs": "Lisää kieliä",
+    "lessLangs": "Vähemmän kieliä"
 }

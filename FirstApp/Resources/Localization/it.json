@@ -21,5 +21,7 @@
     "band5": "5 bande",
     "band6": "6 bande (TCR)",
     "warning": "Attenzione!",
-    "outOfRange": "Valore fuori range per i colori standard."
+    "outOfRange": "Valore fuori range per i colori standard.",
+    "moreLangs": "Altre lingue",
+    "lessLangs": "Meno lingue"
 }

@@ -21,5 +21,7 @@
     "band5": "5环",
     "band6": "6环(TCR)",
     "warning": "警告！",
-    "outOfRange": "数值超出标准色环范围。"
+    "outOfRange": "数值超出标准色环范围。",
+    "moreLangs": "更多语言",
+    "lessLangs": "收起语言"
 }

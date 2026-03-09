@@ -21,5 +21,7 @@
     "band5": "5-pásmo",
     "band6": "6-pásmo(TCR)",
     "warning": "Varování!",
-    "outOfRange": "Hodnota mimo rozsah pro standardní barvy odporů."
+    "outOfRange": "Hodnota mimo rozsah pro standardní barvy odporů.",
+    "moreLangs": "Více jazyků",
+    "lessLangs": "Méně jazyků"
 }

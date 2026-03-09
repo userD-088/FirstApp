@@ -21,5 +21,7 @@
     "band5": "5 Bantlı",
     "band6": "6 Bantlı(TCR)",
     "warning": "Uyarı!",
-    "outOfRange": "Değer standart direnç renk kodları için aralık dışında."
+    "outOfRange": "Değer standart direnç renk kodları için aralık dışında.",
+    "moreLangs": "Daha fazla dil",
+    "lessLangs": "Daha az dil"
 }

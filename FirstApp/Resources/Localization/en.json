@@ -21,5 +21,7 @@
     "band5": "5-Band",
     "band6": "6-Band (TCR)",
     "warning": "Warning!",
-    "outOfRange": "Value out of range for standard resistor colors."
+    "outOfRange": "Value out of range for standard resistor colors.",
+    "moreLangs": "More languages",
+    "lessLangs": "Less languages"
 }

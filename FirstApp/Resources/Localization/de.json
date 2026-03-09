@@ -21,5 +21,7 @@
     "band5": "5-Band",
     "band6": "6-Band (TCR)",
     "warning": "Warnung!",
-    "outOfRange": "Wert außerhalb des Bereichs für Standard-Widerstandsfarben."
+    "outOfRange": "Wert außerhalb des Bereichs für Standard-Widerstandsfarben.",
+    "moreLangs": "Mehr Sprachen",
+    "lessLangs": "Weniger Sprachen"
 }

@@ -29,9 +29,13 @@ namespace FirstApp
         // ─── Text debounce ────────────────────────────────────────────────
         private CancellationTokenSource? _textCts;
 
-        // ── Animation-Constants ─-─────────────────────────────────────────
-        private const uint SlideMs = 200;     // Animation duration
-        private const double OutSlide = 0.30; // Backslide percantage
+        // ─── Animation constants ──────────────────────────────────────────
+        private const uint SlideMs = 200;
+        private const double OutSlide = 0.30;
+
+        // ─── Language section state ───────────────────────────────────────
+        private bool _langExpanded = false;
+        private bool _secondaryChipsBuilt = false;
 
         // ══════════════════════════════════════════════════════════════════
         // INIT
@@ -54,32 +58,31 @@ namespace FirstApp
 
             RebuildToleranceChips();
             RebuildSeriesChips();
-            RebuildLangChips();
+            RebuildPrimaryLangChips();
 
             UpdateResistorTypeTabs();
             UpdateInputModeTabs();
 
             ResistorView.Drawable = new ResistorDrawable(_vm.Rings, () => _vm.BodyColor);
 
-            // Settings inivisible
             SettingsPanel.TranslationY = 2000;
             SettingsOverlay.Opacity = 0;
 
             _vm.SetMode(_vm.ResistorMode);
         }
 
-        // ── Language Change ────────────────────────────────────────────────
-        private void OnVmPropertyChanged(object? sender,
-            System.ComponentModel.PropertyChangedEventArgs e)
+        // ─── Language / locale change ─────────────────────────────────────
+        private void OnVmPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName is "" or nameof(ResistorViewModel.Lang))
             {
                 UpdateResistorTypeTabs();
                 UpdateInputModeTabs();
+                UpdateMoreToggleLabel();
             }
         }
 
-        // ── JIT pre-warm ───────────────────────────────────────────────────
+        // ─── JIT pre-warm ─────────────────────────────────────────────────
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -89,8 +92,6 @@ namespace FirstApp
         private async Task PreWarmJit()
         {
             await Task.Yield();
-
-            // Call each animation method once with null values
             await Task.WhenAll(
                 ResistorView.FadeTo(1, 1),
                 ResistorView.TranslateTo(0, 0, 1),
@@ -104,7 +105,7 @@ namespace FirstApp
         }
 
         // ══════════════════════════════════════════════════════════════════
-        // RESISTOR-TYPE TABS  – Slide + Fade
+        // RESISTOR-TYPE TABS
         // ══════════════════════════════════════════════════════════════════
 
         private void OnResTab0Tapped(object? sender, TappedEventArgs e) => _ = SwitchResistorMode(0);
@@ -119,20 +120,17 @@ namespace FirstApp
             int dir = newMode > _vm.ResistorMode ? 1 : -1;
             double w = ResistorViewContainer.Width > 0 ? ResistorViewContainer.Width : 300;
 
-            // Phase 1: Slide + Fade to the left or right, depending on direction
             await Task.WhenAll(
                 ResistorView.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
                 ResistorView.FadeTo(0, SlideMs, Easing.CubicIn)
             );
 
-            // Change Mode + Chips
             _vm.SetMode(newMode);
             RebuildToleranceChips();
             if (newMode == 2) RebuildTcrChips();
             UpdateResistorTypeTabs();
             ResistorView.Invalidate();
 
-            // Slide new view from the opposite side + Fade in
             ResistorView.TranslationX = dir * w;
             ResistorView.Opacity = 0;
 
@@ -152,7 +150,7 @@ namespace FirstApp
         }
 
         // ══════════════════════════════════════════════════════════════════
-        // INPUT-MODE TABS  – Slide + Fade 
+        // INPUT-MODE TABS
         // ══════════════════════════════════════════════════════════════════
 
         private void OnInputTab0Tapped(object? sender, TappedEventArgs e) => _ = SwitchInputMode(0);
@@ -169,30 +167,25 @@ namespace FirstApp
                 ? (VisualElement)ValueToColorLayout
                 : ColorToValueLayout;
 
-            // Phase 1: Slide + Fade to the left or right, depending on direction
             await Task.WhenAll(
                 outgoing.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
                 outgoing.FadeTo(0, SlideMs, Easing.CubicIn)
             );
 
-            // Change Mode
             _vm.SetInputMode(newMode);
             UpdateInputModeTabs();
 
-            // Incoming layout initialized
             var incoming = newMode == 0
                 ? (VisualElement)ValueToColorLayout
                 : ColorToValueLayout;
             incoming.TranslationX = dir * w;
             incoming.Opacity = 0;
 
-            // Phase 2: slide + fade incoming layout in
             await Task.WhenAll(
                 incoming.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
                 incoming.FadeTo(1, SlideMs, Easing.CubicOut)
             );
 
-            // Reset outgoing
             outgoing.TranslationX = 0;
             outgoing.Opacity = 1;
 
@@ -205,8 +198,6 @@ namespace FirstApp
             SetSegTab(InputTab0, InputTabLabel0, v);
             SetSegTab(InputTab1, InputTabLabel1, !v);
         }
-
-        // ─── Common segmented tab style ───────────────────────────────────
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetSegTab(Border tab, Label lbl, bool active)
@@ -265,37 +256,176 @@ namespace FirstApp
             }
         }
 
-        private void RebuildLangChips()
+        // ── Language chip helpers ─────────────────────────────────────────
+
+        /// <summary>
+        /// Builds the always-visible primary language chips and resets the
+        /// "More / Less" toggle to its collapsed state.
+        /// Called when the settings panel is opened or the language changes.
+        /// </summary>
+        private void RebuildPrimaryLangChips()
         {
+            _langExpanded = false;
+            _secondaryChipsBuilt = false;
+            LangChipsSecondary.Children.Clear();
+
+            MoreLangsRow.IsVisible = false;
+            MoreLangsRow.Opacity = 1;
+            MoreLangsRow.TranslationY = 0;
+
+            UpdateMoreToggleLabel();
+
             LangChipsLayout.Children.Clear();
-            foreach (var (code, flag, shortName) in ResistorViewModel.Languages)
+            foreach (var (code, flag, shortName) in ResistorViewModel.PrimaryLanguages)
+                LangChipsLayout.Children.Add(MakeLangChip(code, flag, shortName));
+        }
+
+        /// <summary>
+        /// Lazily builds secondary language chips the first time they are needed.
+        /// Subsequent calls are a no-op (guard: _secondaryChipsBuilt).
+        /// Also pre-loads JSON files on a background thread so that switching
+        /// to a secondary language has no perceptible delay.
+        /// </summary>
+        private void EnsureSecondaryChipsBuilt()
+        {
+            if (_secondaryChipsBuilt) return;
+            _secondaryChipsBuilt = true;
+
+            LangChipsSecondary.Children.Clear();
+            foreach (var (code, flag, shortName) in ResistorViewModel.SecondaryLanguages)
+                LangChipsSecondary.Children.Add(MakeLangChip(code, flag, shortName));
+
+            // Pre-load JSON files in the background so switching feels instant
+            _ = Task.Run(() =>
             {
-                string cap = code;
-                bool sel = code == _vm.Lang;
-                var chip = new Border
+                foreach (var (code, _, _) in ResistorViewModel.SecondaryLanguages)
+                    ResistorViewModel.PreloadLang(code);
+            });
+        }
+
+        private Border MakeLangChip(string code, string flag, string shortName)
+        {
+            string cap = code;
+            bool sel = code == _vm.Lang;
+            bool hasEmoji = !string.IsNullOrWhiteSpace(flag);
+
+            // Content: emoji or image (png)
+            View chipContent;
+            if (hasEmoji)
+            {
+                chipContent = new Label
                 {
-                    StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(14) },
-                    BackgroundColor = sel ? Color.FromArgb("#2563EB") : Color.FromArgb("#1F2937"),
-                    Stroke = sel ? Colors.White : Colors.Transparent,
-                    StrokeThickness = sel ? 1.5 : 0,
-                    Padding = new Thickness(12, 8),
-                    HeightRequest = 44,
-                    Content = new Label
-                    {
-                        Text = $"{flag}  {shortName}",
-                        TextColor = Colors.White,
-                        FontSize = 13,
-                        FontAttributes = sel ? FontAttributes.Bold : FontAttributes.None,
-                        HorizontalTextAlignment = TextAlignment.Center,
-                        VerticalTextAlignment = TextAlignment.Center,
-                        HorizontalOptions = LayoutOptions.Center,
-                        VerticalOptions = LayoutOptions.Center,
-                    }
+                    Text = $"{flag}  {shortName}",
+                    TextColor = Colors.White,
+                    FontSize = 13,
+                    FontAttributes = sel ? FontAttributes.Bold : FontAttributes.None,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    VerticalTextAlignment = TextAlignment.Center,
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center,
                 };
-                chip.GestureRecognizers.Add(Tap(() => { _vm.Lang = cap; RebuildLangChips(); }));
-                LangChipsLayout.Children.Add(chip);
+            }
+            else
+            {
+                // no emoji: load from Resources/Images/flag_XX.png
+                chipContent = new HorizontalStackLayout
+                {
+                    Spacing = 5,
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center,
+                    Children =
+            {
+                new Image
+                {
+                    Source = ImageSource.FromFile($"flag_{code}.png"),
+                    HeightRequest = 14,
+                    WidthRequest = 22,
+                    Aspect = Aspect.AspectFit,
+                    VerticalOptions = LayoutOptions.Center,
+                },
+                new Label
+                {
+                    Text = shortName,
+                    TextColor = Colors.White,
+                    FontSize = 13,
+                    FontAttributes = sel ? FontAttributes.Bold : FontAttributes.None,
+                    VerticalTextAlignment = TextAlignment.Center,
+                    VerticalOptions = LayoutOptions.Center,
+                }
+            }
+                };
+            }
+
+            var chip = new Border
+            {
+                StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(14) },
+                BackgroundColor = sel ? Color.FromArgb("#2563EB") : Color.FromArgb("#1F2937"),
+                Stroke = sel ? Colors.White : Colors.Transparent,
+                StrokeThickness = sel ? 1.5 : 0,
+                Padding = new Thickness(12, 8),
+                HeightRequest = 44,
+                Content = chipContent
+            };
+
+            chip.GestureRecognizers.Add(Tap(() =>
+            {
+                bool wasExpanded = _langExpanded;
+                _vm.Lang = cap;
+                RebuildPrimaryLangChips();
+
+                if (wasExpanded)
+                {
+                    _langExpanded = true;
+                    EnsureSecondaryChipsBuilt();
+                    MoreLangsRow.IsVisible = true;
+                    MoreLangsRow.Opacity = 1;
+                    MoreLangsRow.TranslationY = 0;
+                    UpdateMoreToggleLabel();
+                }
+            }));
+            return chip;
+        }
+
+        /// <summary>Toggles the "More / Less languages" section – with slide-fade animation.</summary>
+        private async void OnMoreLangsTapped(object sender, TappedEventArgs e)
+        {
+            _langExpanded = !_langExpanded;
+            UpdateMoreToggleLabel();
+
+            if (_langExpanded)
+            {
+                EnsureSecondaryChipsBuilt();
+                MoreLangsRow.Opacity = 0;
+                MoreLangsRow.TranslationY = -12;
+                MoreLangsRow.IsVisible = true;
+                await Task.WhenAll(
+                    MoreLangsRow.FadeTo(1, 230, Easing.CubicOut),
+                    MoreLangsRow.TranslateTo(0, 0, 230, Easing.CubicOut)
+                );
+            }
+            else
+            {
+                await Task.WhenAll(
+                    MoreLangsRow.FadeTo(0, 180, Easing.CubicIn),
+                    MoreLangsRow.TranslateTo(0, -12, 180, Easing.CubicIn)
+                );
+                MoreLangsRow.IsVisible = false;
+                MoreLangsRow.TranslationY = 0;
             }
         }
+
+        private void UpdateMoreToggleLabel()
+        {
+            // Fallback text in case the key is not yet in older JSON files
+            string more = string.IsNullOrEmpty(_vm.MoreLangsText) || _vm.MoreLangsText == "moreLangs"
+                          ? "More languages" : _vm.MoreLangsText;
+            string less = string.IsNullOrEmpty(_vm.LessLangsText) || _vm.LessLangsText == "lessLangs"
+                          ? "Less languages" : _vm.LessLangsText;
+
+            MoreLangsLabel.Text = _langExpanded ? $"▲  {less}" : $"▼  {more}";
+        }
+
+        // ─────────────────────────────────────────────────────────────────
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetSel(List<Border> list, int idx)
@@ -394,13 +524,11 @@ namespace FirstApp
             if (_settingsOpen) return;
             _settingsOpen = true;
 
-            RebuildLangChips();
+            RebuildPrimaryLangChips();
 
-            // Activate hit testing – no opacity jump, panel is already positioned in advance
             SettingsOverlay.IsVisible = true;
             SettingsOverlay.InputTransparent = false;
 
-            // Parallel: Show backdrop + move panel up
             await Task.WhenAll(
                 SettingsOverlay.FadeTo(1, 220, Easing.CubicOut),
                 SettingsPanel.TranslateTo(0, 0, 260, Easing.CubicOut)
@@ -411,7 +539,6 @@ namespace FirstApp
         {
             if (!_settingsOpen) return;
 
-            // Deactivate hit testing immediately → no accidental tapping
             SettingsOverlay.InputTransparent = true;
 
             await Task.WhenAll(

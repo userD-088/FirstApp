@@ -21,5 +21,7 @@
     "band5": "5バンド",
     "band6": "6バンド(TCR)",
     "warning": "警告！",
-    "outOfRange": "値が標準カラーコードの範囲外です。"
+    "outOfRange": "値が標準カラーコードの範囲外です。",
+    "moreLangs": "言語をもっと見る",
+    "lessLangs": "言語を閉じる"
 }

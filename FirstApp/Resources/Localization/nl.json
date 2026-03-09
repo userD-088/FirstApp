@@ -21,5 +21,7 @@
     "band5": "5-bands",
     "band6": "6-bands(TCR)",
     "warning": "Waarschuwing!",
-    "outOfRange": "Waarde buiten bereik voor standaard weerstandskleuren."
+    "outOfRange": "Waarde buiten bereik voor standaard weerstandskleuren.",
+    "moreLangs": "Meer talen",
+    "lessLangs": "Minder talen"
 }
