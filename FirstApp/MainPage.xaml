@@ -338,7 +338,8 @@
                                FontSize="13" TextColor="#9CA3AF"/>
 
                         <!-- primary languages -->
-                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never"
+                                    HeightRequest="60">
                             <HorizontalStackLayout x:Name="LangChipsLayout" Spacing="8" Padding="2,4"/>
                         </ScrollView>
 
@@ -362,7 +363,8 @@
                         <ScrollView x:Name="MoreLangsRow"
                                     IsVisible="False"
                                     Orientation="Horizontal"
-                                    HorizontalScrollBarVisibility="Never">
+                                    HorizontalScrollBarVisibility="Never"
+                                    HeightRequest="60">
                             <HorizontalStackLayout x:Name="LangChipsSecondary" Spacing="8" Padding="2,4"/>
                         </ScrollView>
                     </VerticalStackLayout>
@@ -424,7 +426,7 @@
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnUnitOpt1Tapped"/>
                     </Border.GestureRecognizers>
-                    <Label Text="K" TextColor="#94A3B8" FontSize="15"
+                    <Label Text="KΩ" TextColor="#94A3B8" FontSize="15"
                            FontAttributes="Bold"
                            HorizontalTextAlignment="Center"
                            VerticalTextAlignment="Center"/>
@@ -436,7 +438,7 @@
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnUnitOpt2Tapped"/>
                     </Border.GestureRecognizers>
-                    <Label Text="M" TextColor="#94A3B8" FontSize="15"
+                    <Label Text="MΩ" TextColor="#94A3B8" FontSize="15"
                            FontAttributes="Bold"
                            HorizontalTextAlignment="Center"
                            VerticalTextAlignment="Center"/>
@@ -448,7 +450,7 @@
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnUnitOpt3Tapped"/>
                     </Border.GestureRecognizers>
-                    <Label Text="G" TextColor="#94A3B8" FontSize="15"
+                    <Label Text="GΩ" TextColor="#94A3B8" FontSize="15"
                            FontAttributes="Bold"
                            HorizontalTextAlignment="Center"
                            VerticalTextAlignment="Center"/>

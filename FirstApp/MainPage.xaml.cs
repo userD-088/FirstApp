@@ -23,7 +23,7 @@ namespace FirstApp
 
         // --- Unit dropdown
         // 0 = Ohm  1 = K  2 = M  3 = G
-        private static readonly string[] UnitLabels = { "Ω", "K", "M", "G" };
+        private static readonly string[] UnitLabels = { "Ω", "KΩ", "MΩ", "GΩ" };
         private static readonly string[] UnitSuffixes = { "", "k", "M", "G" };
         private int _unitIdx = 0;
         private bool _unitDropdownOpen = false;
@@ -86,21 +86,62 @@ namespace FirstApp
 
         // --- Language / locale change
         private void OnVmPropertyChanged(object? sender,
-            System.ComponentModel.PropertyChangedEventArgs e)
+    System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName is "" or nameof(ResistorViewModel.Lang))
             {
                 UpdateResistorTypeTabs();
                 UpdateInputModeTabs();
                 UpdateMoreToggleLabel();
+                UpdateWindowTitle();
             }
+        }
+
+        // --- App title update
+        private void UpdateWindowTitle()
+        {
+            #if ANDROID
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
+                if (activity == null) return;
+                activity.Title = _vm.TitleText;
+
+                if (OperatingSystem.IsAndroidVersionAtLeast(33))
+                {
+                    var td = new Android.App.ActivityManager.TaskDescription.Builder()
+                        .SetLabel(_vm.TitleText)
+                        .Build();
+                    activity.SetTaskDescription(td);
+                }
+                else if (OperatingSystem.IsAndroidVersionAtLeast(21))
+                {
+            #pragma warning disable CA1422
+                    activity.SetTaskDescription(
+                        new Android.App.ActivityManager.TaskDescription(_vm.TitleText));
+            #pragma warning restore CA1422
+                }
+            });
+            #endif
         }
 
         // --- JIT pre-warm
         protected override void OnAppearing()
         {
             base.OnAppearing();
+            UpdateWindowTitle();
             _ = PreWarmJit();
+        }
+
+        protected override void OnHandlerChanged()
+        {
+            base.OnHandlerChanged();
+            UpdateWindowTitle();
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
         }
 
         private async Task PreWarmJit()
