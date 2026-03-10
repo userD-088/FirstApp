@@ -13,7 +13,7 @@ namespace FirstApp
     {
         private readonly ResistorViewModel _vm;
 
-        // ─── Chip lists ───────────────────────────────────────────────────
+        // --- Chip lists
         private readonly List<Border> _chips1 = new();
         private readonly List<Border> _chips2 = new();
         private readonly List<Border> _chips3 = new();
@@ -21,25 +21,33 @@ namespace FirstApp
         private readonly List<Border> _chipsTol = new();
         private readonly List<Border> _chipsTcr = new();
 
-        // ─── Animation guards ─────────────────────────────────────────────
+        // --- Unit dropdown
+        // 0 = Ohm  1 = K  2 = M  3 = G
+        private static readonly string[] UnitLabels = { "Ω", "K", "M", "G" };
+        private static readonly string[] UnitSuffixes = { "", "k", "M", "G" };
+        private int _unitIdx = 0;
+        private bool _unitDropdownOpen = false;
+        private bool _unitAnimBusy = false;
+        private bool _suppressTextChanged = false;
+
+        // --- Animation guards
         private bool _resAnimBusy;
         private bool _inputAnimBusy;
         private bool _settingsOpen;
 
-        // ─── Text debounce ────────────────────────────────────────────────
+        // --- Text debounce
         private CancellationTokenSource? _textCts;
 
-        // ─── Animation constants ──────────────────────────────────────────
+        // --- Animation constants
         private const uint SlideMs = 200;
         private const double OutSlide = 0.30;
+        private const uint DropMs = 160;
 
-        // ─── Language section state ───────────────────────────────────────
+        // --- Language section state
         private bool _langExpanded = false;
         private bool _secondaryChipsBuilt = false;
 
-        // ══════════════════════════════════════════════════════════════════
         // INIT
-        // ══════════════════════════════════════════════════════════════════
 
         public MainPage()
         {
@@ -60,6 +68,11 @@ namespace FirstApp
             RebuildSeriesChips();
             RebuildPrimaryLangChips();
 
+            // Prepare unit dropdown
+            UnitDropdown.Opacity = 0;
+            UnitDropdown.IsVisible = false;
+            ApplyUnitHighlight();
+
             UpdateResistorTypeTabs();
             UpdateInputModeTabs();
 
@@ -71,8 +84,9 @@ namespace FirstApp
             _vm.SetMode(_vm.ResistorMode);
         }
 
-        // ─── Language / locale change ─────────────────────────────────────
-        private void OnVmPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        // --- Language / locale change
+        private void OnVmPropertyChanged(object? sender,
+            System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName is "" or nameof(ResistorViewModel.Lang))
             {
@@ -82,7 +96,7 @@ namespace FirstApp
             }
         }
 
-        // ─── JIT pre-warm ─────────────────────────────────────────────────
+        // --- JIT pre-warm
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -104,9 +118,114 @@ namespace FirstApp
             );
         }
 
-        // ══════════════════════════════════════════════════════════════════
+        // UNIT DROPDOWN  (Ohm / K / M / G)
+
+        private async void OnUnitBtnTapped(object? sender, TappedEventArgs e)
+        {
+            if (_unitAnimBusy) return;
+
+            if (_unitDropdownOpen) await CloseUnitDropdown();
+            else await OpenUnitDropdown();
+        }
+
+        private async Task OpenUnitDropdown()
+        {
+            if (_unitAnimBusy) return;
+            _unitAnimBusy = true;
+            _unitDropdownOpen = true;
+
+            // Absolute position of UnitBtn relative to RootGrid
+            var pos = GetAbsolutePosition(UnitBtn, RootGrid);
+            double left = pos.X;  // left edge of button
+            double top = pos.Y + UnitBtn.Height + 4;  // just below button
+
+            UnitDropdown.Margin = new Thickness(left, top, 0, 0);
+            UnitDropdown.TranslationY = -10;
+            UnitDropdown.Opacity = 0;
+            UnitDropdown.IsVisible = true;
+            UnitChevron.Text = "▴";
+
+            await Task.WhenAll(
+                UnitDropdown.FadeTo(1, DropMs, Easing.CubicOut),
+                UnitDropdown.TranslateTo(0, 0, DropMs, Easing.CubicOut)
+            );
+
+            _unitAnimBusy = false;
+        }
+
+        // Walks up the visual tree from element to relativeTo, summing X/Y offsets.
+        private static Point GetAbsolutePosition(VisualElement element, VisualElement relativeTo)
+        {
+            double x = 0, y = 0;
+            VisualElement? current = element;
+            while (current != null && current != relativeTo)
+            {
+                x += current.X;
+                y += current.Y;
+                current = current.Parent as VisualElement;
+            }
+            return new Point(x, y);
+        }
+
+        private async Task CloseUnitDropdown()
+        {
+            if (_unitAnimBusy || !_unitDropdownOpen) return;
+            _unitAnimBusy = true;
+            _unitDropdownOpen = false;
+            UnitChevron.Text = "▾";
+
+            await Task.WhenAll(
+                UnitDropdown.FadeTo(0, DropMs, Easing.CubicIn),
+                UnitDropdown.TranslateTo(0, -10, DropMs, Easing.CubicIn)
+            );
+
+            UnitDropdown.IsVisible = false;
+            _unitAnimBusy = false;
+        }
+
+        // -- Option taps
+        private void OnUnitOpt0Tapped(object? s, TappedEventArgs e) => _ = SelectUnit(0);
+        private void OnUnitOpt1Tapped(object? s, TappedEventArgs e) => _ = SelectUnit(1);
+        private void OnUnitOpt2Tapped(object? s, TappedEventArgs e) => _ = SelectUnit(2);
+        private void OnUnitOpt3Tapped(object? s, TappedEventArgs e) => _ = SelectUnit(3);
+
+        private async Task SelectUnit(int idx)
+        {
+            _unitIdx = idx;
+            ApplyUnitHighlight();
+            await CloseUnitDropdown();
+            TriggerRecalc();
+        }
+
+        // Updates button label and option highlight silently (no animation).
+        private void SetUnitSilent(int idx)
+        {
+            _unitIdx = idx;
+            ApplyUnitHighlight();
+        }
+
+        private void ApplyUnitHighlight()
+        {
+            // Button label
+            UnitBtnLabel.Text = UnitLabels[_unitIdx];
+
+            // Highlight active option
+            Border[] opts = { UnitOpt0, UnitOpt1, UnitOpt2, UnitOpt3 };
+            for (int i = 0; i < opts.Length; i++)
+            {
+                bool active = i == _unitIdx;
+                opts[i].BackgroundColor = active
+                    ? Color.FromArgb("#2563EB")
+                    : Color.FromArgb("#1A2535");
+                if (opts[i].Content is Label lbl)
+                {
+                    lbl.TextColor = active ? Colors.White : Color.FromArgb("#94A3B8");
+                    lbl.FontAttributes = active ? FontAttributes.Bold : FontAttributes.None;
+                }
+            }
+        }
+
         // RESISTOR-TYPE TABS
-        // ══════════════════════════════════════════════════════════════════
 
         private void OnResTab0Tapped(object? sender, TappedEventArgs e) => _ = SwitchResistorMode(0);
         private void OnResTab1Tapped(object? sender, TappedEventArgs e) => _ = SwitchResistorMode(1);
@@ -149,9 +268,7 @@ namespace FirstApp
             SetSegTab(ResTab2, ResTabLabel2, _vm.ResistorMode == 2);
         }
 
-        // ══════════════════════════════════════════════════════════════════
         // INPUT-MODE TABS
-        // ══════════════════════════════════════════════════════════════════
 
         private void OnInputTab0Tapped(object? sender, TappedEventArgs e) => _ = SwitchInputMode(0);
         private void OnInputTab1Tapped(object? sender, TappedEventArgs e) => _ = SwitchInputMode(1);
@@ -160,6 +277,9 @@ namespace FirstApp
         {
             if (_vm.InputMode == newMode || _inputAnimBusy) return;
             _inputAnimBusy = true;
+
+            // close unit dropdown if open
+            if (_unitDropdownOpen) await CloseUnitDropdown();
 
             int dir = newMode > _vm.InputMode ? 1 : -1;
             double w = InputContentGrid.Width > 0 ? InputContentGrid.Width : 300;
@@ -207,9 +327,7 @@ namespace FirstApp
             lbl.FontAttributes = active ? FontAttributes.Bold : FontAttributes.None;
         }
 
-        // ══════════════════════════════════════════════════════════════════
         // CHIP BUILDERS
-        // ══════════════════════════════════════════════════════════════════
 
         private void BuildChipRow(
             HorizontalStackLayout host, List<Border> list,
@@ -248,21 +366,34 @@ namespace FirstApp
                 var chip = MakeSeriesChip(s, s == _vm.SelectedSeries);
                 chip.GestureRecognizers.Add(Tap(() =>
                 {
-                    double rounded = _vm.SetSeries(cap, ResistanceEntry.Text);
-                    if (rounded > 0) ResistanceEntry.Text = ResistorViewModel.FormatR(rounded);
+                    string fullText = BuildFullText(ResistanceEntry.Text);
+                    double rounded = _vm.SetSeries(cap, fullText);
+
+                    if (rounded > 0)
+                    {
+                        string formatted = ResistorViewModel.FormatR(rounded);
+                        int newUnit = 0;
+                        string numPart = formatted;
+
+                        if (formatted.EndsWith("G")) { newUnit = 3; numPart = formatted[..^1]; }
+                        else if (formatted.EndsWith("M")) { newUnit = 2; numPart = formatted[..^1]; }
+                        else if (formatted.EndsWith("k")) { newUnit = 1; numPart = formatted[..^1]; }
+
+                        _suppressTextChanged = true;
+                        ResistanceEntry.Text = numPart;
+                        _suppressTextChanged = false;
+
+                        SetUnitSilent(newUnit);
+                        TriggerRecalc();
+                    }
+
                     RebuildSeriesChips();
                 }));
                 SeriesChipsMain.Children.Add(chip);
             }
         }
 
-        // ── Language chip helpers ─────────────────────────────────────────
-
-        /// <summary>
-        /// Builds the always-visible primary language chips and resets the
-        /// "More / Less" toggle to its collapsed state.
-        /// Called when the settings panel is opened or the language changes.
-        /// </summary>
+        // -- Language chip helpers
         private void RebuildPrimaryLangChips()
         {
             _langExpanded = false;
@@ -280,12 +411,6 @@ namespace FirstApp
                 LangChipsLayout.Children.Add(MakeLangChip(code, flag, shortName));
         }
 
-        /// <summary>
-        /// Lazily builds secondary language chips the first time they are needed.
-        /// Subsequent calls are a no-op (guard: _secondaryChipsBuilt).
-        /// Also pre-loads JSON files on a background thread so that switching
-        /// to a secondary language has no perceptible delay.
-        /// </summary>
         private void EnsureSecondaryChipsBuilt()
         {
             if (_secondaryChipsBuilt) return;
@@ -295,7 +420,6 @@ namespace FirstApp
             foreach (var (code, flag, shortName) in ResistorViewModel.SecondaryLanguages)
                 LangChipsSecondary.Children.Add(MakeLangChip(code, flag, shortName));
 
-            // Pre-load JSON files in the background so switching feels instant
             _ = Task.Run(() =>
             {
                 foreach (var (code, _, _) in ResistorViewModel.SecondaryLanguages)
@@ -309,7 +433,6 @@ namespace FirstApp
             bool sel = code == _vm.Lang;
             bool hasEmoji = !string.IsNullOrWhiteSpace(flag);
 
-            // Content: emoji or image (png)
             View chipContent;
             if (hasEmoji)
             {
@@ -327,32 +450,30 @@ namespace FirstApp
             }
             else
             {
-                // no emoji: load from Resources/Images/flag_XX.png
                 chipContent = new HorizontalStackLayout
                 {
                     Spacing = 5,
                     HorizontalOptions = LayoutOptions.Center,
                     VerticalOptions = LayoutOptions.Center,
                     Children =
-            {
-                new Image
-                {
-                    Source = ImageSource.FromFile($"flag_{code}.png"),
-                    HeightRequest = 14,
-                    WidthRequest = 22,
-                    Aspect = Aspect.AspectFit,
-                    VerticalOptions = LayoutOptions.Center,
-                },
-                new Label
-                {
-                    Text = shortName,
-                    TextColor = Colors.White,
-                    FontSize = 13,
-                    FontAttributes = sel ? FontAttributes.Bold : FontAttributes.None,
-                    VerticalTextAlignment = TextAlignment.Center,
-                    VerticalOptions = LayoutOptions.Center,
-                }
-            }
+                    {
+                        new Image
+                        {
+                            Source        = ImageSource.FromFile($"flag_{code}.png"),
+                            HeightRequest = 14, WidthRequest = 22,
+                            Aspect        = Aspect.AspectFit,
+                            VerticalOptions = LayoutOptions.Center,
+                        },
+                        new Label
+                        {
+                            Text           = shortName,
+                            TextColor      = Colors.White,
+                            FontSize       = 13,
+                            FontAttributes = sel ? FontAttributes.Bold : FontAttributes.None,
+                            VerticalTextAlignment = TextAlignment.Center,
+                            VerticalOptions       = LayoutOptions.Center,
+                        }
+                    }
                 };
             }
 
@@ -386,7 +507,6 @@ namespace FirstApp
             return chip;
         }
 
-        /// <summary>Toggles the "More / Less languages" section – with slide-fade animation.</summary>
         private async void OnMoreLangsTapped(object sender, TappedEventArgs e)
         {
             _langExpanded = !_langExpanded;
@@ -416,16 +536,13 @@ namespace FirstApp
 
         private void UpdateMoreToggleLabel()
         {
-            // Fallback text in case the key is not yet in older JSON files
             string more = string.IsNullOrEmpty(_vm.MoreLangsText) || _vm.MoreLangsText == "moreLangs"
                           ? "More languages" : _vm.MoreLangsText;
             string less = string.IsNullOrEmpty(_vm.LessLangsText) || _vm.LessLangsText == "lessLangs"
                           ? "Less languages" : _vm.LessLangsText;
-
             MoreLangsLabel.Text = _langExpanded ? $"▲  {less}" : $"▼  {more}";
         }
 
-        // ─────────────────────────────────────────────────────────────────
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetSel(List<Border> list, int idx)
@@ -493,37 +610,69 @@ namespace FirstApp
             return t;
         }
 
-        // ══════════════════════════════════════════════════════════════════
         // TEXT ENTRY  (debounced 80 ms)
-        // ══════════════════════════════════════════════════════════════════
 
         private void OnResistanceTextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!_vm.IsValueMode) return;
+            if (!_vm.IsValueMode || _suppressTextChanged) return;
+
+            // -- Auto-detect a trailing unit suffix typed by the user
+            string raw = e.NewTextValue ?? "";
+            string upper = raw.TrimEnd().ToUpperInvariant();
+
+            int detectedUnit = -1;
+            if (upper.EndsWith("G")) detectedUnit = 3;
+            else if (upper.EndsWith("M")) detectedUnit = 2;
+            else if (upper.EndsWith("K")) detectedUnit = 1;
+            else if (upper.EndsWith("Ω") || upper.EndsWith("O")) detectedUnit = 0;
+
+            if (detectedUnit >= 0)
+            {
+                _suppressTextChanged = true;
+                ResistanceEntry.Text = raw[..^1];
+                _suppressTextChanged = false;
+                SetUnitSilent(detectedUnit);
+            }
+
+            // Close dropdown if open (user started typing)
+            if (_unitDropdownOpen) _ = CloseUnitDropdown();
+
+            TriggerRecalc();
+        }
+
+        private void TriggerRecalc()
+        {
             _textCts?.Cancel();
             _textCts = new CancellationTokenSource();
             var token = _textCts.Token;
+
             Task.Delay(80, token).ContinueWith(_ =>
             {
                 if (token.IsCancellationRequested) return;
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    _vm.RecalcFromText(ResistanceEntry.Text);
+                    string fullText = BuildFullText(ResistanceEntry.Text);
+                    _vm.RecalcFromText(fullText);
                     if (_vm.ResultText == "OUT_OF_RANGE")
                         DisplayAlert(_vm.WarningTitle, _vm.OutOfRangeText, "OK");
                 });
             }, TaskScheduler.Default);
         }
 
-        // ══════════════════════════════════════════════════════════════════
+        private string BuildFullText(string? entryText)
+        {
+            string num = entryText?.Trim() ?? "";
+            return string.IsNullOrEmpty(num) ? num : num + UnitSuffixes[_unitIdx];
+        }
+
         // SETTINGS PANEL
-        // ══════════════════════════════════════════════════════════════════
 
         private async void OnOpenSettings(object sender, EventArgs e)
         {
             if (_settingsOpen) return;
             _settingsOpen = true;
 
+            if (_unitDropdownOpen) await CloseUnitDropdown();
             RebuildPrimaryLangChips();
 
             SettingsOverlay.IsVisible = true;
@@ -538,7 +687,6 @@ namespace FirstApp
         private async void OnCloseSettings(object sender, EventArgs e)
         {
             if (!_settingsOpen) return;
-
             SettingsOverlay.InputTransparent = true;
 
             await Task.WhenAll(
@@ -554,9 +702,7 @@ namespace FirstApp
             => OnCloseSettings(sender, e);
         private void OnSettingsPanelTapped(object sender, TappedEventArgs e) { /* consume */ }
 
-        // ══════════════════════════════════════════════════════════════════
         // RESISTOR DRAWABLE
-        // ══════════════════════════════════════════════════════════════════
 
         public sealed class ResistorDrawable : IDrawable
         {
@@ -569,10 +715,8 @@ namespace FirstApp
             public void Draw(ICanvas canvas, RectF rect)
             {
                 const float Bw = 210f, Bh = 56f, Rw = 13f, Gap = 25f;
-                float cx = rect.Width / 2;
-                float cy = rect.Height / 2;
-                float bx = cx - Bw / 2;
-                float by = cy - Bh / 2;
+                float cx = rect.Width / 2, cy = rect.Height / 2;
+                float bx = cx - Bw / 2, by = cy - Bh / 2;
 
                 canvas.StrokeColor = Colors.Silver;
                 canvas.StrokeSize = 5;

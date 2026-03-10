@@ -13,11 +13,11 @@
         </LinearGradientBrush>
     </ContentPage.Background>
 
-    <Grid>
+    <Grid x:Name="RootGrid">
         <ScrollView>
             <VerticalStackLayout Spacing="0">
 
-                <!-- ══ HEADER ══ -->
+                <!-- header -->
                 <Border Padding="15,40,15,22" StrokeThickness="0">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -47,7 +47,7 @@
                     </Grid>
                 </Border>
 
-                <!-- ══ RESISTOR CARD ══ -->
+                <!-- resistor card -->
                 <Border Margin="20,12" Padding="16,14"
                         StrokeShape="RoundRectangle 28"
                         Stroke="#2563EB" StrokeThickness="1.5">
@@ -59,7 +59,7 @@
                     </Border.Background>
                     <VerticalStackLayout Spacing="12">
 
-                        <!-- Segmented control – Resistor type -->
+                        <!-- resistor type tabs -->
                         <Border BackgroundColor="#060D1A"
                                 StrokeShape="RoundRectangle 13"
                                 Stroke="#1E3A5F" StrokeThickness="1"
@@ -104,7 +104,7 @@
                             </Grid>
                         </Border>
 
-                        <!-- Resistor graphic -->
+                        <!-- resistor graphic -->
                         <Grid x:Name="ResistorViewContainer"
                               HeightRequest="80" WidthRequest="300"
                               HorizontalOptions="Center"
@@ -115,14 +115,14 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- ══ INPUT CARD ══ -->
+                <!-- input card -->
                 <Border Margin="20,0,20,30" Padding="18,16"
                         StrokeShape="RoundRectangle 24"
                         BackgroundColor="#0D1520"
                         Stroke="#2563EB" StrokeThickness="1.5">
                     <VerticalStackLayout Spacing="14">
 
-                        <!-- Segmented control – Input mode -->
+                        <!-- input mode tabs -->
                         <Border BackgroundColor="#060D1A"
                                 StrokeShape="RoundRectangle 13"
                                 Stroke="#1E3A5F" StrokeThickness="1"
@@ -157,23 +157,55 @@
 
                         <BoxView HeightRequest="1" BackgroundColor="#1E2D40"/>
 
-                        <!-- Animated content area -->
+                        <!-- animated content area -->
                         <Grid x:Name="InputContentGrid" IsClippedToBounds="True">
 
-                            <!-- VALUE → COLOR -->
+                            <!-- value to color mode -->
                             <VerticalStackLayout x:Name="ValueToColorLayout"
                                                  IsVisible="{Binding IsValueMode}"
                                                  Spacing="14">
                                 <VerticalStackLayout Spacing="5">
                                     <Label Text="{Binding ResistanceLabelText}"
                                            FontSize="13" TextColor="#9CA3AF"/>
-                                    <Entry x:Name="ResistanceEntry"
-                                           Placeholder="e.g. 4k7 or 470"
-                                           Keyboard="Numeric"
-                                           BackgroundColor="#111827" TextColor="White"
-                                           PlaceholderColor="#4B5563"
-                                           HeightRequest="46" FontSize="15"
-                                           TextChanged="OnResistanceTextChanged"/>
+
+                                    <!-- entry + unit button -->
+                                    <Grid ColumnDefinitions="*,auto" ColumnSpacing="8">
+
+                                        <Entry x:Name="ResistanceEntry"
+                                               Grid.Column="0"
+                                               Placeholder="e.g. 470"
+                                               Keyboard="Numeric"
+                                               BackgroundColor="#111827" TextColor="White"
+                                               PlaceholderColor="#4B5563"
+                                               HeightRequest="46" FontSize="15"
+                                               TextChanged="OnResistanceTextChanged"/>
+
+                                        <!-- unit button -->
+                                        <Border x:Name="UnitBtn"
+                                                Grid.Column="1"
+                                                BackgroundColor="#111827"
+                                                StrokeShape="RoundRectangle 12"
+                                                Stroke="#1E3A5F" StrokeThickness="1"
+                                                WidthRequest="64" HeightRequest="46"
+                                                VerticalOptions="Center">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnUnitBtnTapped"/>
+                                            </Border.GestureRecognizers>
+                                            <HorizontalStackLayout Spacing="3"
+                                                                   HorizontalOptions="Center"
+                                                                   VerticalOptions="Center">
+                                                <Label x:Name="UnitBtnLabel" Text="Ω"
+                                                       TextColor="White"
+                                                       FontSize="15" FontAttributes="Bold"
+                                                       VerticalTextAlignment="Center"/>
+                                                <Label x:Name="UnitChevron" Text="▾"
+                                                       TextColor="#64748B" FontSize="10"
+                                                       VerticalTextAlignment="Center"
+                                                       Margin="0,2,0,0"/>
+                                            </HorizontalStackLayout>
+                                        </Border>
+
+                                    </Grid>
                                 </VerticalStackLayout>
                                 <VerticalStackLayout Spacing="6">
                                     <Label Text="{Binding NormSeriesLabelText}"
@@ -186,7 +218,7 @@
                                 </VerticalStackLayout>
                             </VerticalStackLayout>
 
-                            <!-- COLOR → VALUE -->
+                            <!-- color to value mode -->
                             <VerticalStackLayout x:Name="ColorToValueLayout"
                                                  IsVisible="{Binding IsColorMode}"
                                                  Spacing="10">
@@ -237,7 +269,7 @@
 
                         <BoxView HeightRequest="1" BackgroundColor="#1E2D40"/>
 
-                        <!-- Tolerance -->
+                        <!-- tolerance -->
                         <Grid ColumnDefinitions="58,*" ColumnSpacing="6">
                             <Label Grid.Column="0" Text="{Binding TolText}"
                                    FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
@@ -266,7 +298,7 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- ══ SETTINGS OVERLAY ══ -->
+        <!-- settings overlay -->
         <Grid x:Name="SettingsOverlay" IsVisible="False"
               InputTransparent="True"
               BackgroundColor="#BB000000">
@@ -291,7 +323,7 @@
 
                 <VerticalStackLayout Spacing="20">
 
-                    <!-- Drag handle -->
+                    <!-- drag handle -->
                     <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2"
                              BackgroundColor="#334155" HorizontalOptions="Center"
                              Margin="0,4,0,0"/>
@@ -300,17 +332,17 @@
                            FontSize="20" FontAttributes="Bold"
                            TextColor="White" HorizontalOptions="Center"/>
 
-                    <!-- ── Language section ── -->
+                    <!-- language section -->
                     <VerticalStackLayout Spacing="10">
                         <Label Text="{Binding LangSectionText}"
                                FontSize="13" TextColor="#9CA3AF"/>
 
-                        <!-- Primary languages (always visible) -->
+                        <!-- primary languages -->
                         <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
                             <HorizontalStackLayout x:Name="LangChipsLayout" Spacing="8" Padding="2,4"/>
                         </ScrollView>
 
-                        <!-- "More / Less languages" toggle button -->
+                        <!-- more/less languages toggle -->
                         <Border BackgroundColor="#111827"
                                 StrokeShape="RoundRectangle 10"
                                 Stroke="#1E3A5F" StrokeThickness="1"
@@ -326,7 +358,7 @@
                                    VerticalTextAlignment="Center"/>
                         </Border>
 
-                        <!-- Secondary languages (lazy, collapsed by default) -->
+                        <!-- secondary languages (lazy) -->
                         <ScrollView x:Name="MoreLangsRow"
                                     IsVisible="False"
                                     Orientation="Horizontal"
@@ -337,7 +369,7 @@
 
                     <BoxView HeightRequest="1" BackgroundColor="#1E293B"/>
 
-                    <!-- About -->
+                    <!-- about -->
                     <Border Padding="16,14" StrokeShape="RoundRectangle 16"
                             BackgroundColor="#111827" Stroke="#1E293B" StrokeThickness="1">
                         <VerticalStackLayout Spacing="5">
@@ -360,6 +392,69 @@
                 </VerticalStackLayout>
             </Border>
         </Grid>
+
+        <!-- unit dropdown (root level, floats over everything) -->
+        <Border x:Name="UnitDropdown"
+                IsVisible="False"
+                HorizontalOptions="Start"
+                VerticalOptions="Start"
+                BackgroundColor="#0B1628"
+                StrokeShape="RoundRectangle 16"
+                Stroke="#2563EB" StrokeThickness="1.5"
+                Padding="6"
+                WidthRequest="80"
+                InputTransparent="False">
+            <VerticalStackLayout Spacing="3">
+                <Border x:Name="UnitOpt0"
+                        BackgroundColor="#1A2535"
+                        StrokeShape="RoundRectangle 10"
+                        StrokeThickness="0" Padding="0,11">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnUnitOpt0Tapped"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="Ω" TextColor="#94A3B8" FontSize="15"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           VerticalTextAlignment="Center"/>
+                </Border>
+                <Border x:Name="UnitOpt1"
+                        BackgroundColor="#1A2535"
+                        StrokeShape="RoundRectangle 10"
+                        StrokeThickness="0" Padding="0,11">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnUnitOpt1Tapped"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="K" TextColor="#94A3B8" FontSize="15"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           VerticalTextAlignment="Center"/>
+                </Border>
+                <Border x:Name="UnitOpt2"
+                        BackgroundColor="#1A2535"
+                        StrokeShape="RoundRectangle 10"
+                        StrokeThickness="0" Padding="0,11">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnUnitOpt2Tapped"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="M" TextColor="#94A3B8" FontSize="15"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           VerticalTextAlignment="Center"/>
+                </Border>
+                <Border x:Name="UnitOpt3"
+                        BackgroundColor="#1A2535"
+                        StrokeShape="RoundRectangle 10"
+                        StrokeThickness="0" Padding="0,11">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnUnitOpt3Tapped"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="G" TextColor="#94A3B8" FontSize="15"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           VerticalTextAlignment="Center"/>
+                </Border>
+            </VerticalStackLayout>
+        </Border>
 
     </Grid>
 </ContentPage>

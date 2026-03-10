@@ -13,7 +13,7 @@
 		<Nullable>enable</Nullable>
 		<ApplicationTitle>Resistance Calculator</ApplicationTitle>
 		<ApplicationId>com.companyname.firstapp</ApplicationId>
-		<ApplicationDisplayVersion>0.4.5</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>0.5</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 	</PropertyGroup>
 

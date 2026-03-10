@@ -102,7 +102,11 @@ namespace FirstApp
             ("bg","🇧🇬","BG"), ("lt","🇱🇹","LT"), ("lv","🇱🇻","LV"), ("et","🇪🇪","ET"),
             ("ms","🇲🇾","MS"), ("gl","","GL"), ("ca","","CA"), ("eu","","EU"),
             ("la","🇻🇦","LA"), ("cy","","CY"), ("af","🇿🇦","AF"), ("sq","🇦🇱","SQ"),
-            ("am","🇪🇹","AM"), ("is","🇮🇸","IS"), ("eo","","EO"), ("ha","","HA")
+            ("am","🇪🇹","AM"), ("is","🇮🇸","IS"), ("eo","","EO"), ("haw","","HAW"), 
+            ("rap","🗿","RAP"), ("pa","🇮🇳","PA"), ("jv","🇮🇩","JV"), ("mr","🇮🇳","MR"),
+            ("wuu","🇨🇳","WUU"), ("ha","🇳🇬","HA"), ("kn","🇮🇳","KN"), ("gu","🇮🇳","GU"),
+            ("tl","🇵🇭","TL"), ("sr","🇷🇸","SR"), ("ka","🇬🇪","KA"), ("hy","🇦🇲","HY"),
+            ("az","🇦🇿","AZ")
         };
 
         // Combined – used only for default-language detection
