@@ -84,19 +84,18 @@ namespace FirstApp
         // Main languages
         public static readonly (string Code, string Flag, string Short)[] PrimaryLanguages =
         {
-            ("en","🇬🇧","EN"), ("de","🇩🇪","DE"), ("es","🇪🇸","ES"), ("fr","🇫🇷","FR"),
-            ("pt","🇵🇹","PT"), ("it","🇮🇹","IT"), ("ja","🇯🇵","JA"), ("zh","🇨🇳","ZH"), 
-            ("ru","🇷🇺","RU"),
+            ("en","🇬🇧","EN"), ("de","🇩🇪","DE"), ("es","🇪🇸","ES"), ("ru","🇷🇺","RU"), ("fr","🇫🇷","FR"),
+            ("pt","🇵🇹","PT"), ("ja","🇯🇵","JA"), ("zh","🇨🇳","ZH"),
         };
 
         // Secondary languages (not loaded by default to save memory and load time – only loaded when user clicks "More languages")
         public static readonly (string Code, string Flag, string Short)[] SecondaryLanguages =
         {
-            ("nl","🇳🇱","NL"), ("ko","🇰🇷","KO"), ("tr","🇹🇷","TR"), ("pl","🇵🇱","PL"),
-            ("sv","🇸🇪","SV"), ("da","🇩🇰","DA"), ("no","🇳🇴","NO"), ("fi","🇫🇮","FI"),
-            ("cs","🇨🇿","CS"), ("el","🇬🇷","EL"), ("uk","🇺🇦","UK"), ("ar","🇸🇦","AR"),
-            ("hi","🇮🇳","HI"), ("ro","🇷🇴","RO"), ("hu","🇭🇺","HU"), ("he","🇮🇱","HE"),
-            ("id","🇮🇩","ID"), ("vi","🇻🇳","VI"), ("th","🇹🇭","TH"), ("bn","🇧🇩","BN"),
+            ("it","🇮🇹","IT"), ("nl","🇳🇱","NL"), ("ko","🇰🇷","KO"), ("tr","🇹🇷","TR"), 
+            ("pl","🇵🇱","PL"), ("sv","🇸🇪","SV"), ("da","🇩🇰","DA"), ("no","🇳🇴","NO"), 
+            ("fi","🇫🇮","FI"), ("cs","🇨🇿","CS"), ("el","🇬🇷","EL"), ("uk","🇺🇦","UK"), 
+            ("ar","🇸🇦","AR"), ("hi","🇮🇳","HI"), ("ro","🇷🇴","RO"), ("hu","🇭🇺","HU"), 
+            ("he","🇮🇱","HE"), ("id","🇮🇩","ID"), ("vi","🇻🇳","VI"), ("th","🇹🇭","TH"), 
             ("ta","🇮🇳","TA"), ("te","🇮🇳","TE"), ("fa","🇮🇷","FA"), ("ur","🇵🇰","UR"),
             ("sw","🇰🇪","SW"), ("sk","🇸🇰","SK"), ("sl","🇸🇮","SL"), ("hr","🇭🇷","HR"),
             ("bg","🇧🇬","BG"), ("lt","🇱🇹","LT"), ("lv","🇱🇻","LV"), ("et","🇪🇪","ET"),
@@ -106,7 +105,7 @@ namespace FirstApp
             ("rap","🗿","RAP"), ("pa","🇮🇳","PA"), ("jv","🇮🇩","JV"), ("mr","🇮🇳","MR"),
             ("wuu","🇨🇳","WUU"), ("ha","🇳🇬","HA"), ("kn","🇮🇳","KN"), ("gu","🇮🇳","GU"),
             ("tl","🇵🇭","TL"), ("sr","🇷🇸","SR"), ("ka","🇬🇪","KA"), ("hy","🇦🇲","HY"),
-            ("az","🇦🇿","AZ")
+            ("az","🇦🇿","AZ"), ("bn","🇧🇩","BN"),
         };
 
         // Combined – used only for default-language detection

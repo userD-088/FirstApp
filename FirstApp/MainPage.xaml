@@ -40,10 +40,14 @@
                                    HorizontalTextAlignment="Center"
                                    LineBreakMode="TailTruncation"/>
                         </VerticalStackLayout>
-                        <Button Grid.Column="2" Text="⚙" FontSize="20"
-                                BackgroundColor="Transparent" TextColor="#94A3B8"
-                                WidthRequest="44" HeightRequest="44" Padding="0"
-                                VerticalOptions="Center" Clicked="OnOpenSettings"/>
+                        <Button Grid.Column="2"
+                                ImageSource="settings.svg"
+                                BackgroundColor="Transparent"
+                                WidthRequest="50"
+                                HeightRequest="50"
+                                Padding="0"
+                                VerticalOptions="Center"
+                                Clicked="OnOpenSettings"/>
                     </Grid>
                 </Border>
 
