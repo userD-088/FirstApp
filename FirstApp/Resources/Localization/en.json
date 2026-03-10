@@ -23,5 +23,42 @@
     "warning": "Warning!",
     "outOfRange": "Value out of range for standard resistor colors.",
     "moreLangs": "More languages",
-    "lessLangs": "Less languages"
+    "lessLangs": "Less languages",
+
+    "refTitle": "Reference",
+    "refColors": "Color Codes",
+    "refColor": "Color",
+    "refDigit": "Digit",
+    "refMult": "Mult.",
+    "refTol": "Tol.",
+    "refESeries": "E-Series",
+    "refTip": "Reading Direction",
+
+    "colBlack": "Black",
+    "colBrown": "Brown",
+    "colRed": "Red",
+    "colOrange": "Orange",
+    "colYellow": "Yellow",
+    "colGreen": "Green",
+    "colBlue": "Blue",
+    "colViolet": "Violet",
+    "colGray": "Gray",
+    "colWhite": "White",
+    "colGold": "Gold",
+    "colSilver": "Silver",
+    "colNone": "None",
+
+    "eSeriesHint": "Standardised values per decade (×1, ×10, ×100 …)",
+    "eUseRough": "Rough",
+    "eUseGeneral": "General",
+    "eUseStd": "Standard",
+    "eUseCommon": "Common",
+    "eUsePrecise": "Precise",
+    "eUseHigh": "High prec.",
+    "eUseUltra": "Ultra prec.",
+
+    "tip4band": "4-band: Digit · Digit · Multiplier · Tolerance",
+    "tip5band": "5-band: Digit · Digit · Digit · Multiplier · Tolerance",
+    "tip6band": "6-band: Digit · Digit · Digit · Multiplier · Tolerance · TCR",
+    "tipDir": "Read left → right.  Gold/Silver gap = right side."
 }

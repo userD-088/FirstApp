@@ -743,6 +743,421 @@ namespace FirstApp
             => OnCloseSettings(sender, e);
         private void OnSettingsPanelTapped(object sender, TappedEventArgs e) { /* consume */ }
 
+        // ──────────────────────────────────────────────────────────
+        // REFERENCE OVERLAY  –  open / close
+        // ──────────────────────────────────────────────────────────
+
+        private bool _refOpen = false;
+
+        private async void OnOpenReference(object sender, EventArgs e)
+        {
+            if (_refOpen) return;
+            _refOpen = true;
+
+            if (_unitDropdownOpen) await CloseUnitDropdown();
+
+            BuildReferenceContent();   // (re)build so language is current
+
+            RefOverlay.IsVisible = true;
+            RefOverlay.InputTransparent = false;
+
+            await Task.WhenAll(
+                RefOverlay.FadeTo(1, 220, Easing.CubicOut),
+                RefPanel.TranslateTo(0, 0, 260, Easing.CubicOut)
+            );
+        }
+
+        private async void OnCloseReference(object sender, EventArgs e)
+        {
+            if (!_refOpen) return;
+            RefOverlay.InputTransparent = true;
+
+            await Task.WhenAll(
+                RefOverlay.FadeTo(0, 200, Easing.CubicIn),
+                RefPanel.TranslateTo(0, 2000, 240, Easing.CubicIn)
+            );
+
+            RefOverlay.IsVisible = false;
+            _refOpen = false;
+        }
+
+        private void OnRefBackdropTapped(object sender, TappedEventArgs e)
+            => OnCloseReference(sender, e);
+        private void OnRefPanelTapped(object sender, TappedEventArgs e) { /* consume */ }
+
+
+        // ──────────────────────────────────────────────────────────
+        // REFERENCE CONTENT BUILDER
+        // ──────────────────────────────────────────────────────────
+
+        // Builds the scrollable reference content (color table + E-series)
+        private void BuildReferenceContent()
+        {
+            RefContent.Children.Clear();
+
+            // ── Localised title
+            RefTitleLabel.Text = Loc("refTitle", "Reference");
+
+            // ── Section 1: Reading order tip
+            RefContent.Children.Add(BuildSectionHeader(Loc("refTip", "Reading Direction")));
+            RefContent.Children.Add(BuildReadingTip());
+
+            RefContent.Children.Add(new BoxView { HeightRequest = 1, BackgroundColor = Color.FromArgb("#1E293B") });
+
+            // ── Section 2: Color Band Table
+            RefContent.Children.Add(BuildSectionHeader(Loc("refColors", "Color Codes")));
+            RefContent.Children.Add(BuildColorTable());
+
+            RefContent.Children.Add(new BoxView { HeightRequest = 1, BackgroundColor = Color.FromArgb("#1E293B") });
+
+            // ── Section 3: E-Series
+            RefContent.Children.Add(BuildSectionHeader(Loc("refESeries", "E-Series")));
+            RefContent.Children.Add(BuildESeriesSection());
+        }
+
+        // ── Localization helper (falls back to defaultText)
+        private string Loc(string key, string defaultText)
+        {
+            // Re-use the ViewModel's translated text if exposed; otherwise fallback.
+            // Extend ResistorViewModel.T() or duplicate minimal lookup here.
+            try
+            {
+                var t = typeof(ResistorViewModel)
+                    .GetMethod("T", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (t != null) return (string?)t.Invoke(_vm, new object[] { key }) ?? defaultText;
+            }
+            catch { /* ignore */ }
+            return defaultText;
+        }
+
+        // ── Generic section header label
+        private static Label BuildSectionHeader(string text) => new Label
+        {
+            Text = text,
+            FontSize = 14,
+            FontAttributes = FontAttributes.Bold,
+            TextColor = Color.FromArgb("#94A3B8"),
+            Margin = new Thickness(0, 4, 0, 6)
+        };
+
+        // ─────────────────────────────────────────────
+        // COLOR TABLE
+        // ─────────────────────────────────────────────
+        // Columns:  Swatch | Color name | Digit | Multiplier | Tolerance
+        private View BuildColorTable()
+        {
+            var colHeader = Loc("refColor", "Color");
+            var digHeader = Loc("refDigit", "Digit");
+            var mulHeader = Loc("refMult", "×");
+            var tolHeader = Loc("refTol", "Tol.");
+
+            // Data: (bg, fg, name, digit, multiplier, tolerance)
+            var rows = new (Color Bg, Color Fg, string Name, string Digit, string Mult, string Tol)[]
+            {
+                (ResistorViewModel.CBlack,  Colors.White,  Loc("colBlack",  "Black"),  "0", "×1",      "–"     ),
+                (ResistorViewModel.CBrown,  Colors.White,  Loc("colBrown",  "Brown"),  "1", "×10",     "±1%"   ),
+                (ResistorViewModel.CRed,    Colors.White,  Loc("colRed",    "Red"),    "2", "×100",    "±2%"   ),
+                (ResistorViewModel.COrange, Colors.Black,  Loc("colOrange", "Orange"), "3", "×1k",     "–"     ),
+                (ResistorViewModel.CYellow, Colors.Black,  Loc("colYellow", "Yellow"), "4", "×10k",    "–"     ),
+                (ResistorViewModel.CGreen,  Colors.White,  Loc("colGreen",  "Green"),  "5", "×100k",   "±0.5%" ),
+                (ResistorViewModel.CBlue,   Colors.White,  Loc("colBlue",   "Blue"),   "6", "×1M",     "±0.25%"),
+                (ResistorViewModel.CViolet, Colors.White,  Loc("colViolet", "Violet"), "7", "×10M",    "±0.1%" ),
+                (ResistorViewModel.CGray,   Colors.White,  Loc("colGray",   "Gray"),   "8", "×100M",   "±0.05%"),
+                (ResistorViewModel.CWhite,  Colors.Black,  Loc("colWhite",  "White"),  "9", "×1G",     "–"     ),
+                (ResistorViewModel.CGold,   Colors.Black,  Loc("colGold",   "Gold"),   "–", "×0.1",    "±5%"   ),
+                (ResistorViewModel.CSilver, Colors.Black,  Loc("colSilver", "Silver"), "–", "×0.01",   "±10%"  ),
+                (ResistorViewModel.CNone,   Colors.White,  Loc("colNone",   "None"),   "–", "–",        "±20%"  ),
+            };
+
+            var grid = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitionCollection
+                {
+                    new ColumnDefinition { Width = 28 },            // swatch
+                    new ColumnDefinition { Width = GridLength.Star },// name
+                    new ColumnDefinition { Width = 36 },            // digit
+                    new ColumnDefinition { Width = 58 },            // mult
+                    new ColumnDefinition { Width = 52 },            // tol
+                },
+                RowSpacing = 0,
+                ColumnSpacing = 6,
+            };
+
+            // Header row
+            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            void AddHeader(string t, int col)
+            {
+                var l = new Label
+                {
+                    Text = t,
+                    FontSize = 10,
+                    TextColor = Color.FromArgb("#64748B"),
+                    FontAttributes = FontAttributes.Bold,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    VerticalTextAlignment = TextAlignment.Center,
+                    Margin = new Thickness(0, 0, 0, 4)
+                };
+                Grid.SetRow(l, 0); Grid.SetColumn(l, col);
+                grid.Children.Add(l);
+            }
+            AddHeader("", 0);
+            AddHeader(colHeader, 1);
+            AddHeader(digHeader, 2);
+            AddHeader(mulHeader, 3);
+            AddHeader(tolHeader, 4);
+
+            // Data rows
+            for (int r = 0; r < rows.Length; r++)
+            {
+                var row = rows[r];
+                int rowIdx = r + 1;
+                grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+                // Background stripe for readability
+                bool stripe = r % 2 == 0;
+                var bg = new BoxView
+                {
+                    BackgroundColor = stripe
+                        ? Color.FromArgb("#0D1520")
+                        : Color.FromArgb("#070F1A"),
+                    CornerRadius = 6,
+                    Margin = new Thickness(-2, 1)
+                };
+                Grid.SetRow(bg, rowIdx);
+                Grid.SetColumn(bg, 0);
+                Grid.SetColumnSpan(bg, 5);
+                grid.Children.Add(bg);
+
+                // Swatch (colored circle)
+                bool isNone = row.Bg == ResistorViewModel.CNone;
+                var swatch = new Border
+                {
+                    WidthRequest = 20,
+                    HeightRequest = 20,
+                    BackgroundColor = isNone ? Color.FromArgb("#2A2A2A") : row.Bg,
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(10) },
+                    Stroke = isNone ? Color.FromArgb("#444") : Colors.Transparent,
+                    StrokeThickness = isNone ? 1 : 0,
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center,
+                    Margin = new Thickness(0, 3)
+                };
+                Grid.SetRow(swatch, rowIdx); Grid.SetColumn(swatch, 0);
+                grid.Children.Add(swatch);
+
+                // Name
+                var nameLabel = new Label
+                {
+                    Text = row.Name,
+                    FontSize = 12.5,
+                    TextColor = Colors.White,
+                    VerticalTextAlignment = TextAlignment.Center,
+                    Margin = new Thickness(2, 3)
+                };
+                Grid.SetRow(nameLabel, rowIdx); Grid.SetColumn(nameLabel, 1);
+                grid.Children.Add(nameLabel);
+
+                // Digit
+                var digitLabel = new Label
+                {
+                    Text = row.Digit,
+                    FontSize = 13,
+                    TextColor = Color.FromArgb("#E2E8F0"),
+                    FontAttributes = FontAttributes.Bold,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    VerticalTextAlignment = TextAlignment.Center,
+                    Margin = new Thickness(0, 3)
+                };
+                Grid.SetRow(digitLabel, rowIdx); Grid.SetColumn(digitLabel, 2);
+                grid.Children.Add(digitLabel);
+
+                // Multiplier
+                var multLabel = new Label
+                {
+                    Text = row.Mult,
+                    FontSize = 11.5,
+                    TextColor = Color.FromArgb("#10B981"),
+                    FontAttributes = FontAttributes.Bold,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    VerticalTextAlignment = TextAlignment.Center,
+                    Margin = new Thickness(0, 3)
+                };
+                Grid.SetRow(multLabel, rowIdx); Grid.SetColumn(multLabel, 3);
+                grid.Children.Add(multLabel);
+
+                // Tolerance
+                string tol = row.Tol;
+                var tolLabel = new Label
+                {
+                    Text = tol,
+                    FontSize = 11,
+                    TextColor = tol == "–" ? Color.FromArgb("#374151") : Color.FromArgb("#FBBF24"),
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    VerticalTextAlignment = TextAlignment.Center,
+                    Margin = new Thickness(0, 3)
+                };
+                Grid.SetRow(tolLabel, rowIdx); Grid.SetColumn(tolLabel, 4);
+                grid.Children.Add(tolLabel);
+            }
+
+            return new Border
+            {
+                Content = grid,
+                BackgroundColor = Color.FromArgb("#060D1A"),
+                StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(14) },
+                Stroke = Color.FromArgb("#1E3A5F"),
+                StrokeThickness = 1,
+                Padding = new Thickness(10, 8)
+            };
+        }
+
+        // E-SERIES SECTION
+        private View BuildESeriesSection()
+        {
+            // Data: (series, values per decade, typical use, example values)
+            var series = new (string Name, string ValsPer, string Use, string Examples)[]
+            {
+                ("E3",  "3",   Loc("eUseRough",   "Rough"),   "1.0 – 2.2 – 4.7"),
+                ("E6",  "6",   Loc("eUseGeneral", "General"), "1.0 – 1.5 – 2.2 – 3.3 – 4.7 – 6.8"),
+                ("E12", "12",  Loc("eUseStd",     "Standard"),"1.0 – 1.2 – 1.5 – 1.8 – 2.2 – 2.7 …"),
+                ("E24", "24",  Loc("eUseCommon",  "Common"),  "1.0 – 1.1 – 1.2 – 1.3 – 1.5 – 1.6 …"),
+                ("E48", "48",  Loc("eUsePrecise", "Precise"), "1.00 – 1.05 – 1.10 – 1.15 …"),
+                ("E96", "96",  Loc("eUseHigh",    "High prec."),"1.00 – 1.02 – 1.05 – 1.07 …"),
+                ("E192","192", Loc("eUseUltra",   "Ultra prec."),"1.000 – 1.010 – 1.020 …"),
+            };
+
+            var stack = new VerticalStackLayout { Spacing = 6 };
+
+            // Sub-header
+            stack.Children.Add(new Label
+            {
+                Text = Loc("eSeriesHint", "Standardised values per decade (×1, ×10, ×100 …)"),
+                FontSize = 11,
+                TextColor = Color.FromArgb("#64748B"),
+                Margin = new Thickness(0, 0, 0, 4)
+            });
+
+            foreach (var s in series)
+            {
+                // Highlight E12 / E24 as most common
+                bool highlight = s.Name == "E12" || s.Name == "E24";
+
+                var card = new Border
+                {
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(12) },
+                    BackgroundColor = highlight ? Color.FromArgb("#0E1F3A") : Color.FromArgb("#060D1A"),
+                    Stroke = highlight ? Color.FromArgb("#2563EB") : Color.FromArgb("#1E3A5F"),
+                    StrokeThickness = highlight ? 1.5 : 1,
+                    Padding = new Thickness(12, 9)
+                };
+
+                var inner = new Grid
+                {
+                    ColumnDefinitions = new ColumnDefinitionCollection
+                    {
+                        new ColumnDefinition { Width = 44 },
+                        new ColumnDefinition { Width = 34 },
+                        new ColumnDefinition { Width = 70 },
+                        new ColumnDefinition { Width = GridLength.Star },
+                    },
+                    ColumnSpacing = 8
+                };
+
+                // Series name badge
+                var badge = new Border
+                {
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(8) },
+                    BackgroundColor = highlight ? Color.FromArgb("#2563EB") : Color.FromArgb("#1A2535"),
+                    Padding = new Thickness(0),
+                    WidthRequest = 40,
+                    HeightRequest = 26,
+                    Content = new Label
+                    {
+                        Text = s.Name,
+                        FontSize = 11.5,
+                        FontAttributes = FontAttributes.Bold,
+                        TextColor = Colors.White,
+                        HorizontalTextAlignment = TextAlignment.Center,
+                        VerticalTextAlignment = TextAlignment.Center
+                    }
+                };
+                Grid.SetColumn(badge, 0);
+                inner.Children.Add(badge);
+
+                // Values per decade
+                var vpdLabel = new Label
+                {
+                    Text = s.ValsPer,
+                    FontSize = 13,
+                    FontAttributes = FontAttributes.Bold,
+                    TextColor = Color.FromArgb("#10B981"),
+                    VerticalTextAlignment = TextAlignment.Center,
+                    HorizontalTextAlignment = TextAlignment.Center
+                };
+                Grid.SetColumn(vpdLabel, 1);
+                inner.Children.Add(vpdLabel);
+
+                // Use label
+                var useLabel = new Label
+                {
+                    Text = s.Use,
+                    FontSize = 11.5,
+                    TextColor = highlight ? Color.FromArgb("#93C5FD") : Color.FromArgb("#94A3B8"),
+                    VerticalTextAlignment = TextAlignment.Center
+                };
+                Grid.SetColumn(useLabel, 2);
+                inner.Children.Add(useLabel);
+
+                // Example values
+                var exLabel = new Label
+                {
+                    Text = s.Examples,
+                    FontSize = 10,
+                    TextColor = Color.FromArgb("#475569"),
+                    VerticalTextAlignment = TextAlignment.Center,
+                    LineBreakMode = LineBreakMode.TailTruncation
+                };
+                Grid.SetColumn(exLabel, 3);
+                inner.Children.Add(exLabel);
+
+                card.Content = inner;
+                stack.Children.Add(card);
+            }
+
+            return stack;
+        }
+
+        // READING DIRECTION TIP
+        private View BuildReadingTip()
+        {
+            string tip4 = Loc("tip4band", "4-band: Digit · Digit · Multiplier · Tolerance");
+            string tip5 = Loc("tip5band", "5-band: Digit · Digit · Digit · Multiplier · Tolerance");
+            string tip6 = Loc("tip6band", "6-band: Digit · Digit · Digit · Multiplier · Tolerance · TCR");
+            string tipDir = Loc("tipDir", "Read left → right. Gold/Silver gap = right side.");
+
+            return new Border
+            {
+                StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(14) },
+                BackgroundColor = Color.FromArgb("#060D1A"),
+                Stroke = Color.FromArgb("#1E3A5F"),
+                StrokeThickness = 1,
+                Padding = new Thickness(14, 12),
+                Content = new VerticalStackLayout
+                {
+                    Spacing = 7,
+                    Children =
+                    {
+                        new Label { Text = tip4,   FontSize = 12, TextColor = Color.FromArgb("#D2B48C") },
+                        new Label { Text = tip5,   FontSize = 12, TextColor = Color.FromArgb("#6BA3BE") },
+                        new Label { Text = tip6,   FontSize = 12, TextColor = Color.FromArgb("#6BA3BE") },
+                        new BoxView { HeightRequest = 1, BackgroundColor = Color.FromArgb("#1E293B"), Margin = new Thickness(0,2) },
+                        new Label { Text = tipDir, FontSize = 11.5, TextColor = Color.FromArgb("#FBBF24"),
+                            FontAttributes = FontAttributes.Bold }
+                    }
+                }
+            };
+        }
+
         // RESISTOR DRAWABLE
 
         public sealed class ResistorDrawable : IDrawable

@@ -26,7 +26,17 @@
                         </LinearGradientBrush>
                     </Border.Background>
                     <Grid ColumnDefinitions="44,*,44">
-                        <ContentView Grid.Column="0"/>
+                        <Button Grid.Column="0"
+                                Text="?"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                TextColor="#94A3B8"
+                                BackgroundColor="Transparent"
+                                WidthRequest="44"
+                                HeightRequest="44"
+                                Padding="0"
+                                VerticalOptions="Center"
+                                Clicked="OnOpenReference"/>
                         <VerticalStackLayout Grid.Column="1" Spacing="3" HorizontalOptions="Center">
                             <Label Text="{Binding TitleText}"
                                    FontSize="{Binding TitleFontSize}"
@@ -394,6 +404,57 @@
                     <Button Text="{Binding CloseText}" Clicked="OnCloseSettings"
                             BackgroundColor="#2563EB" TextColor="White"
                             CornerRadius="16" HeightRequest="50" FontSize="16"/>
+
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- reference overlay -->
+        <Grid x:Name="RefOverlay"
+              IsVisible="False"
+              InputTransparent="True"
+              BackgroundColor="#BB000000">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnRefBackdropTapped"/>
+            </Grid.GestureRecognizers>
+
+            <Border x:Name="RefPanel"
+                    VerticalOptions="End"
+                    StrokeShape="RoundRectangle 28,28,0,0"
+                    Stroke="#2563EB" StrokeThickness="1.5"
+                    Padding="20,12,20,40">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#0F172A" Offset="0"/>
+                        <GradientStop Color="#1A2A3F" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnRefPanelTapped"/>
+                </Border.GestureRecognizers>
+
+                <VerticalStackLayout Spacing="0">
+
+                    <!-- drag handle -->
+                    <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2"
+                            BackgroundColor="#334155" HorizontalOptions="Center"
+                            Margin="0,4,0,12"/>
+
+                    <!-- title row -->
+                    <Grid ColumnDefinitions="*,44" Margin="0,0,0,16">
+                        <Label x:Name="RefTitleLabel"
+                               Grid.Column="0"
+                               Text="📖  Reference"
+                               FontSize="20" FontAttributes="Bold"
+                               TextColor="White"
+                               VerticalOptions="Center"/>
+                    </Grid>
+
+                    <!-- scrollable content – built in code-behind -->
+                    <ScrollView MaximumHeightRequest="520"
+                                HorizontalScrollBarVisibility="Never">
+                        <VerticalStackLayout x:Name="RefContent" Spacing="20"/>
+                    </ScrollView>
 
                 </VerticalStackLayout>
             </Border>
