@@ -256,11 +256,32 @@ namespace FirstApp
                 case 1: Sel2 = idx; break;
                 case 2: Sel3 = idx; break;
                 case 3: SelMul = idx; break;
-                case 4: SelTol = idx; ApplyTolRing(); RingsChanged?.Invoke(); return;
-                case 5: SelTcr = idx; ApplyTcrRing(); RingsChanged?.Invoke(); return;
+
+                case 4:
+                    SelTol = idx;
+                    if (IsColorMode)
+                        RecalcColorToValue();
+                    else
+                    {
+                        ApplyTolRing();
+                        RingsChanged?.Invoke();
+                    }
+                    return;
+
+                case 5:
+                    SelTcr = idx;
+                    if (IsColorMode)
+                        RecalcColorToValue();
+                    else
+                    {
+                        ApplyTcrRing();
+                        RingsChanged?.Invoke();
+                    }
+                    return;
             }
             if (IsColorMode) RecalcColorToValue();
         }
+
         public void RecalcFromText(string? text)
         {
             ResultText = "";
