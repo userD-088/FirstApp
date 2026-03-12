@@ -719,6 +719,10 @@ namespace FirstApp
             SettingsOverlay.IsVisible = true;
             SettingsOverlay.InputTransparent = false;
 
+            _aboutExpanded = false;
+            AboutExpanded.IsVisible = false;
+            AboutChevron.Text = "›";
+
             await Task.WhenAll(
                 SettingsOverlay.FadeTo(1, 220, Easing.CubicOut),
                 SettingsPanel.TranslateTo(0, 0, 260, Easing.CubicOut)
@@ -742,6 +746,43 @@ namespace FirstApp
         private void OnSettingsBackdropTapped(object sender, TappedEventArgs e)
             => OnCloseSettings(sender, e);
         private void OnSettingsPanelTapped(object sender, TappedEventArgs e) { /* consume */ }
+
+        // ── About accordion ──────────────────────────────────────────────
+        private bool _aboutExpanded = false;
+
+        private async void OnAboutTapped(object sender, TappedEventArgs e)
+        {
+            _aboutExpanded = !_aboutExpanded;
+
+            if (_aboutExpanded)
+            {
+                AboutExpanded.IsVisible = true;
+                AboutExpanded.Opacity = 0;
+                AboutChevron.Text = "⌄";
+                await AboutExpanded.FadeTo(1, 180, Easing.CubicOut);
+            }
+            else
+            {
+                AboutChevron.Text = "›";
+                await AboutExpanded.FadeTo(0, 140, Easing.CubicIn);
+                AboutExpanded.IsVisible = false;
+            }
+        }
+
+        // ── Links ────────────────────────────────────────────────────────
+        private const string SupportEmail = "support@yourapp.com";
+        private const string PrivacyPolicyUrl = "https://yourapp.com/privacy";
+        private const string DeveloperUrl = "https://yourapp.com/about";
+
+        private void OnSupportTapped(object sender, TappedEventArgs e)
+            => _ = Launcher.OpenAsync(
+                   $"mailto:{SupportEmail}?subject=Resistor%20Calculator%20Feedback");
+
+        private void OnPrivacyTapped(object sender, TappedEventArgs e)
+            => _ = Browser.OpenAsync(PrivacyPolicyUrl, BrowserLaunchMode.SystemPreferred);
+
+        private void OnDeveloperTapped(object sender, TappedEventArgs e)
+            => _ = Browser.OpenAsync(DeveloperUrl, BrowserLaunchMode.SystemPreferred);
 
         // ──────────────────────────────────────────────────────────
         // REFERENCE OVERLAY  –  open / close

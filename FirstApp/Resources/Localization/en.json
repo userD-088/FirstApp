@@ -60,5 +60,9 @@
     "tip4band": "4-band: Digit · Digit · Multiplier · Tolerance",
     "tip5band": "5-band: Digit · Digit · Digit · Multiplier · Tolerance",
     "tip6band": "6-band: Digit · Digit · Digit · Multiplier · Tolerance · TCR",
-    "tipDir": "Read left → right.  Gold/Silver gap = right side."
+    "tipDir": "Read left → right.  Gold/Silver gap = right side.",
+
+    "support": "Support & Feedback",
+    "privacyPolicy": "Privacy Policy",
+    "aboutDev": "About the Developer"
 }

@@ -210,6 +210,9 @@ namespace FirstApp
         public string Band6BtnText => T("band6");
         public string MoreLangsText => T("moreLangs");
         public string LessLangsText => T("lessLangs");
+        public string SupportText => T("support");
+        public string PrivacyPolicyText => T("privacyPolicy");
+        public string AboutDevText => T("aboutDev");
 
         // ──────────────────────────────────────────────────────────────
         // APP INFO
