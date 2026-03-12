@@ -230,7 +230,7 @@ namespace FirstApp
         {
             _lang = Preferences.Get("pref_lang", GetDefaultLanguage());
             _selectedSeries = Preferences.Get("pref_series", 12);
-            _resistorMode = Preferences.Get("pref_mode", 1);
+            _resistorMode = 1;
             InitRings();
         }
 
@@ -246,7 +246,6 @@ namespace FirstApp
             for (int i = 0; i < count; i++) Rings.Add(CBlack);
 
             SelTol = mode == 0 ? 1 : 4; SelTcr = 0;
-            Preferences.Set("pref_mode", mode);
             ResistorMode = mode;
             Recalc();
         }
