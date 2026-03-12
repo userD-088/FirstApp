@@ -23,5 +23,42 @@
     "warning": "Rhybudd!",
     "outOfRange": "Mae'r gwerth y tu allan i ystod cod lliw gwrthydd safonol.",
     "moreLangs": "Mwy o ieithoedd",
-    "lessLangs": "Llai o ieithoedd"
+    "lessLangs": "Llai o ieithoedd",
+
+    "refTitle": "Cyfeirnod",
+    "refColors": "Codau Lliw",
+    "refColor": "Lliw",
+    "refDigit": "Digid",
+    "refMult": "Lluosi",
+    "refTol": "Tolerans",
+    "refESeries": "Cyfres E",
+    "refTip": "Cyfeiriad Darllen",
+
+    "colBlack": "Du",
+    "colBrown": "Brown",
+    "colRed": "Coch",
+    "colOrange": "Oren",
+    "colYellow": "Melyn",
+    "colGreen": "Gwyrdd",
+    "colBlue": "Glas",
+    "colViolet": "Fioled",
+    "colGray": "Llwyd",
+    "colWhite": "Gwyn",
+    "colGold": "Aur",
+    "colSilver": "Arian",
+    "colNone": "Dim",
+
+    "eSeriesHint": "Gwerthoedd safonol fesul degawd (×1, ×10, ×100 …)",
+    "eUseRough": "Gros",
+    "eUseGeneral": "Cyffredinol",
+    "eUseStd": "Safonol",
+    "eUseCommon": "Cyffredin",
+    "eUsePrecise": "Manwl",
+    "eUseHigh": "Uchaf manwl",
+    "eUseUltra": "Ultra manwl",
+
+    "tip4band": "4-Bŵnd: Digid · Digid · Lluosi · Tolerans",
+    "tip5band": "5-Bŵnd: Digid · Digid · Digid · Lluosi · Tolerans",
+    "tip6band": "6-Bŵnd: Digid · Digid · Digid · Lluosi · Tolerans · TCR",
+    "tipDir": "Darllenwch o'r chwith → i'r dde. Bwlch Aur/Arian = ochr dde."
 }

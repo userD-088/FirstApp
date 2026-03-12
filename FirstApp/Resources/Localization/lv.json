@@ -23,5 +23,42 @@
     "warning": "Brīdinājums!",
     "outOfRange": "Vērtība ārpus standarta pretestības krāsu koda diapazona.",
     "moreLangs": "Vairāk valodu",
-    "lessLangs": "Mazāk valodu"
+    "lessLangs": "Mazāk valodu",
+
+    "refTitle": "Atsauce",
+    "refColors": "Krāsu kodi",
+    "refColor": "Krāsa",
+    "refDigit": "Cipars",
+    "refMult": "Reizinātājs",
+    "refTol": "Tolerance",
+    "refESeries": "E sērija",
+    "refTip": "Lasīšanas virziens",
+
+    "colBlack": "Melna",
+    "colBrown": "Brūna",
+    "colRed": "Sarkana",
+    "colOrange": "Oranža",
+    "colYellow": "Dzeltena",
+    "colGreen": "Zaļa",
+    "colBlue": "Zila",
+    "colViolet": "Violeta",
+    "colGray": "Pelēka",
+    "colWhite": "Balta",
+    "colGold": "Zelta",
+    "colSilver": "Sudraba",
+    "colNone": "Nav",
+
+    "eSeriesHint": "Standarta vērtības katrai dekādei (×1, ×10, ×100 …)",
+    "eUseRough": "Aptuveni",
+    "eUseGeneral": "Vispārīgi",
+    "eUseStd": "Standarta",
+    "eUseCommon": "Bieži",
+    "eUsePrecise": "Precīzi",
+    "eUseHigh": "Augsta precizitāte",
+    "eUseUltra": "Ultra precizitāte",
+
+    "tip4band": "4 joslas: Cipars · Cipars · Reizinātājs · Tolerance",
+    "tip5band": "5 joslas: Cipars · Cipars · Cipars · Reizinātājs · Tolerance",
+    "tip6band": "6 joslas: Cipars · Cipars · Cipars · Reizinātājs · Tolerance · TCR",
+    "tipDir": "Lasiet no kreisās → uz labo. Zelta/sudraba atstarpe = labā puse."
 }

@@ -23,5 +23,42 @@
     "warning": "ચેતવણી!",
     "outOfRange": "મૂલ્ય પ્રમાણભૂત અવરોધ રંગોની શ્રેણીની બહાર છે.",
     "moreLangs": "વધુ ભાષાઓ",
-    "lessLangs": "ઓછી ભાષાઓ"
+    "lessLangs": "ઓછી ભાષાઓ",
+
+    "refTitle": "સંદર્ભ",
+    "refColors": "રંગ કોડ્સ",
+    "refColor": "રંગ",
+    "refDigit": "અંક",
+    "refMult": "ગુણક",
+    "refTol": "સહનશીલતા",
+    "refESeries": "E-શ્રેણી",
+    "refTip": "વાંચન દિશા",
+
+    "colBlack": "કાળો",
+    "colBrown": "ભૂરા",
+    "colRed": "લાલ",
+    "colOrange": "નારંગી",
+    "colYellow": "પીળો",
+    "colGreen": "લીલું",
+    "colBlue": "વાદળી",
+    "colViolet": "જાંભળું",
+    "colGray": "ભૂરું-કાળું",
+    "colWhite": "સફેદ",
+    "colGold": "સોનું",
+    "colSilver": "ચાંદી",
+    "colNone": "કોઈ નહિ",
+
+    "eSeriesHint": "દર દાયકાના સ્ટાન્ડર્ડ મૂલ્યો (×1, ×10, ×100 …)",
+    "eUseRough": "અંદાજિત",
+    "eUseGeneral": "સામાન્ય",
+    "eUseStd": "સ્ટાન્ડર્ડ",
+    "eUseCommon": "સામાન્ય ઉપયોગ",
+    "eUsePrecise": "નિખરેલ",
+    "eUseHigh": "ઉચ્ચ નિખરતા",
+    "eUseUltra": "અત્યંત નિખરતા",
+
+    "tip4band": "4-બૅન્ડ: અંક · અંક · ગુણક · સહનશીલતા",
+    "tip5band": "5-બૅન્ડ: અંક · અંક · અંક · ગુણક · સહનશીલતા",
+    "tip6band": "6-બૅન્ડ: અંક · અંક · અંક · ગુણક · સહનશીલતા · TCR",
+    "tipDir": "ડાબેથી જમણી તરફ વાંચો. સોનાં/ચાંદી ગેપ = જમણ બાજુ."
 }

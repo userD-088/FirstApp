@@ -23,5 +23,42 @@
     "warning": "Aviso!",
     "outOfRange": "Valor fora do intervalo para cores padrão.",
     "moreLangs": "Mais idiomas",
-    "lessLangs": "Menos idiomas"
+    "lessLangs": "Menos idiomas",
+
+    "refTitle": "Referência",
+    "refColors": "Códigos de cores",
+    "refColor": "Cor",
+    "refDigit": "Dígito",
+    "refMult": "Multiplicador",
+    "refTol": "Tolerância",
+    "refESeries": "Série E",
+    "refTip": "Direção de leitura",
+
+    "colBlack": "Preto",
+    "colBrown": "Marrom",
+    "colRed": "Vermelho",
+    "colOrange": "Laranja",
+    "colYellow": "Amarelo",
+    "colGreen": "Verde",
+    "colBlue": "Azul",
+    "colViolet": "Violeta",
+    "colGray": "Cinza",
+    "colWhite": "Branco",
+    "colGold": "Ouro",
+    "colSilver": "Prata",
+    "colNone": "Nenhum",
+
+    "eSeriesHint": "Valores padronizados por década (×1, ×10, ×100 …)",
+    "eUseRough": "Aproximado",
+    "eUseGeneral": "Geral",
+    "eUseStd": "Padrão",
+    "eUseCommon": "Comum",
+    "eUsePrecise": "Preciso",
+    "eUseHigh": "Alta precisão",
+    "eUseUltra": "Ultra precisão",
+
+    "tip4band": "4 faixas: Dígito · Dígito · Multiplicador · Tolerância",
+    "tip5band": "5 faixas: Dígito · Dígito · Dígito · Multiplicador · Tolerância",
+    "tip6band": "6 faixas: Dígito · Dígito · Dígito · Multiplicador · Tolerância · TCR",
+    "tipDir": "Ler da esquerda → direita. Espaço ouro/prata = lado direito."
 }

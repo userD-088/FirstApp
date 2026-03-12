@@ -23,5 +23,42 @@
     "warning": "ማስጠንቀቂያ!",
     "outOfRange": "ዋጋው የመደበኛ የመከላከያ ቀለም ኮድ ክልል ውጭ ነው።",
     "moreLangs": "ተጨማሪ ቋንቋዎች",
-    "lessLangs": "ያነሰ ቋንቋዎች"
+    "lessLangs": "ያነሰ ቋንቋዎች",
+
+    "refTitle": "እትም",
+    "refColors": "ቀለማት ኮዶች",
+    "refColor": "ቀለም",
+    "refDigit": "ቁጥር",
+    "refMult": "ባለተወሰነ አንፃር",
+    "refTol": "ትክክለኛነት",
+    "refESeries": "E-ስርዓት",
+    "refTip": "የንባብ አቅጣጫ",
+
+    "colBlack": "ጥቁር",
+    "colBrown": "ቡናማርሽ",
+    "colRed": "ቀይ",
+    "colOrange": "ብርቱካና",
+    "colYellow": "ሐምራዊ",
+    "colGreen": "አረንጓዴ",
+    "colBlue": "ሰማያዊ",
+    "colViolet": "ቀይ ቡና",
+    "colGray": "ግራይ",
+    "colWhite": "ነጭ",
+    "colGold": "ወርቅ",
+    "colSilver": "እርግብ",
+    "colNone": "የለም",
+
+    "eSeriesHint": "በየ10 ተወሰኑ ዋጋዎች (×1, ×10, ×100 …)",
+    "eUseRough": "ጠቅላላ",
+    "eUseGeneral": "አጠቃላይ",
+    "eUseStd": "መደበኛ",
+    "eUseCommon": "አስፈላጊ",
+    "eUsePrecise": "ትክክል",
+    "eUseHigh": "ከፍተኛ ትክክል",
+    "eUseUltra": "ልዩ ትክክል",
+
+    "tip4band": "4-ቀለም: ቁጥር · ቁጥር · ባለተወሰነ አንፃር · ትክክለኛነት",
+    "tip5band": "5-ቀለም: ቁጥር · ቁጥር · ቁጥር · ባለተወሰነ አንፃር · ትክክለኛነት",
+    "tip6band": "6-ቀለም: ቁጥር · ቁጥር · ቁጥር · ባለተወሰነ አንፃር · ትክክለኛነት · TCR",
+    "tipDir": "ከግራ → ወደ ቀኝ ንባብ። ወርቅ/እርግብ ባለበት የቀኝ በስትስ"
 }

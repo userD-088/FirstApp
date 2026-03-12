@@ -23,5 +23,42 @@
     "warning": "Atento!",
     "outOfRange": "La valoro estas ekster la intervalo de norma rezista kolorkodo.",
     "moreLangs": "Pli da lingvoj",
-    "lessLangs": "Malpli da lingvoj"
+    "lessLangs": "Malpli da lingvoj",
+
+    "refTitle": "Referenco",
+    "refColors": "Koloroj Kodoj",
+    "refColor": "Koloro",
+    "refDigit": "Cifero",
+    "refMult": "Mult.",
+    "refTol": "Toler.",
+    "refESeries": "E-Serio",
+    "refTip": "Lektado Direkto",
+
+    "colBlack": "Nigra",
+    "colBrown": "Bruna",
+    "colRed": "Ruĝa",
+    "colOrange": "Oranĝa",
+    "colYellow": "Flava",
+    "colGreen": "Verda",
+    "colBlue": "Blua",
+    "colViolet": "Violeta",
+    "colGray": "Griza",
+    "colWhite": "Blanka",
+    "colGold": "Ora",
+    "colSilver": "Arĝenta",
+    "colNone": "Neniu",
+
+    "eSeriesHint": "Normaj valoroj por ĉiu jardeko (×1, ×10, ×100 …)",
+    "eUseRough": "Proksimuma",
+    "eUseGeneral": "Ĝenerala",
+    "eUseStd": "Norma",
+    "eUseCommon": "Komuna",
+    "eUsePrecise": "Preciza",
+    "eUseHigh": "Alta precizeco",
+    "eUseUltra": "Ultra preciza",
+
+    "tip4band": "4-Ringoj: Cifero · Cifero · Mult. · Toler.",
+    "tip5band": "5-Ringoj: Cifero · Cifero · Cifero · Mult. · Toler.",
+    "tip6band": "6-Ringoj: Cifero · Cifero · Cifero · Mult. · Toler. · TCR",
+    "tipDir": "Legu maldekstre → dekstre. Ora/Arĝenta interspaco = dekstra flanko."
 }

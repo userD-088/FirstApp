@@ -23,5 +23,42 @@
     "warning": "Upozorenje!",
     "outOfRange": "Vrijednost je izvan raspona standardnog koda boja otpornika.",
     "moreLangs": "Više jezika",
-    "lessLangs": "Manje jezika"
+    "lessLangs": "Manje jezika",
+
+    "refTitle": "Referenca",
+    "refColors": "Kodovi boja",
+    "refColor": "Boja",
+    "refDigit": "Znamenka",
+    "refMult": "Množitelj",
+    "refTol": "Tolerancija",
+    "refESeries": "E-serija",
+    "refTip": "Smjer čitanja",
+
+    "colBlack": "Crna",
+    "colBrown": "Smeđa",
+    "colRed": "Crvena",
+    "colOrange": "Narančasta",
+    "colYellow": "Žuta",
+    "colGreen": "Zelena",
+    "colBlue": "Plava",
+    "colViolet": "Ljubičasta",
+    "colGray": "Siva",
+    "colWhite": "Bijela",
+    "colGold": "Zlatna",
+    "colSilver": "Srebrna",
+    "colNone": "Nijedna",
+
+    "eSeriesHint": "Standardne vrijednosti po dekadi (×1, ×10, ×100 …)",
+    "eUseRough": "Grubo",
+    "eUseGeneral": "Opće",
+    "eUseStd": "Standardno",
+    "eUseCommon": "Uobičajeno",
+    "eUsePrecise": "Precizno",
+    "eUseHigh": "Visoka preciznost",
+    "eUseUltra": "Ultra preciznost",
+
+    "tip4band": "4 prstena: Znamenka · Znamenka · Množitelj · Tolerancija",
+    "tip5band": "5 prstena: Znamenka · Znamenka · Znamenka · Množitelj · Tolerancija",
+    "tip6band": "6 prstena: Znamenka · Znamenka · Znamenka · Množitelj · Tolerancija · TCR",
+    "tipDir": "Čitajte s lijeva → desno. Zlatni/srebrni razmak = desna strana."
 }

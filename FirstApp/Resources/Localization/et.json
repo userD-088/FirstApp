@@ -23,5 +23,42 @@
     "warning": "Hoiatus!",
     "outOfRange": "Väärtus on standardse takisti värvikoodi vahemikust väljas.",
     "moreLangs": "Rohkem keeli",
-    "lessLangs": "Vähem keeli"
+    "lessLangs": "Vähem keeli",
+
+    "refTitle": "Viide",
+    "refColors": "Värvikoodid",
+    "refColor": "Värv",
+    "refDigit": "Number",
+    "refMult": "Kordaja",
+    "refTol": "Tolerants",
+    "refESeries": "E-seeria",
+    "refTip": "Lugemise suund",
+
+    "colBlack": "Must",
+    "colBrown": "Pruun",
+    "colRed": "Punane",
+    "colOrange": "Oranž",
+    "colYellow": "Kollane",
+    "colGreen": "Roheline",
+    "colBlue": "Sinine",
+    "colViolet": "Lilla",
+    "colGray": "Hall",
+    "colWhite": "Valge",
+    "colGold": "Kuldne",
+    "colSilver": "Hõbedane",
+    "colNone": "Puudub",
+
+    "eSeriesHint": "Standardväärtused iga kümnendi jaoks (×1, ×10, ×100 …)",
+    "eUseRough": "Ligikaudne",
+    "eUseGeneral": "Üldine",
+    "eUseStd": "Standard",
+    "eUseCommon": "Levinud",
+    "eUsePrecise": "Täpne",
+    "eUseHigh": "Kõrge täpsus",
+    "eUseUltra": "Ülitäpne",
+
+    "tip4band": "4 rõngast: Number · Number · Kordaja · Tolerants",
+    "tip5band": "5 rõngast: Number · Number · Number · Kordaja · Tolerants",
+    "tip6band": "6 rõngast: Number · Number · Number · Kordaja · Tolerants · TCR",
+    "tipDir": "Loe vasakult → paremale. Kuldne/hõbedane vahe = parem pool."
 }

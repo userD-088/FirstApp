@@ -23,5 +23,42 @@
     "warning": "경고!",
     "outOfRange": "값이 표준 저항 색코드 범위를 벗어났습니다.",
     "moreLangs": "더 많은 언어",
-    "lessLangs": "언어 줄이기"
+    "lessLangs": "언어 줄이기",
+
+    "refTitle": "참고",
+    "refColors": "색 코드",
+    "refColor": "색상",
+    "refDigit": "숫자",
+    "refMult": "배수",
+    "refTol": "허용 오차",
+    "refESeries": "E 시리즈",
+    "refTip": "읽는 방향",
+
+    "colBlack": "검정",
+    "colBrown": "갈색",
+    "colRed": "빨강",
+    "colOrange": "주황",
+    "colYellow": "노랑",
+    "colGreen": "초록",
+    "colBlue": "파랑",
+    "colViolet": "보라",
+    "colGray": "회색",
+    "colWhite": "흰색",
+    "colGold": "금",
+    "colSilver": "은",
+    "colNone": "없음",
+
+    "eSeriesHint": "각 자릿수 범위의 표준 값 (×1, ×10, ×100 …)",
+    "eUseRough": "대략",
+    "eUseGeneral": "일반",
+    "eUseStd": "표준",
+    "eUseCommon": "일반적",
+    "eUsePrecise": "정밀",
+    "eUseHigh": "고정밀",
+    "eUseUltra": "초정밀",
+
+    "tip4band": "4밴드: 숫자 · 숫자 · 배수 · 허용 오차",
+    "tip5band": "5밴드: 숫자 · 숫자 · 숫자 · 배수 · 허용 오차",
+    "tip6band": "6밴드: 숫자 · 숫자 · 숫자 · 배수 · 허용 오차 · TCR",
+    "tipDir": "왼쪽 → 오른쪽으로 읽기. 금/은 간격 = 오른쪽."
 }

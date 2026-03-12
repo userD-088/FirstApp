@@ -23,5 +23,42 @@
     "warning": "Ostrzeżenie!",
     "outOfRange": "Wartość poza zakresem standardowych kolorów rezystorów.",
     "moreLangs": "Więcej języków",
-    "lessLangs": "Mniej języków"
+    "lessLangs": "Mniej języków",
+
+    "refTitle": "Referencja",
+    "refColors": "Kody kolorów",
+    "refColor": "Kolor",
+    "refDigit": "Cyfra",
+    "refMult": "Mnożnik",
+    "refTol": "Tolerancja",
+    "refESeries": "Seria E",
+    "refTip": "Kierunek odczytu",
+
+    "colBlack": "Czarny",
+    "colBrown": "Brązowy",
+    "colRed": "Czerwony",
+    "colOrange": "Pomarańczowy",
+    "colYellow": "Żółty",
+    "colGreen": "Zielony",
+    "colBlue": "Niebieski",
+    "colViolet": "Fioletowy",
+    "colGray": "Szary",
+    "colWhite": "Biały",
+    "colGold": "Złoty",
+    "colSilver": "Srebrny",
+    "colNone": "Brak",
+
+    "eSeriesHint": "Standaryzowane wartości na dekadę (×1, ×10, ×100 …)",
+    "eUseRough": "Zgrubne",
+    "eUseGeneral": "Ogólne",
+    "eUseStd": "Standard",
+    "eUseCommon": "Popularne",
+    "eUsePrecise": "Precyzyjne",
+    "eUseHigh": "Wysoka precyzja",
+    "eUseUltra": "Ultra precyzja",
+
+    "tip4band": "4 paski: Cyfra · Cyfra · Mnożnik · Tolerancja",
+    "tip5band": "5 pasków: Cyfra · Cyfra · Cyfra · Mnożnik · Tolerancja",
+    "tip6band": "6 pasków: Cyfra · Cyfra · Cyfra · Mnożnik · Tolerancja · TCR",
+    "tipDir": "Czytaj od lewej → do prawej. Przerwa złoto/srebro = prawa strona."
 }

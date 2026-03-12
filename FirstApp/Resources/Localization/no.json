@@ -23,5 +23,42 @@
     "warning": "Advarsel!",
     "outOfRange": "Verdi utenfor området for standard motstandsfarger.",
     "moreLangs": "Flere språk",
-    "lessLangs": "Færre språk"
+    "lessLangs": "Færre språk",
+
+    "refTitle": "Referanse",
+    "refColors": "Fargekoder",
+    "refColor": "Farge",
+    "refDigit": "Siffer",
+    "refMult": "Multiplikator",
+    "refTol": "Toleranse",
+    "refESeries": "E-serie",
+    "refTip": "Leseretning",
+
+    "colBlack": "Svart",
+    "colBrown": "Brun",
+    "colRed": "Rød",
+    "colOrange": "Oransje",
+    "colYellow": "Gul",
+    "colGreen": "Grønn",
+    "colBlue": "Blå",
+    "colViolet": "Fiolett",
+    "colGray": "Grå",
+    "colWhite": "Hvit",
+    "colGold": "Gull",
+    "colSilver": "Sølv",
+    "colNone": "Ingen",
+
+    "eSeriesHint": "Standardiserte verdier per dekade (×1, ×10, ×100 …)",
+    "eUseRough": "Grov",
+    "eUseGeneral": "Generell",
+    "eUseStd": "Standard",
+    "eUseCommon": "Vanlig",
+    "eUsePrecise": "Presis",
+    "eUseHigh": "Høy presisjon",
+    "eUseUltra": "Ultra presisjon",
+
+    "tip4band": "4 bånd: Siffer · Siffer · Multiplikator · Toleranse",
+    "tip5band": "5 bånd: Siffer · Siffer · Siffer · Multiplikator · Toleranse",
+    "tip6band": "6 bånd: Siffer · Siffer · Siffer · Multiplikator · Toleranse · TCR",
+    "tipDir": "Les venstre → høyre. Gull/sølv-gap = høyre side."
 }

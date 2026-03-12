@@ -23,5 +23,42 @@
     "warning": "ʻIkepili!",
     "outOfRange": "Aia ka kumu ma waho o ka pae code waihoʻoluʻu kūpono maʻamau.",
     "moreLangs": "Ƙarin harsuna",
-    "lessLangs": "Ƙananan harsuna"
+    "lessLangs": "Ƙananan harsuna",
+
+    "refTitle": "Hoʻohālike",
+    "refColors": "Nā kala",
+    "refColor": "Kala",
+    "refDigit": "Ka helu",
+    "refMult": "Hoʻonui",
+    "refTol": "Manawa",
+    "refESeries": "Moʻokāki E",
+    "refTip": "Kumu heluhelu",
+
+    "colBlack": "ʻEleʻele",
+    "colBrown": "Mākuʻe",
+    "colRed": "ʻUlaʻula",
+    "colOrange": "ʻAlani",
+    "colYellow": "Mea melemele",
+    "colGreen": "ʻŌmaʻomaʻo",
+    "colBlue": "Polū",
+    "colViolet": "Ponoi",
+    "colGray": "Keʻokeʻo",
+    "colWhite": "Keʻokeʻo",
+    "colGold": "Aurea",
+    "colSilver": "Kina",
+    "colNone": "ʻAʻole",
+
+    "eSeriesHint": "Nā waiwai maʻamau no kēlā me kēia dekada (×1, ×10, ×100 …)",
+    "eUseRough": "Pauku",
+    "eUseGeneral": "Pūnaewele",
+    "eUseStd": "Maʻamau",
+    "eUseCommon": "ʻOluʻolu",
+    "eUsePrecise": "Pololei",
+    "eUseHigh": "Pololei kiʻekiʻe",
+    "eUseUltra": "Pololei ʻOluʻolu",
+
+    "tip4band": "4-Kāleka: Helu · Helu · Hoʻonui · Manawa",
+    "tip5band": "5-Kāleka: Helu · Helu · Helu · Hoʻonui · Manawa",
+    "tip6band": "6-Kāleka: Helu · Helu · Helu · Hoʻonui · Manawa · TCR",
+    "tipDir": "Helu mai ka hema → ʻākau. ʻAuʻau Aur/ʻAlekona = ʻākau."
 }

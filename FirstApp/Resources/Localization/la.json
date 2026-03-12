@@ -23,5 +23,42 @@
     "warning": "Monitio!",
     "outOfRange": "Valor extra fines codicis colorum resistentiae standard est.",
     "moreLangs": "Plures linguae",
-    "lessLangs": "Pauciores linguae"
+    "lessLangs": "Pauciores linguae",
+
+    "refTitle": "Referentia",
+    "refColors": "Codices Colorum",
+    "refColor": "Color",
+    "refDigit": "Digitus",
+    "refMult": "Multiplicator",
+    "refTol": "Tolerantia",
+    "refESeries": "Series E",
+    "refTip": "Directio Legendi",
+
+    "colBlack": "Niger",
+    "colBrown": "Brunneus",
+    "colRed": "Rubrus",
+    "colOrange": "Aurantiacus",
+    "colYellow": "Flavus",
+    "colGreen": "Viridis",
+    "colBlue": "Caeruleus",
+    "colViolet": "Violaceus",
+    "colGray": "Canus",
+    "colWhite": "Albus",
+    "colGold": "Aurum",
+    "colSilver": "Argentum",
+    "colNone": "Nullus",
+
+    "eSeriesHint": "Valores standard per decadem (×1, ×10, ×100 …)",
+    "eUseRough": "Approximate",
+    "eUseGeneral": "Generale",
+    "eUseStd": "Standard",
+    "eUseCommon": "Communis",
+    "eUsePrecise": "Precisus",
+    "eUseHigh": "Alta precisio",
+    "eUseUltra": "Ultra precisio",
+
+    "tip4band": "4-Annulus: Digitus · Digitus · Multiplicator · Tolerantia",
+    "tip5band": "5-Annulus: Digitus · Digitus · Digitus · Multiplicator · Tolerantia",
+    "tip6band": "6-Annulus: Digitus · Digitus · Digitus · Multiplicator · Tolerantia · TCR",
+    "tipDir": "Lege a sinistra → ad dextram. Spatium Aurum/Argentum = dextra parte."
 }

@@ -21,5 +21,42 @@
     "band5": "5 juostos",
     "band6": "6 juostos (TCR)",
     "warning": "Įspėjimas!",
-    "outOfRange": "Reikšmė už standartinio varžos spalvų kodo ribų."
+    "outOfRange": "Reikšmė už standartinio varžos spalvų kodo ribų.",
+
+    "refTitle": "Nuoroda",
+    "refColors": "Spalvų kodai",
+    "refColor": "Spalva",
+    "refDigit": "Skaitmuo",
+    "refMult": "Daugiklis",
+    "refTol": "Tolerancija",
+    "refESeries": "E serija",
+    "refTip": "Skaitymo kryptis",
+
+    "colBlack": "Juoda",
+    "colBrown": "Ruda",
+    "colRed": "Raudona",
+    "colOrange": "Oranžinė",
+    "colYellow": "Geltona",
+    "colGreen": "Žalia",
+    "colBlue": "Mėlyna",
+    "colViolet": "Violetinė",
+    "colGray": "Pilka",
+    "colWhite": "Balta",
+    "colGold": "Auksinė",
+    "colSilver": "Sidabrinė",
+    "colNone": "Nėra",
+
+    "eSeriesHint": "Standartinės vertės kiekvienai dekadai (×1, ×10, ×100 …)",
+    "eUseRough": "Apytiksliai",
+    "eUseGeneral": "Bendra",
+    "eUseStd": "Standartinė",
+    "eUseCommon": "Dažna",
+    "eUsePrecise": "Tiksli",
+    "eUseHigh": "Didelis tikslumas",
+    "eUseUltra": "Ultra tikslumas",
+
+    "tip4band": "4 juostos: Skaitmuo · Skaitmuo · Daugiklis · Tolerancija",
+    "tip5band": "5 juostos: Skaitmuo · Skaitmuo · Skaitmuo · Daugiklis · Tolerancija",
+    "tip6band": "6 juostos: Skaitmuo · Skaitmuo · Skaitmuo · Daugiklis · Tolerancija · TCR",
+    "tipDir": "Skaitykite iš kairės → į dešinę. Auksinis/sidabrinis tarpas = dešinė pusė."
 }

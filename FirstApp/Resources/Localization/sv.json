@@ -23,5 +23,42 @@
     "warning": "Varning!",
     "outOfRange": "Värdet är utanför intervallet för standardmotståndsfärger.",
     "moreLangs": "Fler språk",
-    "lessLangs": "Färre språk"
+    "lessLangs": "Färre språk",
+
+    "refTitle": "Referens",
+    "refColors": "Färgkoder",
+    "refColor": "Färg",
+    "refDigit": "Siffra",
+    "refMult": "Multiplikator",
+    "refTol": "Tolerans",
+    "refESeries": "E-serie",
+    "refTip": "Läsriktning",
+
+    "colBlack": "Svart",
+    "colBrown": "Brun",
+    "colRed": "Röd",
+    "colOrange": "Orange",
+    "colYellow": "Gul",
+    "colGreen": "Grön",
+    "colBlue": "Blå",
+    "colViolet": "Violett",
+    "colGray": "Grå",
+    "colWhite": "Vit",
+    "colGold": "Guld",
+    "colSilver": "Silver",
+    "colNone": "Ingen",
+
+    "eSeriesHint": "Standardiserade värden per dekad (×1, ×10, ×100 …)",
+    "eUseRough": "Grov",
+    "eUseGeneral": "Allmän",
+    "eUseStd": "Standard",
+    "eUseCommon": "Vanlig",
+    "eUsePrecise": "Precis",
+    "eUseHigh": "Hög precision",
+    "eUseUltra": "Ultra precision",
+
+    "tip4band": "4 band: Siffra · Siffra · Multiplikator · Tolerans",
+    "tip5band": "5 band: Siffra · Siffra · Siffra · Multiplikator · Tolerans",
+    "tip6band": "6 band: Siffra · Siffra · Siffra · Multiplikator · Tolerans · TCR",
+    "tipDir": "Läs vänster → höger. Guld/silver-mellanrum = höger sida."
 }

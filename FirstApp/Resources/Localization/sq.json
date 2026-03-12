@@ -23,5 +23,42 @@
     "warning": "Kujdes!",
     "outOfRange": "Vlera është jashtë diapazonit të kodit standard të ngjyrave për rezistencë.",
     "moreLangs": "Më shumë gjuhë",
-    "lessLangs": "Më pak gjuhë"
+    "lessLangs": "Më pak gjuhë",
+
+    "refTitle": "Referencë",
+    "refColors": "Kodet e ngjyrave",
+    "refColor": "Ngjyrë",
+    "refDigit": "Shifër",
+    "refMult": "Shumësues",
+    "refTol": "Tolerancë",
+    "refESeries": "Seria E",
+    "refTip": "Drejtimi i lexim",
+
+    "colBlack": "E zezë",
+    "colBrown": "Kafe",
+    "colRed": "E kuqe",
+    "colOrange": "Portokalli",
+    "colYellow": "E verdhë",
+    "colGreen": "E gjelbër",
+    "colBlue": "Blu",
+    "colViolet": "Vjollcë",
+    "colGray": "Gri",
+    "colWhite": "E bardhë",
+    "colGold": "Ari",
+    "colSilver": "Argjend",
+    "colNone": "Asnjë",
+
+    "eSeriesHint": "Vlera standard për çdo dekadë (×1, ×10, ×100 …)",
+    "eUseRough": "Afërsisht",
+    "eUseGeneral": "Përgjithshme",
+    "eUseStd": "Standard",
+    "eUseCommon": "E zakonshme",
+    "eUsePrecise": "Precize",
+    "eUseHigh": "Precizion i lartë",
+    "eUseUltra": "Precizion ultra",
+
+    "tip4band": "4-Unazë: Shifër · Shifër · Shumësues · Tolerancë",
+    "tip5band": "5-Unazë: Shifër · Shifër · Shifër · Shumësues · Tolerancë",
+    "tip6band": "6-Unazë: Shifër · Shifër · Shifër · Shumësues · Tolerancë · TCR",
+    "tipDir": "Lexo nga e majta → djathtas. Hapësira Ari/Argjend = ana e djathtë."
 }

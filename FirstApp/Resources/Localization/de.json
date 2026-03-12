@@ -1,6 +1,6 @@
 ﻿{
     "title": "Widerstandsrechner",
-    "subtitle": "Farbcode und Wert Umrechner",
+    "subtitle": "Farbcode und Wertumrechner",
     "valToCol": "Wert ➞ Farbe",
     "colToVal": "Farbe ➞ Wert",
     "resistance": "Widerstand (Ω)",
@@ -23,5 +23,42 @@
     "warning": "Warnung!",
     "outOfRange": "Wert außerhalb des Bereichs für Standard-Widerstandsfarben.",
     "moreLangs": "Mehr Sprachen",
-    "lessLangs": "Weniger Sprachen"
+    "lessLangs": "Weniger Sprachen",
+
+    "refTitle": "Referenz",
+    "refColors": "Farbcodes",
+    "refColor": "Farbe",
+    "refDigit": "Ziffer",
+    "refMult": "Multiplikator",
+    "refTol": "Toleranz",
+    "refESeries": "E-Serie",
+    "refTip": "Leserichtung",
+
+    "colBlack": "Schwarz",
+    "colBrown": "Braun",
+    "colRed": "Rot",
+    "colOrange": "Orange",
+    "colYellow": "Gelb",
+    "colGreen": "Grün",
+    "colBlue": "Blau",
+    "colViolet": "Violett",
+    "colGray": "Grau",
+    "colWhite": "Weiß",
+    "colGold": "Gold",
+    "colSilver": "Silber",
+    "colNone": "Keine",
+
+    "eSeriesHint": "Standardisierte Werte pro Dekade (×1, ×10, ×100 …)",
+    "eUseRough": "Grob",
+    "eUseGeneral": "Allgemein",
+    "eUseStd": "Standard",
+    "eUseCommon": "Üblich",
+    "eUsePrecise": "Präzise",
+    "eUseHigh": "Hohe Präzision",
+    "eUseUltra": "Ultra-Präzision",
+
+    "tip4band": "4-Band: Ziffer · Ziffer · Multiplikator · Toleranz",
+    "tip5band": "5-Band: Ziffer · Ziffer · Ziffer · Multiplikator · Toleranz",
+    "tip6band": "6-Band: Ziffer · Ziffer · Ziffer · Multiplikator · Toleranz · TCR",
+    "tipDir": "Von links → rechts lesen. Gold/Silber-Abstand = rechte Seite."
 }

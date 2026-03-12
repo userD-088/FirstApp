@@ -23,5 +23,42 @@
     "warning": "Cảnh báo!",
     "outOfRange": "Giá trị nằm ngoài phạm vi mã màu điện trở tiêu chuẩn.",
     "moreLangs": "Thêm ngôn ngữ",
-    "lessLangs": "Ít ngôn ngữ hơn"
+    "lessLangs": "Ít ngôn ngữ hơn",
+
+    "refTitle": "Tham chiếu",
+    "refColors": "Mã màu",
+    "refColor": "Màu",
+    "refDigit": "Chữ số",
+    "refMult": "Hệ số nhân",
+    "refTol": "Sai số",
+    "refESeries": "Chuỗi E",
+    "refTip": "Hướng đọc",
+
+    "colBlack": "Đen",
+    "colBrown": "Nâu",
+    "colRed": "Đỏ",
+    "colOrange": "Cam",
+    "colYellow": "Vàng",
+    "colGreen": "Xanh lá",
+    "colBlue": "Xanh dương",
+    "colViolet": "Tím",
+    "colGray": "Xám",
+    "colWhite": "Trắng",
+    "colGold": "Vàng kim",
+    "colSilver": "Bạc",
+    "colNone": "Không có",
+
+    "eSeriesHint": "Giá trị chuẩn cho mỗi bậc (×1, ×10, ×100 …)",
+    "eUseRough": "Thô",
+    "eUseGeneral": "Chung",
+    "eUseStd": "Tiêu chuẩn",
+    "eUseCommon": "Phổ biến",
+    "eUsePrecise": "Chính xác",
+    "eUseHigh": "Độ chính xác cao",
+    "eUseUltra": "Siêu chính xác",
+
+    "tip4band": "4 vòng: Chữ số · Chữ số · Hệ số · Sai số",
+    "tip5band": "5 vòng: Chữ số · Chữ số · Chữ số · Hệ số · Sai số",
+    "tip6band": "6 vòng: Chữ số · Chữ số · Chữ số · Hệ số · Sai số · TCR",
+    "tipDir": "Đọc từ trái → phải. Khoảng vàng/bạc = bên phải."
 }

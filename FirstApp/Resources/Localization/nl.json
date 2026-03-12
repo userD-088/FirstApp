@@ -23,5 +23,42 @@
     "warning": "Waarschuwing!",
     "outOfRange": "Waarde buiten bereik voor standaard weerstandskleuren.",
     "moreLangs": "Meer talen",
-    "lessLangs": "Minder talen"
+    "lessLangs": "Minder talen",
+
+    "refTitle": "Referentie",
+    "refColors": "Kleurcodes",
+    "refColor": "Kleur",
+    "refDigit": "Cijfer",
+    "refMult": "Vermenigvuldiger",
+    "refTol": "Tolerantie",
+    "refESeries": "E-serie",
+    "refTip": "Leesrichting",
+
+    "colBlack": "Zwart",
+    "colBrown": "Bruin",
+    "colRed": "Rood",
+    "colOrange": "Oranje",
+    "colYellow": "Geel",
+    "colGreen": "Groen",
+    "colBlue": "Blauw",
+    "colViolet": "Violet",
+    "colGray": "Grijs",
+    "colWhite": "Wit",
+    "colGold": "Goud",
+    "colSilver": "Zilver",
+    "colNone": "Geen",
+
+    "eSeriesHint": "Gestandaardiseerde waarden per decade (×1, ×10, ×100 …)",
+    "eUseRough": "Ruw",
+    "eUseGeneral": "Algemeen",
+    "eUseStd": "Standaard",
+    "eUseCommon": "Gebruikelijk",
+    "eUsePrecise": "Precies",
+    "eUseHigh": "Hoge precisie",
+    "eUseUltra": "Ultra precisie",
+
+    "tip4band": "4-band: Cijfer · Cijfer · Vermenigvuldiger · Tolerantie",
+    "tip5band": "5-band: Cijfer · Cijfer · Cijfer · Vermenigvuldiger · Tolerantie",
+    "tip6band": "6-band: Cijfer · Cijfer · Cijfer · Vermenigvuldiger · Tolerantie · TCR",
+    "tipDir": "Lees links → rechts. Goud/zilver opening = rechterkant."
 }

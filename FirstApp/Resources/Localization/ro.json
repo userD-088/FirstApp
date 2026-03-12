@@ -23,5 +23,42 @@
     "warning": "Atenție!",
     "outOfRange": "Valoare în afara intervalului pentru culorile standard.",
     "moreLangs": "Mai multe limbi",
-    "lessLangs": "Mai puține limbi"
+    "lessLangs": "Mai puține limbi",
+
+    "refTitle": "Referință",
+    "refColors": "Coduri de culori",
+    "refColor": "Culoare",
+    "refDigit": "Cifră",
+    "refMult": "Multiplicator",
+    "refTol": "Toleranță",
+    "refESeries": "Seria E",
+    "refTip": "Direcția de citire",
+
+    "colBlack": "Negru",
+    "colBrown": "Maro",
+    "colRed": "Roșu",
+    "colOrange": "Portocaliu",
+    "colYellow": "Galben",
+    "colGreen": "Verde",
+    "colBlue": "Albastru",
+    "colViolet": "Violet",
+    "colGray": "Gri",
+    "colWhite": "Alb",
+    "colGold": "Auriu",
+    "colSilver": "Argintiu",
+    "colNone": "Niciunul",
+
+    "eSeriesHint": "Valori standardizate pe decadă (×1, ×10, ×100 …)",
+    "eUseRough": "Aproximativ",
+    "eUseGeneral": "General",
+    "eUseStd": "Standard",
+    "eUseCommon": "Comun",
+    "eUsePrecise": "Precis",
+    "eUseHigh": "Precizie ridicată",
+    "eUseUltra": "Ultra precizie",
+
+    "tip4band": "4 benzi: Cifră · Cifră · Multiplicator · Toleranță",
+    "tip5band": "5 benzi: Cifră · Cifră · Cifră · Multiplicator · Toleranță",
+    "tip6band": "6 benzi: Cifră · Cifră · Cifră · Multiplicator · Toleranță · TCR",
+    "tipDir": "Citiți de la stânga → dreapta. Spațiul aur/argint = partea dreaptă."
 }

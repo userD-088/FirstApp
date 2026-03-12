@@ -23,5 +23,42 @@
     "warning": "Pènget!",
     "outOfRange": "Nilai ing njaba watesan kanggo werna resistor standar.",
     "moreLangs": "Basa liyane",
-    "lessLangs": "Basa luwih sithik"
+    "lessLangs": "Basa luwih sithik",
+
+    "refTitle": "Referensi",
+    "refColors": "Kode Warna",
+    "refColor": "Warna",
+    "refDigit": "Digit",
+    "refMult": "Pengganda",
+    "refTol": "Toleransi",
+    "refESeries": "Seri E",
+    "refTip": "Arah Maca",
+
+    "colBlack": "Ireng",
+    "colBrown": "Coklat",
+    "colRed": "Abang",
+    "colOrange": "Oranye",
+    "colYellow": "Kuning",
+    "colGreen": "Ijo",
+    "colBlue": "Biru",
+    "colViolet": "Ungu",
+    "colGray": "Abu-abu",
+    "colWhite": "Putih",
+    "colGold": "Emas",
+    "colSilver": "Perak",
+    "colNone": "Ora ana",
+
+    "eSeriesHint": "Nilai standar saben dekade (×1, ×10, ×100 …)",
+    "eUseRough": "Kasar",
+    "eUseGeneral": "Umum",
+    "eUseStd": "Standar",
+    "eUseCommon": "Biasa",
+    "eUsePrecise": "Tepat",
+    "eUseHigh": "Tepat dhuwur",
+    "eUseUltra": "Tepat banget",
+
+    "tip4band": "4-Cincin: Digit · Digit · Pengganda · Toleransi",
+    "tip5band": "5-Cincin: Digit · Digit · Digit · Pengganda · Toleransi",
+    "tip6band": "6-Cincin: Digit · Digit · Digit · Pengganda · Toleransi · TCR",
+    "tipDir": "Waca saka kiwa → tengen. Celah Emas/Perak = sisih tengen."
 }

@@ -23,5 +23,42 @@
     "warning": "Attenzione!",
     "outOfRange": "Valore fuori range per i colori standard.",
     "moreLangs": "Altre lingue",
-    "lessLangs": "Meno lingue"
+    "lessLangs": "Meno lingue",
+
+    "refTitle": "Riferimento",
+    "refColors": "Codici colore",
+    "refColor": "Colore",
+    "refDigit": "Cifra",
+    "refMult": "Moltiplicatore",
+    "refTol": "Tolleranza",
+    "refESeries": "Serie E",
+    "refTip": "Direzione di lettura",
+
+    "colBlack": "Nero",
+    "colBrown": "Marrone",
+    "colRed": "Rosso",
+    "colOrange": "Arancione",
+    "colYellow": "Giallo",
+    "colGreen": "Verde",
+    "colBlue": "Blu",
+    "colViolet": "Viola",
+    "colGray": "Grigio",
+    "colWhite": "Bianco",
+    "colGold": "Oro",
+    "colSilver": "Argento",
+    "colNone": "Nessuno",
+
+    "eSeriesHint": "Valori standardizzati per decade (×1, ×10, ×100 …)",
+    "eUseRough": "Approssimato",
+    "eUseGeneral": "Generale",
+    "eUseStd": "Standard",
+    "eUseCommon": "Comune",
+    "eUsePrecise": "Preciso",
+    "eUseHigh": "Alta precisione",
+    "eUseUltra": "Ultra precisione",
+
+    "tip4band": "4 bande: Cifra · Cifra · Moltiplicatore · Tolleranza",
+    "tip5band": "5 bande: Cifra · Cifra · Cifra · Moltiplicatore · Tolleranza",
+    "tip6band": "6 bande: Cifra · Cifra · Cifra · Moltiplicatore · Tolleranza · TCR",
+    "tipDir": "Leggere da sinistra → destra. Spazio oro/argento = lato destro."
 }

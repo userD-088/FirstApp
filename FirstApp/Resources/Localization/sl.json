@@ -23,5 +23,42 @@
     "warning": "Opozorilo!",
     "outOfRange": "Vrednost je izven obsega standardne barvne kode upornika.",
     "moreLangs": "Več jezikov",
-    "lessLangs": "Manj jezikov"
+    "lessLangs": "Manj jezikov",
+
+    "refTitle": "Referenca",
+    "refColors": "Barvne kode",
+    "refColor": "Barva",
+    "refDigit": "Števka",
+    "refMult": "Množilnik",
+    "refTol": "Toleranca",
+    "refESeries": "Serija E",
+    "refTip": "Smer branja",
+
+    "colBlack": "Črna",
+    "colBrown": "Rjava",
+    "colRed": "Rdeča",
+    "colOrange": "Oranžna",
+    "colYellow": "Rumena",
+    "colGreen": "Zelena",
+    "colBlue": "Modra",
+    "colViolet": "Vijolična",
+    "colGray": "Siva",
+    "colWhite": "Bela",
+    "colGold": "Zlata",
+    "colSilver": "Srebrna",
+    "colNone": "Brez",
+
+    "eSeriesHint": "Standardne vrednosti za vsako dekado (×1, ×10, ×100 …)",
+    "eUseRough": "Približno",
+    "eUseGeneral": "Splošno",
+    "eUseStd": "Standardno",
+    "eUseCommon": "Pogosto",
+    "eUsePrecise": "Natančno",
+    "eUseHigh": "Visoka natančnost",
+    "eUseUltra": "Ultra natančnost",
+
+    "tip4band": "4 obroči: Števka · Števka · Množilnik · Toleranca",
+    "tip5band": "5 obroči: Števka · Števka · Števka · Množilnik · Toleranca",
+    "tip6band": "6 obroči: Števka · Števka · Števka · Množilnik · Toleranca · TCR",
+    "tipDir": "Berite z leve → desno. Zlata/srebrna vrzel = desna stran."
 }

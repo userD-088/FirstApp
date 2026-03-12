@@ -23,5 +23,42 @@
     "warning": "¡Advertencia!",
     "outOfRange": "Valor fuera de rango para colores estándar.",
     "moreLangs": "Más idiomas",
-    "lessLangs": "Menos idiomas"
+    "lessLangs": "Menos idiomas",
+
+    "refTitle": "Referencia",
+    "refColors": "Códigos de color",
+    "refColor": "Color",
+    "refDigit": "Dígito",
+    "refMult": "Multiplicador",
+    "refTol": "Tolerancia",
+    "refESeries": "Serie E",
+    "refTip": "Dirección de lectura",
+
+    "colBlack": "Negro",
+    "colBrown": "Marrón",
+    "colRed": "Rojo",
+    "colOrange": "Naranja",
+    "colYellow": "Amarillo",
+    "colGreen": "Verde",
+    "colBlue": "Azul",
+    "colViolet": "Violeta",
+    "colGray": "Gris",
+    "colWhite": "Blanco",
+    "colGold": "Oro",
+    "colSilver": "Plata",
+    "colNone": "Ninguno",
+
+    "eSeriesHint": "Valores estandarizados por década (×1, ×10, ×100 …)",
+    "eUseRough": "Aproximado",
+    "eUseGeneral": "General",
+    "eUseStd": "Estándar",
+    "eUseCommon": "Común",
+    "eUsePrecise": "Preciso",
+    "eUseHigh": "Alta precisión",
+    "eUseUltra": "Ultra precisión",
+
+    "tip4band": "4 bandas: Dígito · Dígito · Multiplicador · Tolerancia",
+    "tip5band": "5 bandas: Dígito · Dígito · Dígito · Multiplicador · Tolerancia",
+    "tip6band": "6 bandas: Dígito · Dígito · Dígito · Multiplicador · Tolerancia · TCR",
+    "tipDir": "Leer de izquierda → derecha. Espacio oro/plata = lado derecho."
 }

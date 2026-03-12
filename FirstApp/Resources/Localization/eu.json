@@ -23,5 +23,42 @@
     "warning": "Abisua!",
     "outOfRange": "Balioa erresistentziaren kolore kode estandarreko tartearen kanpoan dago.",
     "moreLangs": "Hizkuntza gehiago",
-    "lessLangs": "Hizkuntza gutxiago"
+    "lessLangs": "Hizkuntza gutxiago",
+
+    "refTitle": "Erreferentzia",
+    "refColors": "Kolore-kodeak",
+    "refColor": "Kolorea",
+    "refDigit": "Zenbaki",
+    "refMult": "Biderkatzailea",
+    "refTol": "Tolerantzia",
+    "refESeries": "E Seriea",
+    "refTip": "Irakurketa norabidea",
+
+    "colBlack": "Beltza",
+    "colBrown": "Marroia",
+    "colRed": "Gorria",
+    "colOrange": "Laranja",
+    "colYellow": "Horia",
+    "colGreen": "Berdea",
+    "colBlue": "Urdina",
+    "colViolet": "Morea",
+    "colGray": "Grisa",
+    "colWhite": "Zuria",
+    "colGold": "Urrea",
+    "colSilver": "Zilarra",
+    "colNone": "Bat ere ez",
+
+    "eSeriesHint": "Balio estandarrak hamarkada bakoitzeko (×1, ×10, ×100 …)",
+    "eUseRough": "Gutxi gorabehera",
+    "eUseGeneral": "Orokorra",
+    "eUseStd": "Estandarra",
+    "eUseCommon": "Ohikoa",
+    "eUsePrecise": "Zehatza",
+    "eUseHigh": "Precision handia",
+    "eUseUltra": "Ultra zehatza",
+
+    "tip4band": "4-Zinta: Zenbaki · Zenbaki · Biderkatzailea · Tolerantzia",
+    "tip5band": "5-Zinta: Zenbaki · Zenbaki · Zenbaki · Biderkatzailea · Tolerantzia",
+    "tip6band": "6-Zinta: Zenbaki · Zenbaki · Zenbaki · Biderkatzailea · Tolerantzia · TCR",
+    "tipDir": "Irakurri ezkerretik → eskuinera. Urre/Zilar espazioa = eskuin aldean."
 }

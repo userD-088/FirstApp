@@ -23,5 +23,42 @@
     "warning": "انتباہ!",
     "outOfRange": "قدر اسٹینڈرڈ ریزسٹر رنگ کوڈ کی حد سے باہر ہے۔",
     "moreLangs": "مزید زبانیں",
-    "lessLangs": "کم زبانیں"
+    "lessLangs": "کم زبانیں",
+
+    "refTitle": "حوالہ",
+    "refColors": "رنگ کوڈ",
+    "refColor": "رنگ",
+    "refDigit": "ہندسہ",
+    "refMult": "ضرب",
+    "refTol": "برداشت",
+    "refESeries": "E سیریز",
+    "refTip": "پڑھنے کی سمت",
+
+    "colBlack": "سیاہ",
+    "colBrown": "بھورا",
+    "colRed": "سرخ",
+    "colOrange": "نارنجی",
+    "colYellow": "پیلا",
+    "colGreen": "سبز",
+    "colBlue": "نیلا",
+    "colViolet": "جامنی",
+    "colGray": "سرمئی",
+    "colWhite": "سفید",
+    "colGold": "سنہری",
+    "colSilver": "چاندی",
+    "colNone": "کوئی نہیں",
+
+    "eSeriesHint": "ہر دہائی کے لیے معیاری اقدار (×1، ×10، ×100 …)",
+    "eUseRough": "تقریباً",
+    "eUseGeneral": "عام",
+    "eUseStd": "معیاری",
+    "eUseCommon": "عام استعمال",
+    "eUsePrecise": "درست",
+    "eUseHigh": "زیادہ درستگی",
+    "eUseUltra": "انتہائی درستگی",
+
+    "tip4band": "4 بینڈ: ہندسہ · ہندسہ · ضرب · برداشت",
+    "tip5band": "5 بینڈ: ہندسہ · ہندسہ · ہندسہ · ضرب · برداشت",
+    "tip6band": "6 بینڈ: ہندسہ · ہندسہ · ہندسہ · ضرب · برداشت · TCR",
+    "tipDir": "بائیں → دائیں پڑھیں۔ سنہری/چاندی خلا = دائیں طرف۔"
 }

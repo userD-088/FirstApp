@@ -23,5 +23,42 @@
     "warning": "ਚੇਤਾਵਨੀ!",
     "outOfRange": "ਮੁੱਲ ਮਿਆਰੀ ਰੰਗ ਕੋਡ ਸੀਮਾ ਤੋਂ ਬਾਹਰ ਹੈ।",
     "moreLangs": "ਹੋਰ ਭਾਸ਼ਾਵਾਂ",
-    "lessLangs": "ਘੱਟ ਭਾਸ਼ਾਵਾਂ"
+    "lessLangs": "ਘੱਟ ਭਾਸ਼ਾਵਾਂ",
+
+    "refTitle": "ਸੰਦਰਭ",
+    "refColors": "ਰੰਗ ਕੋਡ",
+    "refColor": "ਰੰਗ",
+    "refDigit": "ਅੰਕ",
+    "refMult": "ਗੁਣਾ",
+    "refTol": "ਬਰਾਬਰੀ",
+    "refESeries": "E-ਸਿਰੀਜ਼",
+    "refTip": "ਪੜ੍ਹਨ ਦੀ ਦਿਸ਼ਾ",
+
+    "colBlack": "ਕਾਲਾ",
+    "colBrown": "ਭੂਰਾ",
+    "colRed": "ਲਾਲ",
+    "colOrange": "ਸੰਤਰੀ",
+    "colYellow": "ਪੀਲਾ",
+    "colGreen": "ਹਰਾ",
+    "colBlue": "ਨੀਲਾ",
+    "colViolet": "ਜਾਮਨੀ",
+    "colGray": "ਸਲੇਟੀ",
+    "colWhite": "ਸਫ਼ੈਦ",
+    "colGold": "ਸੋਨਾ",
+    "colSilver": "ਚਾਂਦੀ",
+    "colNone": "ਕੋਈ ਨਹੀਂ",
+
+    "eSeriesHint": "ਦਸਕਾਂ ਲਈ ਮਿਆਰੀ ਮੁੱਲ (×1, ×10, ×100 …)",
+    "eUseRough": "ਲਗਭਗ",
+    "eUseGeneral": "ਆਮ",
+    "eUseStd": "ਮਿਆਰੀ",
+    "eUseCommon": "ਆਮ",
+    "eUsePrecise": "ਸਹੀ",
+    "eUseHigh": "ਉੱਚ ਸਹੀਤਾ",
+    "eUseUltra": "ਅਤਿ ਉੱਚ ਸਹੀਤਾ",
+
+    "tip4band": "4-ਬੈਂਡ: ਅੰਕ · ਅੰਕ · ਗੁਣਾ · ਬਰਾਬਰੀ",
+    "tip5band": "5-ਬੈਂਡ: ਅੰਕ · ਅੰਕ · ਅੰਕ · ਗੁਣਾ · ਬਰਾਬਰੀ",
+    "tip6band": "6-ਬੈਂਡ: ਅੰਕ · ਅੰਕ · ਅੰਕ · ਗੁਣਾ · ਬਰਾਬਰੀ · TCR",
+    "tipDir": "ਖੱਬੇ ਤੋਂ ਸੱਜੇ ਵੱਲ ਪੜ੍ਹੋ। ਸੋਨੇ/ਚਾਂਦੀ ਦਾ ਖਾਲੀ = ਸੱਜਾ ਪਾਸਾ।"
 }

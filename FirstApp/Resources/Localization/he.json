@@ -23,5 +23,42 @@
     "warning": "אזהרה!",
     "outOfRange": "הערך מחוץ לטווח קוד הצבע הסטנדרטי לנגדים.",
     "moreLangs": "עוד שפות",
-    "lessLangs": "פחות שפות"
+    "lessLangs": "פחות שפות",
+
+    "refTitle": "ייחוס",
+    "refColors": "קודי צבע",
+    "refColor": "צבע",
+    "refDigit": "ספרה",
+    "refMult": "מכפיל",
+    "refTol": "סבילות",
+    "refESeries": "סדרת E",
+    "refTip": "כיוון הקריאה",
+
+    "colBlack": "שחור",
+    "colBrown": "חום",
+    "colRed": "אדום",
+    "colOrange": "כתום",
+    "colYellow": "צהוב",
+    "colGreen": "ירוק",
+    "colBlue": "כחול",
+    "colViolet": "סגול",
+    "colGray": "אפור",
+    "colWhite": "לבן",
+    "colGold": "זהב",
+    "colSilver": "כסף",
+    "colNone": "ללא",
+
+    "eSeriesHint": "ערכים תקניים לכל סדרת עשיריות (×1, ×10, ×100 …)",
+    "eUseRough": "גס",
+    "eUseGeneral": "כללי",
+    "eUseStd": "תקני",
+    "eUseCommon": "נפוץ",
+    "eUsePrecise": "מדויק",
+    "eUseHigh": "דיוק גבוה",
+    "eUseUltra": "דיוק אולטרה",
+
+    "tip4band": "4 טבעות: ספרה · ספרה · מכפיל · סבילות",
+    "tip5band": "5 טבעות: ספרה · ספרה · ספרה · מכפיל · סבילות",
+    "tip6band": "6 טבעות: ספרה · ספרה · ספרה · מכפיל · סבילות · TCR",
+    "tipDir": "קרא משמאל → לימין. רווח זהב/כסף = צד ימין."
 }

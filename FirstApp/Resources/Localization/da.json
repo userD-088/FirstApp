@@ -23,5 +23,42 @@
     "warning": "Advarsel!",
     "outOfRange": "Værdien er uden for området for standard modstandsfarver.",
     "moreLangs": "Flere sprog",
-    "lessLangs": "Færre sprog"
+    "lessLangs": "Færre sprog",
+
+    "refTitle": "Reference",
+    "refColors": "Farvekoder",
+    "refColor": "Farve",
+    "refDigit": "Ciffer",
+    "refMult": "Multiplikator",
+    "refTol": "Tolerance",
+    "refESeries": "E-serie",
+    "refTip": "Læseretning",
+
+    "colBlack": "Sort",
+    "colBrown": "Brun",
+    "colRed": "Rød",
+    "colOrange": "Orange",
+    "colYellow": "Gul",
+    "colGreen": "Grøn",
+    "colBlue": "Blå",
+    "colViolet": "Violet",
+    "colGray": "Grå",
+    "colWhite": "Hvid",
+    "colGold": "Guld",
+    "colSilver": "Sølv",
+    "colNone": "Ingen",
+
+    "eSeriesHint": "Standardiserede værdier pr. dekade (×1, ×10, ×100 …)",
+    "eUseRough": "Grov",
+    "eUseGeneral": "Generel",
+    "eUseStd": "Standard",
+    "eUseCommon": "Almindelig",
+    "eUsePrecise": "Præcis",
+    "eUseHigh": "Høj præcision",
+    "eUseUltra": "Ultra præcision",
+
+    "tip4band": "4 bånd: Ciffer · Ciffer · Multiplikator · Tolerance",
+    "tip5band": "5 bånd: Ciffer · Ciffer · Ciffer · Multiplikator · Tolerance",
+    "tip6band": "6 bånd: Ciffer · Ciffer · Ciffer · Multiplikator · Tolerance · TCR",
+    "tipDir": "Læs venstre → højre. Guld/sølv mellemrum = højre side."
 }

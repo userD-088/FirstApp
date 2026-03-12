@@ -23,5 +23,42 @@
     "warning": "Babala!",
     "outOfRange": "Wala sa saklaw ng mga karaniwang kulay ng resistor ang halaga.",
     "moreLangs": "Higit pang mga Wika",
-    "lessLangs": "Mas kaunting mga Wika"
+    "lessLangs": "Mas kaunting mga Wika",
+
+    "refTitle": "Sanggunian",
+    "refColors": "Mga Kulay ng Code",
+    "refColor": "Kulay",
+    "refDigit": "Digit",
+    "refMult": "Multiplier",
+    "refTol": "Toleransya",
+    "refESeries": "E-Series",
+    "refTip": "Direksyon ng Pagbasa",
+
+    "colBlack": "Itim",
+    "colBrown": "Kayumanggi",
+    "colRed": "Pula",
+    "colOrange": "Kahel",
+    "colYellow": "Dilaw",
+    "colGreen": "Berde",
+    "colBlue": "Asul",
+    "colViolet": "Ube",
+    "colGray": "Abuhin",
+    "colWhite": "Puti",
+    "colGold": "Ginto",
+    "colSilver": "Pilak",
+    "colNone": "Wala",
+
+    "eSeriesHint": "Karaniwang halaga bawat dekada (×1, ×10, ×100 …)",
+    "eUseRough": "Tantya",
+    "eUseGeneral": "Pangkalahatan",
+    "eUseStd": "Karaniwan",
+    "eUseCommon": "Karaniwan",
+    "eUsePrecise": "Tumpak",
+    "eUseHigh": "Mataas na tumpak",
+    "eUseUltra": "Napakataas na tumpak",
+
+    "tip4band": "4-Band: Digit · Digit · Multiplier · Toleransya",
+    "tip5band": "5-Band: Digit · Digit · Digit · Multiplier · Toleransya",
+    "tip6band": "6-Band: Digit · Digit · Digit · Multiplier · Toleransya · TCR",
+    "tipDir": "Basahin mula kaliwa → kanan. Agwat ng Ginto/Pilak = kanan."
 }

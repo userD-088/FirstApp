@@ -23,5 +23,42 @@
     "warning": "Upozorenje!",
     "outOfRange": "Vrednost je van opsega za standardne boje otpornika.",
     "moreLangs": "Više jezika",
-    "lessLangs": "Manje jezika"
+    "lessLangs": "Manje jezika",
+
+    "refTitle": "Референца",
+    "refColors": "Шифре боја",
+    "refColor": "Боја",
+    "refDigit": "Цифра",
+    "refMult": "Мултипликатор",
+    "refTol": "Толеранција",
+    "refESeries": "E-серија",
+    "refTip": "Смер читања",
+
+    "colBlack": "Црна",
+    "colBrown": "Смеђа",
+    "colRed": "Црвена",
+    "colOrange": "Наранџаста",
+    "colYellow": "Жута",
+    "colGreen": "Зелена",
+    "colBlue": "Плава",
+    "colViolet": "Љубичаста",
+    "colGray": "Сива",
+    "colWhite": "Бела",
+    "colGold": "Злато",
+    "colSilver": "Сребро",
+    "colNone": "Нема",
+
+    "eSeriesHint": "Стандардне вредности по деценијама (×1, ×10, ×100 …)",
+    "eUseRough": "Приближно",
+    "eUseGeneral": "Опште",
+    "eUseStd": "Стандардно",
+    "eUseCommon": "Уобичајено",
+    "eUsePrecise": "Прецизно",
+    "eUseHigh": "Висока прецизност",
+    "eUseUltra": "Врхунска прецизност",
+
+    "tip4band": "4-прстен: Цифра · Цифра · Мултипликатор · Толеранција",
+    "tip5band": "5-прстен: Цифра · Цифра · Цифра · Мултипликатор · Толеранција",
+    "tip6band": "6-прстен: Цифра · Цифра · Цифра · Мултипликатор · Толеранција · TCR",
+    "tipDir": "Читај лево → десно. Златни/Сребрни размак = десно."
 }

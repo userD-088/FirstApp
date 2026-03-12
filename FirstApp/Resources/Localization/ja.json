@@ -23,5 +23,42 @@
     "warning": "警告！",
     "outOfRange": "値が標準カラーコードの範囲外です。",
     "moreLangs": "言語をもっと見る",
-    "lessLangs": "言語を閉じる"
+    "lessLangs": "言語を閉じる",
+
+    "refTitle": "リファレンス",
+    "refColors": "カラーコード",
+    "refColor": "色",
+    "refDigit": "数字",
+    "refMult": "倍率",
+    "refTol": "許容差",
+    "refESeries": "Eシリーズ",
+    "refTip": "読み取り方向",
+
+    "colBlack": "黒",
+    "colBrown": "茶",
+    "colRed": "赤",
+    "colOrange": "橙",
+    "colYellow": "黄",
+    "colGreen": "緑",
+    "colBlue": "青",
+    "colViolet": "紫",
+    "colGray": "灰",
+    "colWhite": "白",
+    "colGold": "金",
+    "colSilver": "銀",
+    "colNone": "なし",
+
+    "eSeriesHint": "各桁ごとの標準化された値 (×1, ×10, ×100 …)",
+    "eUseRough": "粗い",
+    "eUseGeneral": "一般",
+    "eUseStd": "標準",
+    "eUseCommon": "一般的",
+    "eUsePrecise": "高精度",
+    "eUseHigh": "高精度",
+    "eUseUltra": "超高精度",
+
+    "tip4band": "4バンド: 数字 · 数字 · 乗数 · 許容差",
+    "tip5band": "5バンド: 数字 · 数字 · 数字 · 乗数 · 許容差",
+    "tip6band": "6バンド: 数字 · 数字 · 数字 · 乗数 · 許容差 · TCR",
+    "tipDir": "左 → 右に読む。金/銀の間隔 = 右側。"
 }

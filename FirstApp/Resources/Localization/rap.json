@@ -23,5 +23,42 @@
     "warning": "Hakatūpato!",
     "outOfRange": "Te 'aura'a nei e'e no roto i te rēni tae 'ārai mātau.",
     "moreLangs": "Re'o kē atu",
-    "lessLangs": "Re'o iti iho"
+    "lessLangs": "Re'o iti iho",
+
+    "refTitle": "Tohutohu",
+    "refColors": "Waehere Tae",
+    "refColor": "Tae",
+    "refDigit": "Tau",
+    "refMult": "Whakawhānui",
+    "refTol": "Taurite",
+    "refESeries": "Rārangi E",
+    "refTip": "Aronga Pānui",
+
+    "colBlack": "Mangu",
+    "colBrown": "Paraone",
+    "colRed": "Whero",
+    "colOrange": "Karaka",
+    "colYellow": "Kōwhai",
+    "colGreen": "Kākāriki",
+    "colBlue": "Kāhua",
+    "colViolet": "Poroporo",
+    "colGray": "Parauri",
+    "colWhite": "Ma",
+    "colGold": "Koura",
+    "colSilver": "Hiriwa",
+    "colNone": "Kāore",
+
+    "eSeriesHint": "Uara paerewa ia tekau tau (×1, ×10, ×100 …)",
+    "eUseRough": "Poto",
+    "eUseGeneral": "Whānui",
+    "eUseStd": "Paerewa",
+    "eUseCommon": "Tawhito",
+    "eUsePrecise": "Tika",
+    "eUseHigh": "Tika Nui",
+    "eUseUltra": "Tika Rawa",
+
+    "tip4band": "4-Āporo: Tau · Tau · Whakawhānui · Taurite",
+    "tip5band": "5-Āporo: Tau · Tau · Tau · Whakawhānui · Taurite",
+    "tip6band": "6-Āporo: Tau · Tau · Tau · Whakawhānui · Taurite · TCR",
+    "tipDir": "Pānui i te mauī → ki te katau. Wāhi Koura/Hiriwa = taha matau."
 }

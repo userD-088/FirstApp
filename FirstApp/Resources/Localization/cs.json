@@ -23,5 +23,42 @@
     "warning": "Varování!",
     "outOfRange": "Hodnota mimo rozsah pro standardní barvy odporů.",
     "moreLangs": "Více jazyků",
-    "lessLangs": "Méně jazyků"
+    "lessLangs": "Méně jazyků",
+
+    "refTitle": "Reference",
+    "refColors": "Barevné kódy",
+    "refColor": "Barva",
+    "refDigit": "Číslice",
+    "refMult": "Násobitel",
+    "refTol": "Tolerance",
+    "refESeries": "E-řada",
+    "refTip": "Směr čtení",
+
+    "colBlack": "Černá",
+    "colBrown": "Hnědá",
+    "colRed": "Červená",
+    "colOrange": "Oranžová",
+    "colYellow": "Žlutá",
+    "colGreen": "Zelená",
+    "colBlue": "Modrá",
+    "colViolet": "Fialová",
+    "colGray": "Šedá",
+    "colWhite": "Bílá",
+    "colGold": "Zlatá",
+    "colSilver": "Stříbrná",
+    "colNone": "Žádná",
+
+    "eSeriesHint": "Standardizované hodnoty na dekádu (×1, ×10, ×100 …)",
+    "eUseRough": "Hrubé",
+    "eUseGeneral": "Obecné",
+    "eUseStd": "Standard",
+    "eUseCommon": "Běžné",
+    "eUsePrecise": "Přesné",
+    "eUseHigh": "Vysoká přesnost",
+    "eUseUltra": "Ultra přesnost",
+
+    "tip4band": "4 pásma: Číslice · Číslice · Násobitel · Tolerance",
+    "tip5band": "5 pásem: Číslice · Číslice · Číslice · Násobitel · Tolerance",
+    "tip6band": "6 pásem: Číslice · Číslice · Číslice · Násobitel · Tolerance · TCR",
+    "tipDir": "Čtěte zleva → doprava. Mezera zlato/stříbro = pravá strana."
 }

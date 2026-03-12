@@ -23,5 +23,42 @@
     "warning": "Waarskuwing!",
     "outOfRange": "Waarde is buite die standaardweerstandkleurkode-reeks.",
     "moreLangs": "Meer tale",
-    "lessLangs": "Minder tale"
+    "lessLangs": "Minder tale",
+
+    "refTitle": "Verwysing",
+    "refColors": "Kleurkodes",
+    "refColor": "Kleur",
+    "refDigit": "Syfer",
+    "refMult": "Vermenigvuldiger",
+    "refTol": "Verdraagsaamheid",
+    "refESeries": "E-reeks",
+    "refTip": "Leesrigting",
+
+    "colBlack": "Swart",
+    "colBrown": "Bruin",
+    "colRed": "Rooi",
+    "colOrange": "Oranje",
+    "colYellow": "Geel",
+    "colGreen": "Groen",
+    "colBlue": "Blou",
+    "colViolet": "Pers",
+    "colGray": "Grys",
+    "colWhite": "Wit",
+    "colGold": "Goud",
+    "colSilver": "Silwer",
+    "colNone": "Geen",
+
+    "eSeriesHint": "Gestandaardiseerde waardes per dekade (×1, ×10, ×100 …)",
+    "eUseRough": "Grof",
+    "eUseGeneral": "Algemeen",
+    "eUseStd": "Standaard",
+    "eUseCommon": "Algemeen gebruik",
+    "eUsePrecise": "Presies",
+    "eUseHigh": "Hoë presisie",
+    "eUseUltra": "Ultra presisie",
+
+    "tip4band": "4-Ring: Syfer · Syfer · Vermenigvuldiger · Verdraagsaamheid",
+    "tip5band": "5-Ring: Syfer · Syfer · Syfer · Vermenigvuldiger · Verdraagsaamheid",
+    "tip6band": "6-Ring: Syfer · Syfer · Syfer · Vermenigvuldiger · Verdraagsaamheid · TCR",
+    "tipDir": "Lees van links → regs. Goud/Silwer gap = regterkant."
 }

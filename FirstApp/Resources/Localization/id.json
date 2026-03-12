@@ -23,5 +23,42 @@
     "warning": "Peringatan!",
     "outOfRange": "Nilai berada di luar rentang kode warna resistor standar.",
     "moreLangs": "Lebih banyak bahasa",
-    "lessLangs": "Lebih sedikit bahasa"
+    "lessLangs": "Lebih sedikit bahasa",
+
+    "refTitle": "Referensi",
+    "refColors": "Kode warna",
+    "refColor": "Warna",
+    "refDigit": "Digit",
+    "refMult": "Pengali",
+    "refTol": "Toleransi",
+    "refESeries": "Seri E",
+    "refTip": "Arah pembacaan",
+
+    "colBlack": "Hitam",
+    "colBrown": "Cokelat",
+    "colRed": "Merah",
+    "colOrange": "Oranye",
+    "colYellow": "Kuning",
+    "colGreen": "Hijau",
+    "colBlue": "Biru",
+    "colViolet": "Ungu",
+    "colGray": "Abu-abu",
+    "colWhite": "Putih",
+    "colGold": "Emas",
+    "colSilver": "Perak",
+    "colNone": "Tidak ada",
+
+    "eSeriesHint": "Nilai standar per dekade (×1, ×10, ×100 …)",
+    "eUseRough": "Kasar",
+    "eUseGeneral": "Umum",
+    "eUseStd": "Standar",
+    "eUseCommon": "Umum digunakan",
+    "eUsePrecise": "Presisi",
+    "eUseHigh": "Presisi tinggi",
+    "eUseUltra": "Ultra presisi",
+
+    "tip4band": "4 pita: Digit · Digit · Pengali · Toleransi",
+    "tip5band": "5 pita: Digit · Digit · Digit · Pengali · Toleransi",
+    "tip6band": "6 pita: Digit · Digit · Digit · Pengali · Toleransi · TCR",
+    "tipDir": "Baca kiri → kanan. Celah emas/perak = sisi kanan."
 }

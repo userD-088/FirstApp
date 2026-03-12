@@ -23,5 +23,42 @@
     "warning": "警告！",
     "outOfRange": "数值超出标准色环范围。",
     "moreLangs": "更多语言",
-    "lessLangs": "收起语言"
+    "lessLangs": "收起语言",
+
+    "refTitle": "参考",
+    "refColors": "颜色代码",
+    "refColor": "颜色",
+    "refDigit": "数字",
+    "refMult": "倍数",
+    "refTol": "容差",
+    "refESeries": "E系列",
+    "refTip": "读取方向",
+
+    "colBlack": "黑",
+    "colBrown": "棕",
+    "colRed": "红",
+    "colOrange": "橙",
+    "colYellow": "黄",
+    "colGreen": "绿",
+    "colBlue": "蓝",
+    "colViolet": "紫",
+    "colGray": "灰",
+    "colWhite": "白",
+    "colGold": "金",
+    "colSilver": "银",
+    "colNone": "无",
+
+    "eSeriesHint": "每十倍范围的标准化数值 (×1, ×10, ×100 …)",
+    "eUseRough": "粗略",
+    "eUseGeneral": "通用",
+    "eUseStd": "标准",
+    "eUseCommon": "常用",
+    "eUsePrecise": "精确",
+    "eUseHigh": "高精度",
+    "eUseUltra": "超高精度",
+
+    "tip4band": "4环：数字 · 数字 · 倍数 · 容差",
+    "tip5band": "5环：数字 · 数字 · 数字 · 倍数 · 容差",
+    "tip6band": "6环：数字 · 数字 · 数字 · 倍数 · 容差 · TCR",
+    "tipDir": "从左 → 右读取。金/银间隙 = 右侧。"
 }

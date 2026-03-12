@@ -23,5 +23,42 @@
     "warning": "चेतावणी!",
     "outOfRange": "मूल्य मानक रोधक रंगांच्या श्रेणीबाहेर आहे.",
     "moreLangs": "अधिक भाषा",
-    "lessLangs": "कमी भाषा"
+    "lessLangs": "कमी भाषा",
+
+    "refTitle": "संदर्भ",
+    "refColors": "रंग कोड",
+    "refColor": "रंग",
+    "refDigit": "अंक",
+    "refMult": "गुणक",
+    "refTol": "सहनशीलता",
+    "refESeries": "E-मालिका",
+    "refTip": "वाचन दिशा",
+
+    "colBlack": "काळा",
+    "colBrown": "तपकिरी",
+    "colRed": "लाल",
+    "colOrange": "संत्रा",
+    "colYellow": "पिवळा",
+    "colGreen": "हिरवा",
+    "colBlue": "निळा",
+    "colViolet": "जांभळा",
+    "colGray": "हुशार",
+    "colWhite": "पांढरा",
+    "colGold": "सोनं",
+    "colSilver": "चांदी",
+    "colNone": "कोणताही नाही",
+
+    "eSeriesHint": "प्रत्येक दशकासाठी मानक मूल्ये (×1, ×10, ×100 …)",
+    "eUseRough": "अंदाजे",
+    "eUseGeneral": "सामान्य",
+    "eUseStd": "मानक",
+    "eUseCommon": "सामान्य",
+    "eUsePrecise": "अचूक",
+    "eUseHigh": "उच्च अचूकता",
+    "eUseUltra": "अत्युच्च अचूकता",
+
+    "tip4band": "4-बँड: अंक · अंक · गुणक · सहनशीलता",
+    "tip5band": "5-बँड: अंक · अंक · अंक · गुणक · सहनशीलता",
+    "tip6band": "6-बँड: अंक · अंक · अंक · गुणक · सहनशीलता · TCR",
+    "tipDir": "डावीकडून → उजवीकडे वाचा. सोनं/चांदी अंतर = उजवा बाजू."
 }

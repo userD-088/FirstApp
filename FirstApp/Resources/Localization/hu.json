@@ -23,5 +23,42 @@
     "warning": "Figyelmeztetés!",
     "outOfRange": "Az érték kívül esik a szabványos ellenállás színkód tartományán.",
     "moreLangs": "Több nyelv",
-    "lessLangs": "Kevesebb nyelv"
+    "lessLangs": "Kevesebb nyelv",
+
+    "refTitle": "Referencia",
+    "refColors": "Színkódok",
+    "refColor": "Szín",
+    "refDigit": "Számjegy",
+    "refMult": "Szorzó",
+    "refTol": "Tolerancia",
+    "refESeries": "E-sorozat",
+    "refTip": "Olvasási irány",
+
+    "colBlack": "Fekete",
+    "colBrown": "Barna",
+    "colRed": "Piros",
+    "colOrange": "Narancs",
+    "colYellow": "Sárga",
+    "colGreen": "Zöld",
+    "colBlue": "Kék",
+    "colViolet": "Ibolya",
+    "colGray": "Szürke",
+    "colWhite": "Fehér",
+    "colGold": "Arany",
+    "colSilver": "Ezüst",
+    "colNone": "Nincs",
+
+    "eSeriesHint": "Szabványos értékek évtizedenként (×1, ×10, ×100 …)",
+    "eUseRough": "Durva",
+    "eUseGeneral": "Általános",
+    "eUseStd": "Szabvány",
+    "eUseCommon": "Gyakori",
+    "eUsePrecise": "Pontos",
+    "eUseHigh": "Nagy pontosság",
+    "eUseUltra": "Ultra pontosság",
+
+    "tip4band": "4 sáv: Számjegy · Számjegy · Szorzó · Tolerancia",
+    "tip5band": "5 sáv: Számjegy · Számjegy · Számjegy · Szorzó · Tolerancia",
+    "tip6band": "6 sáv: Számjegy · Számjegy · Számjegy · Szorzó · Tolerancia · TCR",
+    "tipDir": "Olvasás balról → jobbra. Arany/ezüst rés = jobb oldal."
 }

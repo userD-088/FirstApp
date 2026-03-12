@@ -23,5 +23,42 @@
     "warning": "সতর্কতা!",
     "outOfRange": "মানটি স্ট্যান্ডার্ড রেজিস্টর রঙ কোডের সীমার বাইরে।",
     "moreLangs": "আরও ভাষা",
-    "lessLangs": "কম ভাষা"
+    "lessLangs": "কম ভাষা",
+
+    "refTitle": "তথ্যসূত্র",
+    "refColors": "কালার কোড",
+    "refColor": "রঙ",
+    "refDigit": "সংখ্যা",
+    "refMult": "গুণক",
+    "refTol": "সহনশীলতা",
+    "refESeries": "E-সিরিজ",
+    "refTip": "পাঠের দিকনির্দেশ",
+
+    "colBlack": "কালো",
+    "colBrown": "বাদামী",
+    "colRed": "লাল",
+    "colOrange": "কমলা",
+    "colYellow": "হলুদ",
+    "colGreen": "সবুজ",
+    "colBlue": "নীল",
+    "colViolet": "বেগুনি",
+    "colGray": "ধূসর",
+    "colWhite": "সাদা",
+    "colGold": "সোনা",
+    "colSilver": "রূপা",
+    "colNone": "কোনো নেই",
+
+    "eSeriesHint": "প্রতিটি দশকে মানের মান (×1, ×10, ×100 …)",
+    "eUseRough": "প্রায়",
+    "eUseGeneral": "সাধারণ",
+    "eUseStd": "স্ট্যান্ডার্ড",
+    "eUseCommon": "সাধারণ",
+    "eUsePrecise": "নিখুঁত",
+    "eUseHigh": "উচ্চ নিখুঁত",
+    "eUseUltra": "সর্বোচ্চ নিখুঁত",
+
+    "tip4band": "4-ব্যান্ড: সংখ্যা · সংখ্যা · গুণক · সহনশীলতা",
+    "tip5band": "5-ব্যান্ড: সংখ্যা · সংখ্যা · সংখ্যা · গুণক · সহনশীলতা",
+    "tip6band": "6-ব্যান্ড: সংখ্যা · সংখ্যা · সংখ্যা · গুণক · সহনশীলতা · TCR",
+    "tipDir": "বাম থেকে ডান দিকে পড়ুন। সোনার/রূপার ফাঁক = ডানদিক।"
 }

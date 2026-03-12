@@ -23,5 +23,42 @@
     "warning": "Xəbərdarlıq!",
     "outOfRange": "Dəyər standart rezistor rəngləri diapazonundan kənardadır.",
     "moreLangs": "Daha çox dil",
-    "lessLangs": "Daha az dil"
+    "lessLangs": "Daha az dil",
+
+    "refTitle": "Mənbə",
+    "refColors": "Rəng Kodları",
+    "refColor": "Rəng",
+    "refDigit": "Rəqəm",
+    "refMult": "Çoxaltma",
+    "refTol": "Tolerans",
+    "refESeries": "E-Seriyası",
+    "refTip": "Oxuma istiqaməti",
+
+    "colBlack": "Qara",
+    "colBrown": "Qəhvəyi",
+    "colRed": "Qırmızı",
+    "colOrange": "Narıncı",
+    "colYellow": "Sarı",
+    "colGreen": "Yaşıl",
+    "colBlue": "Mavi",
+    "colViolet": "Bənövşəyi",
+    "colGray": "Boz",
+    "colWhite": "Ağ",
+    "colGold": "Qızıl",
+    "colSilver": "Gümüş",
+    "colNone": "Heç biri",
+
+    "eSeriesHint": "Hər onillik üçün standart dəyərlər (×1, ×10, ×100 …)",
+    "eUseRough": "Təxmini",
+    "eUseGeneral": "Ümumi",
+    "eUseStd": "Standart",
+    "eUseCommon": "Ümumi",
+    "eUsePrecise": "Dəqiq",
+    "eUseHigh": "Yüksək dəqiqlik",
+    "eUseUltra": "Ultra dəqiqlik",
+
+    "tip4band": "4-Halqa: Rəqəm · Rəqəm · Çoxaltma · Tolerans",
+    "tip5band": "5-Halqa: Rəqəm · Rəqəm · Rəqəm · Çoxaltma · Tolerans",
+    "tip6band": "6-Halqa: Rəqəm · Rəqəm · Rəqəm · Çoxaltma · Tolerans · TCR",
+    "tipDir": "Soldan sağa oxuyun. Qızıl/Gümüş boşluğu = sağ tərəf."
 }

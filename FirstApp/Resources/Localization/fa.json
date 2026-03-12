@@ -23,5 +23,42 @@
     "warning": "هشدار!",
     "outOfRange": "مقدار خارج از محدوده کد رنگ استاندارد مقاومت است.",
     "moreLangs": "زبان‌های بیشتر",
-    "lessLangs": "زبان‌های کمتر"
+    "lessLangs": "زبان‌های کمتر",
+
+    "refTitle": "مرجع",
+    "refColors": "کدهای رنگ",
+    "refColor": "رنگ",
+    "refDigit": "رقم",
+    "refMult": "ضریب",
+    "refTol": "تلورانس",
+    "refESeries": "سری E",
+    "refTip": "جهت خواندن",
+
+    "colBlack": "سیاه",
+    "colBrown": "قهوه‌ای",
+    "colRed": "قرمز",
+    "colOrange": "نارنجی",
+    "colYellow": "زرد",
+    "colGreen": "سبز",
+    "colBlue": "آبی",
+    "colViolet": "بنفش",
+    "colGray": "خاکستری",
+    "colWhite": "سفید",
+    "colGold": "طلایی",
+    "colSilver": "نقره‌ای",
+    "colNone": "هیچ",
+
+    "eSeriesHint": "مقادیر استاندارد در هر دهه (×1، ×10، ×100 …)",
+    "eUseRough": "تقریبی",
+    "eUseGeneral": "عمومی",
+    "eUseStd": "استاندارد",
+    "eUseCommon": "رایج",
+    "eUsePrecise": "دقیق",
+    "eUseHigh": "دقت بالا",
+    "eUseUltra": "فوق دقیق",
+
+    "tip4band": "4 نوار: رقم · رقم · ضریب · تلورانس",
+    "tip5band": "5 نوار: رقم · رقم · رقم · ضریب · تلورانس",
+    "tip6band": "6 نوار: رقم · رقم · رقم · ضریب · تلورانس · TCR",
+    "tipDir": "از چپ → راست بخوانید. فاصله طلایی/نقره‌ای = سمت راست."
 }

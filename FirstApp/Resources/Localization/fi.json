@@ -23,5 +23,42 @@
     "warning": "Varoitus!",
     "outOfRange": "Arvo on standardivastusvärien alueen ulkopuolella.",
     "moreLangs": "Lisää kieliä",
-    "lessLangs": "Vähemmän kieliä"
+    "lessLangs": "Vähemmän kieliä",
+
+    "refTitle": "Viite",
+    "refColors": "Värikoodit",
+    "refColor": "Väri",
+    "refDigit": "Numero",
+    "refMult": "Kerroin",
+    "refTol": "Toleranssi",
+    "refESeries": "E-sarja",
+    "refTip": "Lukusuunta",
+
+    "colBlack": "Musta",
+    "colBrown": "Ruskea",
+    "colRed": "Punainen",
+    "colOrange": "Oranssi",
+    "colYellow": "Keltainen",
+    "colGreen": "Vihreä",
+    "colBlue": "Sininen",
+    "colViolet": "Violetti",
+    "colGray": "Harmaa",
+    "colWhite": "Valkoinen",
+    "colGold": "Kulta",
+    "colSilver": "Hopea",
+    "colNone": "Ei mitään",
+
+    "eSeriesHint": "Standardoidut arvot per dekadi (×1, ×10, ×100 …)",
+    "eUseRough": "Karkea",
+    "eUseGeneral": "Yleinen",
+    "eUseStd": "Standardi",
+    "eUseCommon": "Tavallinen",
+    "eUsePrecise": "Tarkka",
+    "eUseHigh": "Korkea tarkkuus",
+    "eUseUltra": "Ultra tarkkuus",
+
+    "tip4band": "4 rengasta: Numero · Numero · Kerroin · Toleranssi",
+    "tip5band": "5 rengasta: Numero · Numero · Numero · Kerroin · Toleranssi",
+    "tip6band": "6 rengasta: Numero · Numero · Numero · Kerroin · Toleranssi · TCR",
+    "tipDir": "Lue vasemmalta → oikealle. Kulta/hopea-väli = oikea puoli."
 }

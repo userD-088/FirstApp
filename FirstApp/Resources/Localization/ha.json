@@ -23,5 +23,42 @@
     "warning": "Gargaɗi!",
     "outOfRange": "Ƙima ta wuce kewayon launukan resistor na yau da kullun.",
     "moreLangs": "Ƙarin Yare",
-    "lessLangs": "Ƙarancin Yare"
+    "lessLangs": "Ƙarancin Yare",
+
+    "refTitle": "Madauwari",
+    "refColors": "Lambobin Launi",
+    "refColor": "Launi",
+    "refDigit": "Lamba",
+    "refMult": "Ninka",
+    "refTol": "Haƙuri",
+    "refESeries": "E-Series",
+    "refTip": "Hanyar Karatu",
+
+    "colBlack": "Baki",
+    "colBrown": "Ruwan kasa",
+    "colRed": "Ja",
+    "colOrange": "Lemun tsami",
+    "colYellow": "Rawaya",
+    "colGreen": "Kore",
+    "colBlue": "Shudi",
+    "colViolet": "Shuɗi mai launin ruwan hoda",
+    "colGray": "Launin toka",
+    "colWhite": "Fari",
+    "colGold": "Zinariya",
+    "colSilver": "Azurfa",
+    "colNone": "Babu",
+
+    "eSeriesHint": "Ƙimomin da aka daidaita a kowace ɗari (×1, ×10, ×100 …)",
+    "eUseRough": "Kimantawa",
+    "eUseGeneral": "Gaba ɗaya",
+    "eUseStd": "Tsari",
+    "eUseCommon": "Rabaɗaɗɗa",
+    "eUsePrecise": "Daidaici",
+    "eUseHigh": "Matsakaicin Daidaici",
+    "eUseUltra": "Mafi Daidaici",
+
+    "tip4band": "4-Zobe: Lamba · Lamba · Ninka · Haƙuri",
+    "tip5band": "5-Zobe: Lamba · Lamba · Lamba · Ninka · Haƙuri",
+    "tip6band": "6-Zobe: Lamba · Lamba · Lamba · Ninka · Haƙuri · TCR",
+    "tipDir": "Karanta daga hagu → dama. Tazara Zinariya/Azurfa = gefen dama."
 }

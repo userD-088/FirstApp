@@ -23,5 +23,42 @@
     "warning": "Upozornenie!",
     "outOfRange": "Hodnota je mimo rozsah štandardného farebného kódu odporu.",
     "moreLangs": "Viac jazykov",
-    "lessLangs": "Menej jazykov"
+    "lessLangs": "Menej jazykov",
+
+    "refTitle": "Referencia",
+    "refColors": "Farebné kódy",
+    "refColor": "Farba",
+    "refDigit": "Číslica",
+    "refMult": "Násobiteľ",
+    "refTol": "Tolerancia",
+    "refESeries": "Séria E",
+    "refTip": "Smer čítania",
+
+    "colBlack": "Čierna",
+    "colBrown": "Hnedá",
+    "colRed": "Červená",
+    "colOrange": "Oranžová",
+    "colYellow": "Žltá",
+    "colGreen": "Zelená",
+    "colBlue": "Modrá",
+    "colViolet": "Fialová",
+    "colGray": "Sivá",
+    "colWhite": "Biela",
+    "colGold": "Zlatá",
+    "colSilver": "Strieborná",
+    "colNone": "Žiadna",
+
+    "eSeriesHint": "Štandardné hodnoty pre každú dekádu (×1, ×10, ×100 …)",
+    "eUseRough": "Hrubé",
+    "eUseGeneral": "Všeobecné",
+    "eUseStd": "Štandardné",
+    "eUseCommon": "Bežné",
+    "eUsePrecise": "Presné",
+    "eUseHigh": "Vysoká presnosť",
+    "eUseUltra": "Ultra presnosť",
+
+    "tip4band": "4 pásiky: Číslica · Číslica · Násobiteľ · Tolerancia",
+    "tip5band": "5 pásikov: Číslica · Číslica · Číslica · Násobiteľ · Tolerancia",
+    "tip6band": "6 pásikov: Číslica · Číslica · Číslica · Násobiteľ · Tolerancia · TCR",
+    "tipDir": "Čítajte zľava → doprava. Zlatá/strieborná medzera = pravá strana."
 }

@@ -23,5 +23,42 @@
     "warning": "Onyo!",
     "outOfRange": "Thamani iko nje ya kiwango cha rangi ya kawaida ya upinzani.",
     "moreLangs": "Lugha zaidi",
-    "lessLangs": "Lugha chache"
+    "lessLangs": "Lugha chache",
+
+    "refTitle": "Marejeo",
+    "refColors": "Misimbo ya rangi",
+    "refColor": "Rangi",
+    "refDigit": "Nambari",
+    "refMult": "Kizidishi",
+    "refTol": "Uvumulivu",
+    "refESeries": "Mfululizo E",
+    "refTip": "Mwelekeo wa kusoma",
+
+    "colBlack": "Nyeusi",
+    "colBrown": "Kahawia",
+    "colRed": "Nyekundu",
+    "colOrange": "Machungwa",
+    "colYellow": "Njano",
+    "colGreen": "Kijani",
+    "colBlue": "Bluu",
+    "colViolet": "Zambarau",
+    "colGray": "Kijivu",
+    "colWhite": "Nyeupe",
+    "colGold": "Dhahabu",
+    "colSilver": "Fedha",
+    "colNone": "Hakuna",
+
+    "eSeriesHint": "Thamani za kawaida kwa kila dekadi (×1, ×10, ×100 …)",
+    "eUseRough": "Takribani",
+    "eUseGeneral": "Jumla",
+    "eUseStd": "Kawaida",
+    "eUseCommon": "Inayotumika sana",
+    "eUsePrecise": "Sahihi",
+    "eUseHigh": "Usahihi wa juu",
+    "eUseUltra": "Usahihi wa juu sana",
+
+    "tip4band": "Bendi 4: Nambari · Nambari · Kizidishi · Uvumulivu",
+    "tip5band": "Bendi 5: Nambari · Nambari · Nambari · Kizidishi · Uvumulivu",
+    "tip6band": "Bendi 6: Nambari · Nambari · Nambari · Kizidishi · Uvumulivu · TCR",
+    "tipDir": "Soma kutoka kushoto → kulia. Nafasi ya dhahabu/fedha = upande wa kulia."
 }

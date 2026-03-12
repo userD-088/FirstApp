@@ -23,5 +23,42 @@
     "warning": "Attention !",
     "outOfRange": "Valeur hors plage pour les codes couleur standard.",
     "moreLangs": "Plus de langues",
-    "lessLangs": "Moins de langues"
+    "lessLangs": "Moins de langues",
+
+    "refTitle": "Référence",
+    "refColors": "Codes couleur",
+    "refColor": "Couleur",
+    "refDigit": "Chiffre",
+    "refMult": "Multiplicateur",
+    "refTol": "Tolérance",
+    "refESeries": "Série E",
+    "refTip": "Sens de lecture",
+
+    "colBlack": "Noir",
+    "colBrown": "Marron",
+    "colRed": "Rouge",
+    "colOrange": "Orange",
+    "colYellow": "Jaune",
+    "colGreen": "Vert",
+    "colBlue": "Bleu",
+    "colViolet": "Violet",
+    "colGray": "Gris",
+    "colWhite": "Blanc",
+    "colGold": "Or",
+    "colSilver": "Argent",
+    "colNone": "Aucun",
+
+    "eSeriesHint": "Valeurs standardisées par décade (×1, ×10, ×100 …)",
+    "eUseRough": "Approximatif",
+    "eUseGeneral": "Général",
+    "eUseStd": "Standard",
+    "eUseCommon": "Courant",
+    "eUsePrecise": "Précis",
+    "eUseHigh": "Haute précision",
+    "eUseUltra": "Ultra précision",
+
+    "tip4band": "4 bandes : Chiffre · Chiffre · Multiplicateur · Tolérance",
+    "tip5band": "5 bandes : Chiffre · Chiffre · Chiffre · Multiplicateur · Tolérance",
+    "tip6band": "6 bandes : Chiffre · Chiffre · Chiffre · Multiplicateur · Tolérance · TCR",
+    "tipDir": "Lire de gauche → droite. Espace or/argent = côté droit."
 }

@@ -23,5 +23,42 @@
     "warning": "Viðvörun!",
     "outOfRange": "Gildið er utan sviðs staðals litakóðs viðnáms.",
     "moreLangs": "Fleiri tungumál",
-    "lessLangs": "Færri tungumál"
+    "lessLangs": "Færri tungumál",
+
+    "refTitle": "Tilvísun",
+    "refColors": "Litakóðar",
+    "refColor": "Litur",
+    "refDigit": "Tala",
+    "refMult": "Margfaldari",
+    "refTol": "Þol",
+    "refESeries": "E-röð",
+    "refTip": "Lesstefna",
+
+    "colBlack": "Svartur",
+    "colBrown": "Brúnn",
+    "colRed": "Rauður",
+    "colOrange": "Appelsínugulur",
+    "colYellow": "Gulur",
+    "colGreen": "Grænn",
+    "colBlue": "Blár",
+    "colViolet": "Fjólublár",
+    "colGray": "Grár",
+    "colWhite": "Hvítur",
+    "colGold": "Gull",
+    "colSilver": "Silfur",
+    "colNone": "Enginn",
+
+    "eSeriesHint": "Staðlaðar gildi á hverri áratug (×1, ×10, ×100 …)",
+    "eUseRough": "Uppskrift",
+    "eUseGeneral": "Almennt",
+    "eUseStd": "Staðlað",
+    "eUseCommon": "Algengt",
+    "eUsePrecise": "Nákvæmt",
+    "eUseHigh": "Há nákvæmni",
+    "eUseUltra": "Mjög nákvæmt",
+
+    "tip4band": "4-Hringur: Tala · Tala · Margfaldari · Þol",
+    "tip5band": "5-Hringur: Tala · Tala · Tala · Margfaldari · Þol",
+    "tip6band": "6-Hringur: Tala · Tala · Tala · Margfaldari · Þol · TCR",
+    "tipDir": "Lesa frá vinstri → hægri. Gull/Silfur bil = hægri hlið."
 }

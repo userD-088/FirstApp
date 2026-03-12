@@ -23,5 +23,42 @@
     "warning": "Uyarı!",
     "outOfRange": "Değer standart direnç renk kodları için aralık dışında.",
     "moreLangs": "Daha fazla dil",
-    "lessLangs": "Daha az dil"
+    "lessLangs": "Daha az dil",
+
+    "refTitle": "Referans",
+    "refColors": "Renk kodları",
+    "refColor": "Renk",
+    "refDigit": "Rakam",
+    "refMult": "Çarpan",
+    "refTol": "Tolerans",
+    "refESeries": "E Serisi",
+    "refTip": "Okuma yönü",
+
+    "colBlack": "Siyah",
+    "colBrown": "Kahverengi",
+    "colRed": "Kırmızı",
+    "colOrange": "Turuncu",
+    "colYellow": "Sarı",
+    "colGreen": "Yeşil",
+    "colBlue": "Mavi",
+    "colViolet": "Mor",
+    "colGray": "Gri",
+    "colWhite": "Beyaz",
+    "colGold": "Altın",
+    "colSilver": "Gümüş",
+    "colNone": "Yok",
+
+    "eSeriesHint": "Her onluk aralık için standart değerler (×1, ×10, ×100 …)",
+    "eUseRough": "Kabaca",
+    "eUseGeneral": "Genel",
+    "eUseStd": "Standart",
+    "eUseCommon": "Yaygın",
+    "eUsePrecise": "Hassas",
+    "eUseHigh": "Yüksek hassasiyet",
+    "eUseUltra": "Ultra hassasiyet",
+
+    "tip4band": "4 bant: Rakam · Rakam · Çarpan · Tolerans",
+    "tip5band": "5 bant: Rakam · Rakam · Rakam · Çarpan · Tolerans",
+    "tip6band": "6 bant: Rakam · Rakam · Rakam · Çarpan · Tolerans · TCR",
+    "tipDir": "Soldan → sağa okuyun. Altın/gümüş boşluk = sağ taraf."
 }

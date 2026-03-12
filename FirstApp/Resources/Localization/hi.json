@@ -23,5 +23,42 @@
     "warning": "चेतावनी!",
     "outOfRange": "मान मानक प्रतिरोधक रंगों की सीमा से बाहर है।",
     "moreLangs": "अधिक भाषाएँ",
-    "lessLangs": "कम भाषाएँ"
+    "lessLangs": "कम भाषाएँ",
+
+    "refTitle": "संदर्भ",
+    "refColors": "रंग कोड",
+    "refColor": "रंग",
+    "refDigit": "अंक",
+    "refMult": "गुणक",
+    "refTol": "सहनशीलता",
+    "refESeries": "E-श्रृंखला",
+    "refTip": "पढ़ने की दिशा",
+
+    "colBlack": "काला",
+    "colBrown": "भूरा",
+    "colRed": "लाल",
+    "colOrange": "नारंगी",
+    "colYellow": "पीला",
+    "colGreen": "हरा",
+    "colBlue": "नीला",
+    "colViolet": "बैंगनी",
+    "colGray": "धूसर",
+    "colWhite": "सफेद",
+    "colGold": "स्वर्ण",
+    "colSilver": "रजत",
+    "colNone": "कोई नहीं",
+
+    "eSeriesHint": "प्रत्येक दशक के लिए मानकीकृत मान (×1, ×10, ×100 …)",
+    "eUseRough": "लगभग",
+    "eUseGeneral": "सामान्य",
+    "eUseStd": "मानक",
+    "eUseCommon": "सामान्य उपयोग",
+    "eUsePrecise": "सटीक",
+    "eUseHigh": "उच्च सटीकता",
+    "eUseUltra": "अति सटीकता",
+
+    "tip4band": "4 बैंड: अंक · अंक · गुणक · सहनशीलता",
+    "tip5band": "5 बैंड: अंक · अंक · अंक · गुणक · सहनशीलता",
+    "tip6band": "6 बैंड: अंक · अंक · अंक · गुणक · सहनशीलता · TCR",
+    "tipDir": "बाएँ → दाएँ पढ़ें। स्वर्ण/रजत अंतर = दायाँ पक्ष।"
 }

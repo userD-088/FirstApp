@@ -23,5 +23,42 @@
     "warning": "تحذير!",
     "outOfRange": "القيمة خارج نطاق ألوان المقاومة القياسية.",
     "moreLangs": "المزيد من اللغات",
-    "lessLangs": "عرض أقل"
+    "lessLangs": "عرض أقل",
+
+    "refTitle": "مرجع",
+    "refColors": "أكواد الألوان",
+    "refColor": "اللون",
+    "refDigit": "الرقم",
+    "refMult": "المضاعف",
+    "refTol": "السماحية",
+    "refESeries": "سلسلة E",
+    "refTip": "اتجاه القراءة",
+
+    "colBlack": "أسود",
+    "colBrown": "بني",
+    "colRed": "أحمر",
+    "colOrange": "برتقالي",
+    "colYellow": "أصفر",
+    "colGreen": "أخضر",
+    "colBlue": "أزرق",
+    "colViolet": "بنفسجي",
+    "colGray": "رمادي",
+    "colWhite": "أبيض",
+    "colGold": "ذهبي",
+    "colSilver": "فضي",
+    "colNone": "لا شيء",
+
+    "eSeriesHint": "قيم معيارية لكل عقدة (×1، ×10، ×100 …)",
+    "eUseRough": "تقريبي",
+    "eUseGeneral": "عام",
+    "eUseStd": "قياسي",
+    "eUseCommon": "شائع",
+    "eUsePrecise": "دقيق",
+    "eUseHigh": "دقة عالية",
+    "eUseUltra": "دقة فائقة",
+
+    "tip4band": "4 حلقات: رقم · رقم · مضاعف · سماحية",
+    "tip5band": "5 حلقات: رقم · رقم · رقم · مضاعف · سماحية",
+    "tip6band": "6 حلقات: رقم · رقم · رقم · مضاعف · سماحية · TCR",
+    "tipDir": "اقرأ من اليسار → اليمين. الفجوة الذهبية/الفضية = الجانب الأيمن."
 }

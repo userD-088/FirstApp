@@ -23,5 +23,42 @@
     "warning": "Amaran!",
     "outOfRange": "Nilai berada di luar julat kod warna perintang standard.",
     "moreLangs": "Lebih banyak bahasa",
-    "lessLangs": "Lebih sedikit bahasa"
+    "lessLangs": "Lebih sedikit bahasa",
+
+    "refTitle": "Rujukan",
+    "refColors": "Kod Warna",
+    "refColor": "Warna",
+    "refDigit": "Digit",
+    "refMult": "Pengganda",
+    "refTol": "Tolerance",
+    "refESeries": "Siri E",
+    "refTip": "Arah Bacaan",
+
+    "colBlack": "Hitam",
+    "colBrown": "Coklat",
+    "colRed": "Merah",
+    "colOrange": "Oren",
+    "colYellow": "Kuning",
+    "colGreen": "Hijau",
+    "colBlue": "Biru",
+    "colViolet": "Ungu",
+    "colGray": "Kelabu",
+    "colWhite": "Putih",
+    "colGold": "Emas",
+    "colSilver": "Perak",
+    "colNone": "Tiada",
+
+    "eSeriesHint": "Nilai piawai bagi setiap dekad (×1, ×10, ×100 …)",
+    "eUseRough": "Kasarnya",
+    "eUseGeneral": "Umum",
+    "eUseStd": "Standard",
+    "eUseCommon": "Biasa",
+    "eUsePrecise": "Tepat",
+    "eUseHigh": "Tepat tinggi",
+    "eUseUltra": "Tepat ultra",
+
+    "tip4band": "4-Cincin: Digit · Digit · Pengganda · Tolerance",
+    "tip5band": "5-Cincin: Digit · Digit · Digit · Pengganda · Tolerance",
+    "tip6band": "6-Cincin: Digit · Digit · Digit · Pengganda · Tolerance · TCR",
+    "tipDir": "Baca dari kiri → kanan. Jurang Emas/Perak = sebelah kanan."
 }
