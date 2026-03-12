@@ -387,8 +387,8 @@
 
                     <!-- about -->
                     <Border x:Name="AboutSection"
-        Padding="16,14" StrokeShape="RoundRectangle 16"
-        BackgroundColor="#111827" Stroke="#1E293B" StrokeThickness="1">
+                            Padding="16,14" StrokeShape="RoundRectangle 16"
+                            BackgroundColor="#111827" Stroke="#1E293B" StrokeThickness="1">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnAboutTapped"/>
                         </Border.GestureRecognizers>
@@ -398,17 +398,17 @@
                             <Grid ColumnDefinitions="*,20">
                                 <VerticalStackLayout Grid.Column="0" Spacing="3">
                                     <Label Text="{Binding AboutTitleText}"
-                       FontSize="14" FontAttributes="Bold" TextColor="#E2E8F0"/>
+                                           FontSize="14" FontAttributes="Bold" TextColor="#E2E8F0"/>
                                     <Label Text="{Binding AppVersionText}"
-                       FontSize="13" TextColor="#94A3B8"/>
+                                           FontSize="13" TextColor="#94A3B8"/>
                                     <Label Text="{Binding AboutDescText}"
-                       FontSize="12" TextColor="#6B7280"/>
+                                           FontSize="12" TextColor="#6B7280"/>
                                 </VerticalStackLayout>
                                 <Label x:Name="AboutChevron"
-                   Grid.Column="1" Text="›"
-                   FontSize="18" TextColor="#475569"
-                   VerticalTextAlignment="Center"
-                   HorizontalTextAlignment="End"/>
+                                       Grid.Column="1" Text="›"
+                                       FontSize="18" TextColor="#475569"
+                                       VerticalTextAlignment="Center"
+                                       HorizontalTextAlignment="End"/>
                             </Grid>
 
                             <!-- Expandable content -->

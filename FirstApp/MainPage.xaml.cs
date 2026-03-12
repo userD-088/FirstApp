@@ -1205,13 +1205,12 @@ namespace FirstApp
         {
             private readonly List<Color> _rings;
             private readonly Func<Color> _body;
-
             public ResistorDrawable(List<Color> rings, Func<Color> body)
             { _rings = rings; _body = body; }
 
             public void Draw(ICanvas canvas, RectF rect)
             {
-                const float Bw = 210f, Bh = 56f, Rw = 13f, Gap = 25f;
+                const float Bw = 210f, Bh = 56f, Rw = 13f, Gap = 25f, GroupExtra = 18f;
                 float cx = rect.Width / 2, cy = rect.Height / 2;
                 float bx = cx - Bw / 2, by = cy - Bh / 2;
 
@@ -1223,16 +1222,20 @@ namespace FirstApp
 
                 canvas.FillColor = Colors.Black.WithAlpha(0.22f);
                 canvas.FillRoundedRectangle(bx, by + 5, Bw, Bh, 28);
-
                 canvas.FillColor = _body();
                 canvas.FillRoundedRectangle(bx, by, Bw, Bh, 28);
-
                 canvas.FillColor = Colors.White.WithAlpha(0.12f);
                 canvas.FillRoundedRectangle(bx + 10, by + 7, Bw - 20, Bh / 3f, 18);
 
+                int count = _rings.Count;
+                int g1 = count == 6 ? 4 : count - 1;
+
                 float x = bx + 30;
-                foreach (var c in _rings)
+                for (int i = 0; i < _rings.Count; i++)
                 {
+                    if (i == g1) x += GroupExtra;
+
+                    var c = _rings[i];
                     if (!ResistorViewModel.IsInvisibleRing(c))
                     {
                         canvas.FillColor = c;
