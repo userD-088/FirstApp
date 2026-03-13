@@ -46,21 +46,15 @@ namespace FirstApp
         // --- Language section state
         private bool _langExpanded = false;
         private bool _secondaryChipsBuilt = false;
-        private string _langChipsBuiltFor = "";   // FIX D
+        private string _langChipsBuiltFor = "";
 
         // --- Reference panel cache
-        private string _refContentBuiltFor = "";    // FIX B
+        private string _refContentBuiltFor = "";
 
-        // ══════════════════════════════════════════════════════════════
-        // FIX E: UI COLOR PALETTE  –  static readonly, einmalig geparst
-        // ══════════════════════════════════════════════════════════════
-        // Aktiv-Blau (Tabs, ausgewählte Chips)
         private static readonly Color CUiBlue = Color.FromArgb("#2563EB");
-        // Dunkle Chip-Hintergründe
         private static readonly Color CUiChipDark = Color.FromArgb("#1F2937");
         private static readonly Color CUiDropDark = Color.FromArgb("#1A2535");
         private static readonly Color CUiChipEmpty = Color.FromArgb("#2A2A2A");
-        // Textfarben
         private static readonly Color CUiTextMuted = Color.FromArgb("#64748B");
         private static readonly Color CUiTextSub = Color.FromArgb("#94A3B8");
         private static readonly Color CUiTextLight = Color.FromArgb("#E2E8F0");
@@ -71,13 +65,11 @@ namespace FirstApp
         private static readonly Color CUiTextSteel = Color.FromArgb("#6BA3BE");
         private static readonly Color CUiTextYellow = Color.FromArgb("#FBBF24");
         private static readonly Color CUiTextGreen = Color.FromArgb("#10B981");
-        // Hintergründe / Panels
         private static readonly Color CUiPanelDark = Color.FromArgb("#060D1A");
         private static readonly Color CUiRowDark1 = Color.FromArgb("#0D1520");
         private static readonly Color CUiRowDark2 = Color.FromArgb("#070F1A");
         private static readonly Color CUiHighBg = Color.FromArgb("#0E1F3A");
         private static readonly Color CUiBadgeDark = Color.FromArgb("#1A2535");
-        // Rahmen / Divider
         private static readonly Color CUiBorderBlue = Color.FromArgb("#1E3A5F");
         private static readonly Color CUiBorderDiv = Color.FromArgb("#1E293B");
         private static readonly Color CUiBorderNone = Color.FromArgb("#444444");
@@ -173,7 +165,6 @@ namespace FirstApp
             UpdateWindowTitle();
         }
 
-        // FIX G: Ressourcen beim Verlassen der Page freigeben
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
@@ -284,10 +275,10 @@ namespace FirstApp
             for (int i = 0; i < opts.Length; i++)
             {
                 bool active = i == _unitIdx;
-                opts[i].BackgroundColor = active ? CUiBlue : CUiDropDark;   // FIX E
+                opts[i].BackgroundColor = active ? CUiBlue : CUiDropDark;    
                 if (opts[i].Content is Label lbl)
                 {
-                    lbl.TextColor = active ? Colors.White : CUiTextSub; // FIX E
+                    lbl.TextColor = active ? Colors.White : CUiTextSub;  
                     lbl.FontAttributes = active ? FontAttributes.Bold : FontAttributes.None;
                 }
             }
@@ -393,8 +384,8 @@ namespace FirstApp
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetSegTab(Border tab, Label lbl, bool active)
         {
-            tab.BackgroundColor = active ? CUiBlue : Colors.Transparent;  // FIX E
-            lbl.TextColor = active ? Colors.White : CUiTextMuted;   // FIX E
+            tab.BackgroundColor = active ? CUiBlue : Colors.Transparent;   
+            lbl.TextColor = active ? Colors.White : CUiTextMuted;    
             lbl.FontAttributes = active ? FontAttributes.Bold : FontAttributes.None;
         }
 
@@ -427,8 +418,6 @@ namespace FirstApp
         private void RebuildTcrChips() =>
             BuildChipRow(TcrChipsLayout, _chipsTcr, ResistorViewModel.TcrData, 5, _vm.SelTcr, pill: true);
 
-        // Erstellt die Series-Chips einmalig.
-        // Für reine Highlight-Wechsel → UpdateSeriesChipsHighlight()
         private void RebuildSeriesChips()
         {
             SeriesChipsMain.Children.Clear();
@@ -452,7 +441,6 @@ namespace FirstApp
                         else if (formatted.EndsWith("M")) { newUnit = 2; numPart = formatted[..^1]; }
                         else if (formatted.EndsWith("k")) { newUnit = 1; numPart = formatted[..^1]; }
 
-                        // FIX F: try/finally damit _suppressTextChanged nie hängen bleibt
                         _suppressTextChanged = true;
                         try { ResistanceEntry.Text = numPart; }
                         finally { _suppressTextChanged = false; }
@@ -467,7 +455,6 @@ namespace FirstApp
             }
         }
 
-        // Aktualisiert nur Farbe/Schrift der bestehenden Series-Chips.
         private void UpdateSeriesChipsHighlight()
         {
             foreach (var child in SeriesChipsMain.Children)
@@ -477,7 +464,7 @@ namespace FirstApp
                 if (!int.TryParse(lbl.Text.AsSpan(1), out int s)) continue;
 
                 bool sel = s == _vm.SelectedSeries;
-                chip.BackgroundColor = sel ? CUiBlue : CUiChipDark;       // FIX E
+                chip.BackgroundColor = sel ? CUiBlue : CUiChipDark;
                 chip.Stroke = sel ? Colors.White : Colors.Transparent;
                 chip.StrokeThickness = sel ? 1.5 : 0;
                 lbl.FontAttributes = sel ? FontAttributes.Bold : FontAttributes.None;
@@ -486,7 +473,6 @@ namespace FirstApp
 
         // -- Language chip helpers
 
-        // FIX D: Chips nur neu bauen wenn Sprache gewechselt hat
         private void RebuildPrimaryLangChips()
         {
             if (_langChipsBuiltFor != _vm.Lang)
@@ -497,7 +483,6 @@ namespace FirstApp
                 _langChipsBuiltFor = _vm.Lang;
             }
 
-            // State immer zurücksetzen (Settings wurde neu geöffnet)
             _langExpanded = false;
             _secondaryChipsBuilt = false;
             LangChipsSecondary.Children.Clear();
@@ -576,7 +561,7 @@ namespace FirstApp
             var chip = new Border
             {
                 StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(14) },
-                BackgroundColor = sel ? CUiBlue : CUiChipDark,          // FIX E
+                BackgroundColor = sel ? CUiBlue : CUiChipDark,
                 Stroke = sel ? Colors.White : Colors.Transparent,
                 StrokeThickness = sel ? 1.5 : 0,
                 Padding = new Thickness(12, 8),
@@ -588,7 +573,7 @@ namespace FirstApp
             {
                 bool wasExpanded = _langExpanded;
                 _vm.Lang = cap;
-                _langChipsBuiltFor = "";   // Cache invalidieren
+                _langChipsBuiltFor = "";
                 RebuildPrimaryLangChips();
 
                 if (wasExpanded)
@@ -656,7 +641,7 @@ namespace FirstApp
             bool empty = bg == Colors.Transparent || bg == ResistorViewModel.CNone;
             var chip = new Border
             {
-                BackgroundColor = empty ? CUiChipEmpty : bg,             // FIX E
+                BackgroundColor = empty ? CUiChipEmpty : bg,              
                 StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(pill ? 10 : 18) },
                 Stroke = sel ? Colors.White : Colors.Transparent,
                 StrokeThickness = sel ? 2.5 : 0,
@@ -681,7 +666,7 @@ namespace FirstApp
         private static Border MakeSeriesChip(int s, bool sel) => new Border
         {
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
-            BackgroundColor = sel ? CUiBlue : CUiChipDark,              // FIX E
+            BackgroundColor = sel ? CUiBlue : CUiChipDark,
             Stroke = sel ? Colors.White : Colors.Transparent,
             StrokeThickness = sel ? 1.5 : 0,
             Padding = new Thickness(14, 8),
@@ -723,7 +708,6 @@ namespace FirstApp
 
             if (detectedUnit >= 0)
             {
-                // FIX F: try/finally – Flag hängt nie bei Exception
                 _suppressTextChanged = true;
                 try { ResistanceEntry.Text = raw[..^1]; }
                 finally { _suppressTextChanged = false; }
@@ -768,7 +752,7 @@ namespace FirstApp
             _settingsOpen = true;
 
             if (_unitDropdownOpen) await CloseUnitDropdown();
-            RebuildPrimaryLangChips();   // FIX D: nur neu wenn Sprache gewechselt
+            RebuildPrimaryLangChips();
 
             SettingsOverlay.IsVisible = true;
             SettingsOverlay.InputTransparent = false;
@@ -848,7 +832,7 @@ namespace FirstApp
             _refOpen = true;
 
             if (_unitDropdownOpen) await CloseUnitDropdown();
-            EnsureReferenceContent();   // FIX B: nur neu wenn Sprache gewechselt
+            EnsureReferenceContent();
 
             RefOverlay.IsVisible = true;
             RefOverlay.InputTransparent = false;
@@ -881,7 +865,6 @@ namespace FirstApp
         // REFERENCE CONTENT BUILDER
         // ──────────────────────────────────────────────────────────
 
-        // FIX B: nur neu bauen wenn Sprache gewechselt hat
         private void EnsureReferenceContent()
         {
             if (_refContentBuiltFor == _vm.Lang) return;
@@ -897,17 +880,16 @@ namespace FirstApp
 
             RefContent.Children.Add(BuildSectionHeader(Loc("refTip", "Reading Direction")));
             RefContent.Children.Add(BuildReadingTip());
-            RefContent.Children.Add(new BoxView { HeightRequest = 1, BackgroundColor = CUiBorderDiv }); // FIX E
+            RefContent.Children.Add(new BoxView { HeightRequest = 1, BackgroundColor = CUiBorderDiv });
 
             RefContent.Children.Add(BuildSectionHeader(Loc("refColors", "Color Codes")));
             RefContent.Children.Add(BuildColorTable());
-            RefContent.Children.Add(new BoxView { HeightRequest = 1, BackgroundColor = CUiBorderDiv }); // FIX E
+            RefContent.Children.Add(new BoxView { HeightRequest = 1, BackgroundColor = CUiBorderDiv });
 
             RefContent.Children.Add(BuildSectionHeader(Loc("refESeries", "E-Series")));
             RefContent.Children.Add(BuildESeriesSection());
         }
 
-        // FIX A: Kein Reflection mehr – T() ist internal
         private string Loc(string key, string defaultText)
         {
             var val = _vm.T(key);
@@ -919,7 +901,7 @@ namespace FirstApp
             Text = text,
             FontSize = 14,
             FontAttributes = FontAttributes.Bold,
-            TextColor = CUiTextSub,   // FIX E
+            TextColor = CUiTextSub,
             Margin = new Thickness(0, 4, 0, 6)
         };
 
@@ -971,7 +953,7 @@ namespace FirstApp
                 {
                     Text = t,
                     FontSize = 10,
-                    TextColor = CUiTextMuted,   // FIX E
+                    TextColor = CUiTextMuted,
                     FontAttributes = FontAttributes.Bold,
                     HorizontalTextAlignment = TextAlignment.Center,
                     VerticalTextAlignment = TextAlignment.Center,
@@ -995,7 +977,7 @@ namespace FirstApp
                 bool stripe = r % 2 == 0;
                 var bg = new BoxView
                 {
-                    BackgroundColor = stripe ? CUiRowDark1 : CUiRowDark2,  // FIX E
+                    BackgroundColor = stripe ? CUiRowDark1 : CUiRowDark2,   
                     CornerRadius = 6,
                     Margin = new Thickness(-2, 1)
                 };
@@ -1007,9 +989,9 @@ namespace FirstApp
                 {
                     WidthRequest = 20,
                     HeightRequest = 20,
-                    BackgroundColor = isNone ? CUiChipEmpty : row.Bg,    // FIX E
+                    BackgroundColor = isNone ? CUiChipEmpty : row.Bg,     
                     StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(10) },
-                    Stroke = isNone ? CUiBorderNone : Colors.Transparent,  // FIX E
+                    Stroke = isNone ? CUiBorderNone : Colors.Transparent,   
                     StrokeThickness = isNone ? 1 : 0,
                     HorizontalOptions = LayoutOptions.Center,
                     VerticalOptions = LayoutOptions.Center,
@@ -1033,7 +1015,7 @@ namespace FirstApp
                 {
                     Text = row.Digit,
                     FontSize = 13,
-                    TextColor = CUiTextLight,   // FIX E
+                    TextColor = CUiTextLight,    
                     FontAttributes = FontAttributes.Bold,
                     HorizontalTextAlignment = TextAlignment.Center,
                     VerticalTextAlignment = TextAlignment.Center,
@@ -1046,7 +1028,7 @@ namespace FirstApp
                 {
                     Text = row.Mult,
                     FontSize = 11.5,
-                    TextColor = CUiTextGreen,   // FIX E
+                    TextColor = CUiTextGreen,    
                     FontAttributes = FontAttributes.Bold,
                     HorizontalTextAlignment = TextAlignment.Center,
                     VerticalTextAlignment = TextAlignment.Center,
@@ -1060,7 +1042,7 @@ namespace FirstApp
                 {
                     Text = tol,
                     FontSize = 11,
-                    TextColor = tol == "–" ? CUiTextDimmer : CUiTextYellow,  // FIX E
+                    TextColor = tol == "–" ? CUiTextDimmer : CUiTextYellow,   
                     HorizontalTextAlignment = TextAlignment.Center,
                     VerticalTextAlignment = TextAlignment.Center,
                     Margin = new Thickness(0, 3)
@@ -1072,9 +1054,9 @@ namespace FirstApp
             return new Border
             {
                 Content = grid,
-                BackgroundColor = CUiPanelDark,    // FIX E
+                BackgroundColor = CUiPanelDark,     
                 StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(14) },
-                Stroke = CUiBorderBlue,   // FIX E
+                Stroke = CUiBorderBlue,    
                 StrokeThickness = 1,
                 Padding = new Thickness(10, 8)
             };
@@ -1099,7 +1081,7 @@ namespace FirstApp
             {
                 Text = Loc("eSeriesHint", "Standardised values per decade (×1, ×10, ×100 …)"),
                 FontSize = 11,
-                TextColor = CUiTextMuted,   // FIX E
+                TextColor = CUiTextMuted,    
                 Margin = new Thickness(0, 0, 0, 4)
             });
 
@@ -1109,8 +1091,8 @@ namespace FirstApp
                 var card = new Border
                 {
                     StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(12) },
-                    BackgroundColor = highlight ? CUiHighBg : CUiPanelDark,      // FIX E
-                    Stroke = highlight ? CUiBlue : CUiBorderBlue,        // FIX E
+                    BackgroundColor = highlight ? CUiHighBg : CUiPanelDark,       
+                    Stroke = highlight ? CUiBlue : CUiBorderBlue,         
                     StrokeThickness = highlight ? 1.5 : 1,
                     Padding = new Thickness(12, 9)
                 };
@@ -1130,7 +1112,7 @@ namespace FirstApp
                 var badge = new Border
                 {
                     StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(8) },
-                    BackgroundColor = highlight ? CUiBlue : CUiBadgeDark,        // FIX E
+                    BackgroundColor = highlight ? CUiBlue : CUiBadgeDark,         
                     Padding = new Thickness(0),
                     WidthRequest = 40,
                     HeightRequest = 26,
@@ -1151,7 +1133,7 @@ namespace FirstApp
                     Text = s.ValsPer,
                     FontSize = 13,
                     FontAttributes = FontAttributes.Bold,
-                    TextColor = CUiTextGreen,  // FIX E
+                    TextColor = CUiTextGreen,   
                     VerticalTextAlignment = TextAlignment.Center,
                     HorizontalTextAlignment = TextAlignment.Center
                 };
@@ -1161,7 +1143,7 @@ namespace FirstApp
                 {
                     Text = s.Use,
                     FontSize = 11.5,
-                    TextColor = highlight ? CUiTextBlue : CUiTextSub,  // FIX E
+                    TextColor = highlight ? CUiTextBlue : CUiTextSub,   
                     VerticalTextAlignment = TextAlignment.Center
                 };
                 Grid.SetColumn(useLabel, 2); inner.Children.Add(useLabel);
@@ -1170,7 +1152,7 @@ namespace FirstApp
                 {
                     Text = s.Examples,
                     FontSize = 10,
-                    TextColor = CUiTextDim,      // FIX E
+                    TextColor = CUiTextDim,       
                     VerticalTextAlignment = TextAlignment.Center,
                     LineBreakMode = LineBreakMode.TailTruncation
                 };
@@ -1193,8 +1175,8 @@ namespace FirstApp
             return new Border
             {
                 StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(14) },
-                BackgroundColor = CUiPanelDark,    // FIX E
-                Stroke = CUiBorderBlue,   // FIX E
+                BackgroundColor = CUiPanelDark,     
+                Stroke = CUiBorderBlue,    
                 StrokeThickness = 1,
                 Padding = new Thickness(14, 12),
                 Content = new VerticalStackLayout
@@ -1202,11 +1184,11 @@ namespace FirstApp
                     Spacing = 7,
                     Children =
                     {
-                        new Label { Text = tip4,   FontSize = 12,   TextColor = CUiTextTan   }, // FIX E
-                        new Label { Text = tip5,   FontSize = 12,   TextColor = CUiTextSteel }, // FIX E
-                        new Label { Text = tip6,   FontSize = 12,   TextColor = CUiTextSteel }, // FIX E
-                        new BoxView { HeightRequest = 1, BackgroundColor = CUiBorderDiv, Margin = new Thickness(0,2) }, // FIX E
-                        new Label { Text = tipDir, FontSize = 11.5, TextColor = CUiTextYellow, // FIX E
+                        new Label { Text = tip4,   FontSize = 12,   TextColor = CUiTextTan   },  
+                        new Label { Text = tip5,   FontSize = 12,   TextColor = CUiTextSteel },  
+                        new Label { Text = tip6,   FontSize = 12,   TextColor = CUiTextSteel },  
+                        new BoxView { HeightRequest = 1, BackgroundColor = CUiBorderDiv, Margin = new Thickness(0,2) },  
+                        new Label { Text = tipDir, FontSize = 11.5, TextColor = CUiTextYellow,  
                             FontAttributes = FontAttributes.Bold }
                     }
                 }

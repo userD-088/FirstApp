@@ -461,8 +461,6 @@ namespace FirstApp
         // LOCALIZATION ENGINE
         // ══════════════════════════════════════════════════════════════
 
-        // FIX C: ConcurrentDictionary – thread-sicher für PreloadLang (Background-Thread)
-        // vs. T() (UI-Thread)
         private static readonly ConcurrentDictionary<string, Dictionary<string, string>> _langCache = new();
 
         private static string GetDefaultLanguage()
@@ -472,7 +470,6 @@ namespace FirstApp
             return supported ? sys : "en";
         }
 
-        // FIX A: internal statt private – direkt aus MainPage.Loc() aufrufbar, kein Reflection
         internal string T(string key)
         {
             if (!_langCache.TryGetValue(_lang, out var dict))
