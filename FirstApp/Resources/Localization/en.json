@@ -64,5 +64,8 @@
 
     "support": "Support & Feedback",
     "privacyPolicy": "Privacy Policy",
-    "aboutDev": "About the Developer"
+    "aboutDev": "About the Developer",
+
+    "defaultAppDesign": "Default Design",
+    "designLabelText": "App Design"
 }

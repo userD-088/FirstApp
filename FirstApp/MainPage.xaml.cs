@@ -691,6 +691,13 @@ namespace FirstApp
             return t;
         }
 
+        // Design Change
+
+        private void OnSetDefaultDesign(object sender, EventArgs e)
+        {
+            return; // design changes disabled for now
+        }
+
         // TEXT ENTRY  (debounced 80 ms)
 
         private void OnResistanceTextChanged(object sender, TextChangedEventArgs e)

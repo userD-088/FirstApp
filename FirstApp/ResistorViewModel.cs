@@ -216,6 +216,8 @@ namespace FirstApp
         public string SupportText => T("support");
         public string PrivacyPolicyText => T("privacyPolicy");
         public string AboutDevText => T("aboutDev");
+        public string DefaultAppDesign => T("defaultAppDesign");
+        public string DesignLabelText => T("designLabelText");
 
         // ──────────────────────────────────────────────────────────────
         // APP INFO

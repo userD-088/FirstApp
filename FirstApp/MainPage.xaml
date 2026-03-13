@@ -77,11 +77,12 @@
                         <Border BackgroundColor="#060D1A"
                                 StrokeShape="RoundRectangle 13"
                                 Stroke="#1E3A5F" StrokeThickness="1"
-                                Padding="3">
-                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="3">
+                                Padding="0">
+                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="0">
                                 <Border x:Name="ResTab0" Grid.Column="0"
-                                        BackgroundColor="#1A2535"
-                                        StrokeShape="RoundRectangle 10" Padding="6,9">
+                                        BackgroundColor="#1A2535" Stroke="#1E293B" 
+                                        StrokeThickness="0" StrokeShape="RoundRectangle 0"
+                                        Padding="0,11">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnResTab0Tapped"/>
                                     </Border.GestureRecognizers>
@@ -92,8 +93,9 @@
                                            VerticalTextAlignment="Center"/>
                                 </Border>
                                 <Border x:Name="ResTab1" Grid.Column="1"
-                                        BackgroundColor="#2563EB"
-                                        StrokeShape="RoundRectangle 10" Padding="6,9">
+                                        BackgroundColor="#2563EB" Stroke="#1E293B" 
+                                        StrokeThickness="0"
+                                        Padding="0,11">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnResTab1Tapped"/>
                                     </Border.GestureRecognizers>
@@ -104,8 +106,9 @@
                                            VerticalTextAlignment="Center"/>
                                 </Border>
                                 <Border x:Name="ResTab2" Grid.Column="2"
-                                        BackgroundColor="#1A2535"
-                                        StrokeShape="RoundRectangle 10" Padding="6,9">
+                                        BackgroundColor="#1A2535" Stroke="#1E293B" 
+                                        StrokeThickness="0"
+                                        Padding="0,11">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnResTab2Tapped"/>
                                     </Border.GestureRecognizers>
@@ -140,11 +143,12 @@
                         <Border BackgroundColor="#060D1A"
                                 StrokeShape="RoundRectangle 13"
                                 Stroke="#1E3A5F" StrokeThickness="1"
-                                Padding="3">
-                            <Grid ColumnDefinitions="*,*" ColumnSpacing="3">
+                                Padding="-1">
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="-2">
                                 <Border x:Name="InputTab0" Grid.Column="0"
-                                        BackgroundColor="#2563EB"
-                                        StrokeShape="RoundRectangle 10" Padding="8,9">
+                                        BackgroundColor="#2563EB" Stroke="#1E293B" 
+                                        StrokeShape="RoundRectangle 0" 
+                                        Padding="0,12">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnInputTab0Tapped"/>
                                     </Border.GestureRecognizers>
@@ -155,8 +159,9 @@
                                            VerticalTextAlignment="Center"/>
                                 </Border>
                                 <Border x:Name="InputTab1" Grid.Column="1"
-                                        BackgroundColor="Transparent"
-                                        StrokeShape="RoundRectangle 10" Padding="8,9">
+                                        BackgroundColor="Transparent" Stroke="#1E293B"
+                                        StrokeShape="RoundRectangle 0" 
+                                        Padding="0,12">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnInputTab1Tapped"/>
                                     </Border.GestureRecognizers>
@@ -384,6 +389,57 @@
                     </VerticalStackLayout>
 
                     <BoxView HeightRequest="1" BackgroundColor="#1E293B"/>
+                    
+                    <!-- Select Design -->
+                    <Label Text="{Binding DesignLabelText}"
+                           FontSize="13" TextColor="#9CA3AF"/>
+                    <HorizontalStackLayout Spacing="8" Padding="2,0">
+                        <Border BackgroundColor="#060D1A" Padding="0"
+                                StrokeShape="RoundRectangle 16"
+                                Stroke="#1E3A5F" StrokeThickness="1">
+                            <Grid ColumnDefinitions="*,*,*">
+                                <Border Grid.Column="0" BackgroundColor="#2563EB" 
+                                        Stroke="#1E293B" StrokeShape="RoundRectangle 0" 
+                                        Padding="0,12">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnSetDefaultDesign"/>
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{Binding DefaultAppDesign}" Padding="12,0"
+                                           FontSize="12" FontAttributes="Bold" TextColor="White"
+                                           MaxLines="1" LineBreakMode="TailTruncation"
+                                           HorizontalTextAlignment="Center" 
+                                           VerticalTextAlignment="Center"/>
+                                </Border>
+                                <Border Grid.Column="1" Padding="0,12"
+                                        BackgroundColor="Transparent" Stroke="#1E293B"
+                                        StrokeShape="RoundRectangle 0">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnSetDefaultDesign"/>
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{Binding DefaultAppDesign}" Padding="12,0"
+                                           FontSize="12" TextColor="#64748B"
+                                           MaxLines="1" LineBreakMode="TailTruncation"
+                                           HorizontalTextAlignment="Center" 
+                                           VerticalTextAlignment="Center"/>
+                                </Border>
+                                <Border Grid.Column="2" Padding="0,12"
+                                        BackgroundColor="Transparent" Stroke="#1E293B" 
+                                        StrokeShape="RoundRectangle 0">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnSetDefaultDesign"/>
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{Binding DefaultAppDesign}" Padding="12,0"
+                                           FontSize="12" FontAttributes="Bold" TextColor="#64748B"
+                                           MaxLines="1" LineBreakMode="TailTruncation"
+                                           HorizontalTextAlignment="Center" 
+                                           VerticalTextAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                    </HorizontalStackLayout>
+
+                    <BoxView HeightRequest="1" BackgroundColor="#1E293B"/>
 
                     <!-- about -->
                     <Border x:Name="AboutSection"
@@ -419,52 +475,52 @@
 
                                 <!-- Support / Feedback -->
                                 <Border BackgroundColor="#0F172A"
-                    StrokeShape="RoundRectangle 12"
-                    Stroke="#1E3A5F" StrokeThickness="1"
-                    Padding="12,10">
+                                        StrokeShape="RoundRectangle 12"
+                                        Stroke="#1E3A5F" StrokeThickness="1"
+                                        Padding="12,10">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnSupportTapped"/>
                                     </Border.GestureRecognizers>
                                     <Grid ColumnDefinitions="22,*">
                                         <Label Grid.Column="0" Text="✉️" FontSize="14"
-                           VerticalTextAlignment="Center"/>
+                                               VerticalTextAlignment="Center"/>
                                         <Label Grid.Column="1" Text="{Binding SupportText}"
-                           FontSize="13" TextColor="#E2E8F0"
-                           VerticalTextAlignment="Center" Margin="8,0,0,0"/>
+                                               FontSize="13" TextColor="#E2E8F0"
+                                               VerticalTextAlignment="Center" Margin="8,0,0,0"/>
                                     </Grid>
                                 </Border>
 
                                 <!-- Privacy Policy -->
                                 <Border BackgroundColor="#0F172A"
-                    StrokeShape="RoundRectangle 12"
-                    Stroke="#1E3A5F" StrokeThickness="1"
-                    Padding="12,10">
+                                        StrokeShape="RoundRectangle 12"
+                                        Stroke="#1E3A5F" StrokeThickness="1"
+                                        Padding="12,10">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnPrivacyTapped"/>
                                     </Border.GestureRecognizers>
                                     <Grid ColumnDefinitions="22,*">
                                         <Label Grid.Column="0" Text="🔒" FontSize="14"
-                           VerticalTextAlignment="Center"/>
+                                               VerticalTextAlignment="Center"/>
                                         <Label Grid.Column="1" Text="{Binding PrivacyPolicyText}"
-                           FontSize="13" TextColor="#E2E8F0"
-                           VerticalTextAlignment="Center" Margin="8,0,0,0"/>
+                                               FontSize="13" TextColor="#E2E8F0"
+                                               VerticalTextAlignment="Center" Margin="8,0,0,0"/>
                                     </Grid>
                                 </Border>
 
                                 <!-- About the Developer -->
                                 <Border BackgroundColor="#0F172A"
-                    StrokeShape="RoundRectangle 12"
-                    Stroke="#1E3A5F" StrokeThickness="1"
-                    Padding="12,10">
+                                        StrokeShape="RoundRectangle 12"
+                                        Stroke="#1E3A5F" StrokeThickness="1"
+                                        Padding="12,10">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnDeveloperTapped"/>
                                     </Border.GestureRecognizers>
                                     <Grid ColumnDefinitions="22,*">
                                         <Label Grid.Column="0" Text="👤" FontSize="14"
-                           VerticalTextAlignment="Center"/>
+                                               VerticalTextAlignment="Center"/>
                                         <Label Grid.Column="1" Text="{Binding AboutDevText}"
-                           FontSize="13" TextColor="#E2E8F0"
-                           VerticalTextAlignment="Center" Margin="8,0,0,0"/>
+                                               FontSize="13" TextColor="#E2E8F0"
+                                               VerticalTextAlignment="Center" Margin="8,0,0,0"/>
                                     </Grid>
                                 </Border>
 
@@ -473,7 +529,7 @@
                             <BoxView HeightRequest="1" BackgroundColor="#1E293B" Margin="0,6,0,4"/>
 
                             <Label Text="{Binding CopyrightText}"
-               FontSize="11" TextColor="#374151"/>
+                                   FontSize="11" TextColor="#374151"/>
                         </VerticalStackLayout>
                     </Border>
 
