@@ -60,5 +60,9 @@
     "tip4band": "4-Annulus: Digitus · Digitus · Multiplicator · Tolerantia",
     "tip5band": "5-Annulus: Digitus · Digitus · Digitus · Multiplicator · Tolerantia",
     "tip6band": "6-Annulus: Digitus · Digitus · Digitus · Multiplicator · Tolerantia · TCR",
-    "tipDir": "Lege a sinistra → ad dextram. Spatium Aurum/Argentum = dextra parte."
+    "tipDir": "Lege a sinistra → ad dextram. Spatium Aurum/Argentum = dextra parte.",
+
+    "support": "Auxilium & Feedback",
+    "privacyPolicy": "Privati Consilium",
+    "aboutDev": "De Developatore"
 }

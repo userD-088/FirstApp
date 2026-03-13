@@ -60,5 +60,10 @@
     "tip4band": "4-Hringur: Tala · Tala · Margfaldari · Þol",
     "tip5band": "5-Hringur: Tala · Tala · Tala · Margfaldari · Þol",
     "tip6band": "6-Hringur: Tala · Tala · Tala · Margfaldari · Þol · TCR",
-    "tipDir": "Lesa frá vinstri → hægri. Gull/Silfur bil = hægri hlið."
+    "tipDir": "Lesa frá vinstri → hægri. Gull/Silfur bil = hægri hlið.",
+
+    "support": "Stuðningur & Endurgjöf",
+    "privacyPolicy": "Persónuverndarstefna",
+    "aboutDev": "Um forritara"
+
 }

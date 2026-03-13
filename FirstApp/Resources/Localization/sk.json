@@ -60,5 +60,9 @@
     "tip4band": "4 pásiky: Číslica · Číslica · Násobiteľ · Tolerancia",
     "tip5band": "5 pásikov: Číslica · Číslica · Číslica · Násobiteľ · Tolerancia",
     "tip6band": "6 pásikov: Číslica · Číslica · Číslica · Násobiteľ · Tolerancia · TCR",
-    "tipDir": "Čítajte zľava → doprava. Zlatá/strieborná medzera = pravá strana."
+    "tipDir": "Čítajte zľava → doprava. Zlatá/strieborná medzera = pravá strana.",
+
+    "support": "Podpora a spätná väzba",
+    "privacyPolicy": "Zásady ochrany osobných údajov",
+    "aboutDev": "O vývojárovi"
 }

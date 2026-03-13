@@ -60,5 +60,9 @@
     "tip4band": "4-Cincin: Digit · Digit · Pengganda · Tolerance",
     "tip5band": "5-Cincin: Digit · Digit · Digit · Pengganda · Tolerance",
     "tip6band": "6-Cincin: Digit · Digit · Digit · Pengganda · Tolerance · TCR",
-    "tipDir": "Baca dari kiri → kanan. Jurang Emas/Perak = sebelah kanan."
+    "tipDir": "Baca dari kiri → kanan. Jurang Emas/Perak = sebelah kanan.",
+
+    "support": "Sokongan & Maklum Balas",
+    "privacyPolicy": "Dasar Privasi",
+    "aboutDev": "Tentang Pembangun"
 }

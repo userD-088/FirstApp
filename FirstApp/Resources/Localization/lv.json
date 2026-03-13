@@ -60,5 +60,9 @@
     "tip4band": "4 joslas: Cipars · Cipars · Reizinātājs · Tolerance",
     "tip5band": "5 joslas: Cipars · Cipars · Cipars · Reizinātājs · Tolerance",
     "tip6band": "6 joslas: Cipars · Cipars · Cipars · Reizinātājs · Tolerance · TCR",
-    "tipDir": "Lasiet no kreisās → uz labo. Zelta/sudraba atstarpe = labā puse."
+    "tipDir": "Lasiet no kreisās → uz labo. Zelta/sudraba atstarpe = labā puse.",
+
+    "support": "Atbalsts un atsauksmes",
+    "privacyPolicy": "Privātuma politika",
+    "aboutDev": "Par izstrādātāju"
 }

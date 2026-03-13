@@ -60,5 +60,9 @@
     "tip4band": "4-Zinta: Zenbaki · Zenbaki · Biderkatzailea · Tolerantzia",
     "tip5band": "5-Zinta: Zenbaki · Zenbaki · Zenbaki · Biderkatzailea · Tolerantzia",
     "tip6band": "6-Zinta: Zenbaki · Zenbaki · Zenbaki · Biderkatzailea · Tolerantzia · TCR",
-    "tipDir": "Irakurri ezkerretik → eskuinera. Urre/Zilar espazioa = eskuin aldean."
+    "tipDir": "Irakurri ezkerretik → eskuinera. Urre/Zilar espazioa = eskuin aldean.",
+
+    "support": "Laguntza eta iruzkinak",
+    "privacyPolicy": "Pribatutasun politika",
+    "aboutDev": "Garatzaileari buruz"
 }

@@ -60,5 +60,9 @@
     "tip4band": "4 vòng: Chữ số · Chữ số · Hệ số · Sai số",
     "tip5band": "5 vòng: Chữ số · Chữ số · Chữ số · Hệ số · Sai số",
     "tip6band": "6 vòng: Chữ số · Chữ số · Chữ số · Hệ số · Sai số · TCR",
-    "tipDir": "Đọc từ trái → phải. Khoảng vàng/bạc = bên phải."
+    "tipDir": "Đọc từ trái → phải. Khoảng vàng/bạc = bên phải.",
+
+    "support": "Dukungan & Masukan",
+    "privacyPolicy": "Kebijakan Privasi",
+    "aboutDev": "Tentang Pengembang"
 }

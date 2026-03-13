@@ -60,5 +60,9 @@
     "tip4band": "4-Anell: Dígic · Dígic · Multiplicador · Tolerància",
     "tip5band": "5-Anell: Dígic · Dígic · Dígic · Multiplicador · Tolerància",
     "tip6band": "6-Anell: Dígic · Dígic · Dígic · Multiplicador · Tolerància · TCR",
-    "tipDir": "Llegiu d'esquerra → dreta. Espai Or/Plata = costat dret."
+    "tipDir": "Llegiu d'esquerra → dreta. Espai Or/Plata = costat dret.",
+
+    "support": "Suport i comentaris",
+    "privacyPolicy": "Política de privacitat",
+    "aboutDev": "Sobre el desenvolupador"
 }

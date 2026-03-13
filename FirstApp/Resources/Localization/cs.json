@@ -60,5 +60,9 @@
     "tip4band": "4 pásma: Číslice · Číslice · Násobitel · Tolerance",
     "tip5band": "5 pásem: Číslice · Číslice · Číslice · Násobitel · Tolerance",
     "tip6band": "6 pásem: Číslice · Číslice · Číslice · Násobitel · Tolerance · TCR",
-    "tipDir": "Čtěte zleva → doprava. Mezera zlato/stříbro = pravá strana."
+    "tipDir": "Čtěte zleva → doprava. Mezera zlato/stříbro = pravá strana.",
+
+    "support": "Tuki ja palaute",
+    "privacyPolicy": "Tietosuojakäytäntö",
+    "aboutDev": "Tietoja kehittäjästä"
 }

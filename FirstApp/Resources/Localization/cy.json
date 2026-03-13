@@ -60,5 +60,9 @@
     "tip4band": "4-Bŵnd: Digid · Digid · Lluosi · Tolerans",
     "tip5band": "5-Bŵnd: Digid · Digid · Digid · Lluosi · Tolerans",
     "tip6band": "6-Bŵnd: Digid · Digid · Digid · Lluosi · Tolerans · TCR",
-    "tipDir": "Darllenwch o'r chwith → i'r dde. Bwlch Aur/Arian = ochr dde."
+    "tipDir": "Darllenwch o'r chwith → i'r dde. Bwlch Aur/Arian = ochr dde.",
+
+    "support": "Cefnogaeth a adborth",
+    "privacyPolicy": "Polisi Preifatrwydd",
+    "aboutDev": "Ynghylch y Datblygwr"
 }

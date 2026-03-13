@@ -58,5 +58,9 @@
     "tip4band": "4 juostos: Skaitmuo · Skaitmuo · Daugiklis · Tolerancija",
     "tip5band": "5 juostos: Skaitmuo · Skaitmuo · Skaitmuo · Daugiklis · Tolerancija",
     "tip6band": "6 juostos: Skaitmuo · Skaitmuo · Skaitmuo · Daugiklis · Tolerancija · TCR",
-    "tipDir": "Skaitykite iš kairės → į dešinę. Auksinis/sidabrinis tarpas = dešinė pusė."
+    "tipDir": "Skaitykite iš kairės → į dešinę. Auksinis/sidabrinis tarpas = dešinė pusė.",
+
+    "support": "Palaikymas ir atsiliepimai",
+    "privacyPolicy": "Privatumo politika",
+    "aboutDev": "Apie kūrėją"
 }

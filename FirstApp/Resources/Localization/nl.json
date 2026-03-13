@@ -60,5 +60,9 @@
     "tip4band": "4-band: Cijfer · Cijfer · Vermenigvuldiger · Tolerantie",
     "tip5band": "5-band: Cijfer · Cijfer · Cijfer · Vermenigvuldiger · Tolerantie",
     "tip6band": "6-band: Cijfer · Cijfer · Cijfer · Vermenigvuldiger · Tolerantie · TCR",
-    "tipDir": "Lees links → rechts. Goud/zilver opening = rechterkant."
+    "tipDir": "Lees links → rechts. Goud/zilver opening = rechterkant.",
+
+    "support": "Ondersteuning & feedback",
+    "privacyPolicy": "Privacybeleid",
+    "aboutDev": "Over de ontwikkelaar"
 }

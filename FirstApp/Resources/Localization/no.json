@@ -60,5 +60,9 @@
     "tip4band": "4 bånd: Siffer · Siffer · Multiplikator · Toleranse",
     "tip5band": "5 bånd: Siffer · Siffer · Siffer · Multiplikator · Toleranse",
     "tip6band": "6 bånd: Siffer · Siffer · Siffer · Multiplikator · Toleranse · TCR",
-    "tipDir": "Les venstre → høyre. Gull/sølv-gap = høyre side."
+    "tipDir": "Les venstre → høyre. Gull/sølv-gap = høyre side.",
+
+    "support": "Support og tilbakemelding",
+    "privacyPolicy": "Personvernregler",
+    "aboutDev": "Om utvikleren"
 }

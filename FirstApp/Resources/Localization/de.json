@@ -60,5 +60,9 @@
     "tip4band": "4-Band: Ziffer · Ziffer · Multiplikator · Toleranz",
     "tip5band": "5-Band: Ziffer · Ziffer · Ziffer · Multiplikator · Toleranz",
     "tip6band": "6-Band: Ziffer · Ziffer · Ziffer · Multiplikator · Toleranz · TCR",
-    "tipDir": "Von links → rechts lesen. Gold/Silber-Abstand = rechte Seite."
+    "tipDir": "Von links → rechts lesen. Gold/Silber-Abstand = rechte Seite.",
+
+    "support": "Support & Rückmeldung",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "aboutDev": "Über den Entwickler"
 }

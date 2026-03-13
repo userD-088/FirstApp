@@ -60,5 +60,9 @@
     "tip4band": "4-Band: Digit · Digit · Multiplier · Toleransya",
     "tip5band": "5-Band: Digit · Digit · Digit · Multiplier · Toleransya",
     "tip6band": "6-Band: Digit · Digit · Digit · Multiplier · Toleransya · TCR",
-    "tipDir": "Basahin mula kaliwa → kanan. Agwat ng Ginto/Pilak = kanan."
+    "tipDir": "Basahin mula kaliwa → kanan. Agwat ng Ginto/Pilak = kanan.",
+
+    "support": "Suporta at Feedback",
+    "privacyPolicy": "Patakaran sa Pagkapribado",
+    "aboutDev": "Tungkol sa Developer"
 }

@@ -60,5 +60,9 @@
     "tip4band": "4 obroči: Števka · Števka · Množilnik · Toleranca",
     "tip5band": "5 obroči: Števka · Števka · Števka · Množilnik · Toleranca",
     "tip6band": "6 obroči: Števka · Števka · Števka · Množilnik · Toleranca · TCR",
-    "tipDir": "Berite z leve → desno. Zlata/srebrna vrzel = desna stran."
+    "tipDir": "Berite z leve → desno. Zlata/srebrna vrzel = desna stran.",
+
+    "support": "Podpora a spätná väzba",
+    "privacyPolicy": "Zásady ochrany osobných údajov",
+    "aboutDev": "O vývojárovi"
 }

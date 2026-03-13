@@ -60,5 +60,9 @@
     "tip4band": "4 sáv: Számjegy · Számjegy · Szorzó · Tolerancia",
     "tip5band": "5 sáv: Számjegy · Számjegy · Számjegy · Szorzó · Tolerancia",
     "tip6band": "6 sáv: Számjegy · Számjegy · Számjegy · Szorzó · Tolerancia · TCR",
-    "tipDir": "Olvasás balról → jobbra. Arany/ezüst rés = jobb oldal."
+    "tipDir": "Olvasás balról → jobbra. Arany/ezüst rés = jobb oldal.",
+
+    "support": "Támogatás és visszajelzés",
+    "privacyPolicy": "Adatvédelmi irányelvek",
+    "aboutDev": "A fejlesztőről"
 }

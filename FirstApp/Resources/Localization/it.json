@@ -60,5 +60,9 @@
     "tip4band": "4 bande: Cifra · Cifra · Moltiplicatore · Tolleranza",
     "tip5band": "5 bande: Cifra · Cifra · Cifra · Moltiplicatore · Tolleranza",
     "tip6band": "6 bande: Cifra · Cifra · Cifra · Moltiplicatore · Tolleranza · TCR",
-    "tipDir": "Leggere da sinistra → destra. Spazio oro/argento = lato destro."
+    "tipDir": "Leggere da sinistra → destra. Spazio oro/argento = lato destro.",
+
+    "support": "Supporto e feedback",
+    "privacyPolicy": "Informativa sulla privacy",
+    "aboutDev": "Informazioni sullo sviluppatore"
 }

@@ -60,5 +60,9 @@
     "tip4band": "4-Ringoj: Cifero · Cifero · Mult. · Toler.",
     "tip5band": "5-Ringoj: Cifero · Cifero · Cifero · Mult. · Toler.",
     "tip6band": "6-Ringoj: Cifero · Cifero · Cifero · Mult. · Toler. · TCR",
-    "tipDir": "Legu maldekstre → dekstre. Ora/Arĝenta interspaco = dekstra flanko."
+    "tipDir": "Legu maldekstre → dekstre. Ora/Arĝenta interspaco = dekstra flanko.",
+
+    "support": "Subteno & Reago",
+    "privacyPolicy": "Privateca Politiko",
+    "aboutDev": "Pri Programisto"
 }

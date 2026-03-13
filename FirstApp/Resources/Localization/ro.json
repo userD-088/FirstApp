@@ -60,5 +60,9 @@
     "tip4band": "4 benzi: Cifră · Cifră · Multiplicator · Toleranță",
     "tip5band": "5 benzi: Cifră · Cifră · Cifră · Multiplicator · Toleranță",
     "tip6band": "6 benzi: Cifră · Cifră · Cifră · Multiplicator · Toleranță · TCR",
-    "tipDir": "Citiți de la stânga → dreapta. Spațiul aur/argint = partea dreaptă."
+    "tipDir": "Citiți de la stânga → dreapta. Spațiul aur/argint = partea dreaptă.",
+
+    "support": "Suport și feedback",
+    "privacyPolicy": "Politica de confidențialitate",
+    "aboutDev": "Despre dezvoltator"
 }

@@ -60,5 +60,9 @@
     "tip4band": "4 טבעות: ספרה · ספרה · מכפיל · סבילות",
     "tip5band": "5 טבעות: ספרה · ספרה · ספרה · מכפיל · סבילות",
     "tip6band": "6 טבעות: ספרה · ספרה · ספרה · מכפיל · סבילות · TCR",
-    "tipDir": "קרא משמאל → לימין. רווח זהב/כסף = צד ימין."
+    "tipDir": "קרא משמאל → לימין. רווח זהב/כסף = צד ימין.",
+
+    "support": "Támogatás és visszajelzés",
+    "privacyPolicy": "Adatvédelmi irányelvek",
+    "aboutDev": "A fejlesztőről"
 }

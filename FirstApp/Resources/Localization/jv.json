@@ -60,5 +60,9 @@
     "tip4band": "4-Cincin: Digit · Digit · Pengganda · Toleransi",
     "tip5band": "5-Cincin: Digit · Digit · Digit · Pengganda · Toleransi",
     "tip6band": "6-Cincin: Digit · Digit · Digit · Pengganda · Toleransi · TCR",
-    "tipDir": "Waca saka kiwa → tengen. Celah Emas/Perak = sisih tengen."
+    "tipDir": "Waca saka kiwa → tengen. Celah Emas/Perak = sisih tengen.",
+
+    "support": "Dhukungan & Saran",
+    "privacyPolicy": "Kebijakan Privasi",
+    "aboutDev": "Babagan Pangembang"
 }

@@ -60,5 +60,9 @@
     "tip4band": "4 bånd: Ciffer · Ciffer · Multiplikator · Tolerance",
     "tip5band": "5 bånd: Ciffer · Ciffer · Ciffer · Multiplikator · Tolerance",
     "tip6band": "6 bånd: Ciffer · Ciffer · Ciffer · Multiplikator · Tolerance · TCR",
-    "tipDir": "Læs venstre → højre. Guld/sølv mellemrum = højre side."
+    "tipDir": "Læs venstre → højre. Guld/sølv mellemrum = højre side.",
+
+    "support": "Support & Feedback",
+    "privacyPolicy": "Privatlivspolitik",
+    "aboutDev": "Om udvikleren"
 }

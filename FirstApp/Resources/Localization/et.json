@@ -60,5 +60,9 @@
     "tip4band": "4 rõngast: Number · Number · Kordaja · Tolerants",
     "tip5band": "5 rõngast: Number · Number · Number · Kordaja · Tolerants",
     "tip6band": "6 rõngast: Number · Number · Number · Kordaja · Tolerants · TCR",
-    "tipDir": "Loe vasakult → paremale. Kuldne/hõbedane vahe = parem pool."
+    "tipDir": "Loe vasakult → paremale. Kuldne/hõbedane vahe = parem pool.",
+
+    "support": "Tugi ja tagasiside",
+    "privacyPolicy": "Privaatsuspoliitika",
+    "aboutDev": "Arendaja kohta"
 }

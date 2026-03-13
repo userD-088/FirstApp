@@ -60,5 +60,9 @@
     "tip4band": "4 band: Siffra · Siffra · Multiplikator · Tolerans",
     "tip5band": "5 band: Siffra · Siffra · Siffra · Multiplikator · Tolerans",
     "tip6band": "6 band: Siffra · Siffra · Siffra · Multiplikator · Tolerans · TCR",
-    "tipDir": "Läs vänster → höger. Guld/silver-mellanrum = höger sida."
+    "tipDir": "Läs vänster → höger. Guld/silver-mellanrum = höger sida.",
+
+    "support": "Support & Feedback",
+    "privacyPolicy": "Integritetspolicy",
+    "aboutDev": "Om utvecklaren"
 }

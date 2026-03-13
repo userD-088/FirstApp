@@ -60,5 +60,9 @@
     "tip4band": "4-Anel: Díxito · Díxito · Multiplicador · Tolerancia",
     "tip5band": "5-Anel: Díxito · Díxito · Díxito · Multiplicador · Tolerancia",
     "tip6band": "6-Anel: Díxito · Díxito · Díxito · Multiplicador · Tolerancia · TCR",
-    "tipDir": "Ler de esquerda → dereita. Espazo Ouro/Prata = lado dereito."
+    "tipDir": "Ler de esquerda → dereita. Espazo Ouro/Prata = lado dereito.",
+
+    "support": "Soporte e comentarios",
+    "privacyPolicy": "Política de privacidade",
+    "aboutDev": "Sobre o desenvolvedor"
 }

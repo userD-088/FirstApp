@@ -60,5 +60,9 @@
     "tip4band": "4 paski: Cyfra · Cyfra · Mnożnik · Tolerancja",
     "tip5band": "5 pasków: Cyfra · Cyfra · Cyfra · Mnożnik · Tolerancja",
     "tip6band": "6 pasków: Cyfra · Cyfra · Cyfra · Mnożnik · Tolerancja · TCR",
-    "tipDir": "Czytaj od lewej → do prawej. Przerwa złoto/srebro = prawa strona."
+    "tipDir": "Czytaj od lewej → do prawej. Przerwa złoto/srebro = prawa strona.",
+
+    "support": "Wsparcie i opinie",
+    "privacyPolicy": "Polityka prywatności",
+    "aboutDev": "O deweloperze"
 }

@@ -60,5 +60,9 @@
     "tip4band": "4 prstena: Znamenka · Znamenka · Množitelj · Tolerancija",
     "tip5band": "5 prstena: Znamenka · Znamenka · Znamenka · Množitelj · Tolerancija",
     "tip6band": "6 prstena: Znamenka · Znamenka · Znamenka · Množitelj · Tolerancija · TCR",
-    "tipDir": "Čitajte s lijeva → desno. Zlatni/srebrni razmak = desna strana."
+    "tipDir": "Čitajte s lijeva → desno. Zlatni/srebrni razmak = desna strana.",
+
+    "support": "Podrška i povratne informacije",
+    "privacyPolicy": "Pravila o privatnosti",
+    "aboutDev": "O programeru"
 }

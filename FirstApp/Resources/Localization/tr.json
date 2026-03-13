@@ -60,5 +60,9 @@
     "tip4band": "4 bant: Rakam · Rakam · Çarpan · Tolerans",
     "tip5band": "5 bant: Rakam · Rakam · Rakam · Çarpan · Tolerans",
     "tip6band": "6 bant: Rakam · Rakam · Rakam · Çarpan · Tolerans · TCR",
-    "tipDir": "Soldan → sağa okuyun. Altın/gümüş boşluk = sağ taraf."
+    "tipDir": "Soldan → sağa okuyun. Altın/gümüş boşluk = sağ taraf.",
+
+    "support": "Destek ve Geri Bildirim",
+    "privacyPolicy": "Gizlilik Politikası",
+    "aboutDev": "Geliştirici Hakkında"
 }

@@ -60,5 +60,9 @@
     "tip4band": "4-Halqa: Rəqəm · Rəqəm · Çoxaltma · Tolerans",
     "tip5band": "5-Halqa: Rəqəm · Rəqəm · Rəqəm · Çoxaltma · Tolerans",
     "tip6band": "6-Halqa: Rəqəm · Rəqəm · Rəqəm · Çoxaltma · Tolerans · TCR",
-    "tipDir": "Soldan sağa oxuyun. Qızıl/Gümüş boşluğu = sağ tərəf."
+    "tipDir": "Soldan sağa oxuyun. Qızıl/Gümüş boşluğu = sağ tərəf.",
+
+    "support": "Dəstək və rəy",
+    "privacyPolicy": "Məxfilik Siyasəti",
+    "aboutDev": "Tərtibatçı haqqında"
 }

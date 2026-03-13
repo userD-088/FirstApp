@@ -60,5 +60,9 @@
     "tip4band": "4 rengasta: Numero · Numero · Kerroin · Toleranssi",
     "tip5band": "5 rengasta: Numero · Numero · Numero · Kerroin · Toleranssi",
     "tip6band": "6 rengasta: Numero · Numero · Numero · Kerroin · Toleranssi · TCR",
-    "tipDir": "Lue vasemmalta → oikealle. Kulta/hopea-väli = oikea puoli."
+    "tipDir": "Lue vasemmalta → oikealle. Kulta/hopea-väli = oikea puoli.",
+
+    "support": "Tuki ja palaute",
+    "privacyPolicy": "Tietosuojakäytäntö",
+    "aboutDev": "Tietoja kehittäjästä"
 }

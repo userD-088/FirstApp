@@ -60,5 +60,9 @@
     "tip4band": "4 bandas: Dígito · Dígito · Multiplicador · Tolerancia",
     "tip5band": "5 bandas: Dígito · Dígito · Dígito · Multiplicador · Tolerancia",
     "tip6band": "6 bandas: Dígito · Dígito · Dígito · Multiplicador · Tolerancia · TCR",
-    "tipDir": "Leer de izquierda → derecha. Espacio oro/plata = lado derecho."
+    "tipDir": "Leer de izquierda → derecha. Espacio oro/plata = lado derecho.",
+
+    "support": "Soporte y comentarios",
+    "privacyPolicy": "Política de privacidad",
+    "aboutDev": "Acerca del desarrollador"
 }
