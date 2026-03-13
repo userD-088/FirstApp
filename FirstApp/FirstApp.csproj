@@ -13,8 +13,14 @@
 		<Nullable>enable</Nullable>
 		<ApplicationTitle>Resistor Calculator</ApplicationTitle>
 		<ApplicationId>com.companyname.firstapp</ApplicationId>
-		<ApplicationDisplayVersion>0.7.1</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>0.7.2</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<MauiLinkMode>SdkAndUserAssemblies</MauiLinkMode>
+		<AndroidEnableR8>true</AndroidEnableR8>
+		<AndroidPackageFormat>aab</AndroidPackageFormat>
 	</PropertyGroup>
 
 	<ItemGroup>

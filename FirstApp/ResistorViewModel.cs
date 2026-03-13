@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -77,8 +78,10 @@ namespace FirstApp
 
         /// <summary>
         /// Create a custom language by (code, flag emoji, short label).
-        /// The code is used to load the corresponding JSON in \Resources\Localization, so it must match the filename (without .json)
-        /// Emoji "emoji" can be used, rare languages use png "" (empty string) and png is in format flag_{code}.png in Images\Flags
+        /// The code is used to load the corresponding JSON in \Resources\Localization,
+        /// so it must match the filename (without .json).
+        /// Emoji can be used; rare languages use png "" (empty string),
+        /// png is in format flag_{code}.png in Images\Flags.
         /// </summary>
 
         // Main languages
@@ -88,24 +91,24 @@ namespace FirstApp
             ("pt","🇵🇹","PT"), ("ja","🇯🇵","JA"), ("zh","🇨🇳","ZH"),
         };
 
-        // Secondary languages (not loaded by default to save memory and load time – only loaded when user clicks "More languages")
+        // Secondary languages – only loaded when user clicks "More languages"
         public static readonly (string Code, string Flag, string Short)[] SecondaryLanguages =
         {
-            ("it","🇮🇹","IT"), ("nl","🇳🇱","NL"), ("ko","🇰🇷","KO"), ("tr","🇹🇷","TR"), 
-            ("pl","🇵🇱","PL"), ("sv","🇸🇪","SV"), ("da","🇩🇰","DA"), ("no","🇳🇴","NO"), 
-            ("fi","🇫🇮","FI"), ("cs","🇨🇿","CS"), ("el","🇬🇷","EL"), ("uk","🇺🇦","UK"), 
-            ("ar","🇸🇦","AR"), ("hi","🇮🇳","HI"), ("ro","🇷🇴","RO"), ("hu","🇭🇺","HU"), 
-            ("he","🇮🇱","HE"), ("id","🇮🇩","ID"), ("vi","🇻🇳","VI"), ("th","🇹🇭","TH"), 
-            ("ta","🇮🇳","TA"), ("te","🇮🇳","TE"), ("fa","🇮🇷","FA"), ("ur","🇵🇰","UR"), 
-            ("sw","🇰🇪","SW"), ("sk","🇸🇰","SK"), ("sl","🇸🇮","SL"), ("hr","🇭🇷","HR"), 
-            ("bg","🇧🇬","BG"), ("lt","🇱🇹","LT"), ("lv","🇱🇻","LV"), ("et","🇪🇪","ET"), 
-            ("ms","🇲🇾","MS"), ("gl","","GL"), ("ca","","CA"), ("eu","","EU"), 
-            ("la","🇻🇦","LA"), ("cy","","CY"), ("af","🇿🇦","AF"), ("sq","🇦🇱","SQ"), 
-            ("am","🇪🇹","AM"), ("is","🇮🇸","IS"), ("eo","","EO"), ("haw","","HAW"), 
-            ("rap","🗿","RAP"), ("pa","🇮🇳","PA"), ("jv","🇮🇩","JV"), ("mr","🇮🇳","MR"), 
-            ("wuu","🇨🇳","WUU"), ("ha","🇳🇬","HA"), ("kn","🇮🇳","KN"), ("gu","🇮🇳","GU"), 
-            ("tl","🇵🇭","TL"), ("sr","🇷🇸","SR"), ("ka","🇬🇪","KA"), ("hy","🇦🇲","HY"), 
-            ("az","🇦🇿","AZ"), ("bn","🇧🇩","BN"), ("ml","🇮🇳","ML"), 
+            ("it","🇮🇹","IT"), ("nl","🇳🇱","NL"), ("ko","🇰🇷","KO"), ("tr","🇹🇷","TR"),
+            ("pl","🇵🇱","PL"), ("sv","🇸🇪","SV"), ("da","🇩🇰","DA"), ("no","🇳🇴","NO"),
+            ("fi","🇫🇮","FI"), ("cs","🇨🇿","CS"), ("el","🇬🇷","EL"), ("uk","🇺🇦","UK"),
+            ("ar","🇸🇦","AR"), ("hi","🇮🇳","HI"), ("ro","🇷🇴","RO"), ("hu","🇭🇺","HU"),
+            ("he","🇮🇱","HE"), ("id","🇮🇩","ID"), ("vi","🇻🇳","VI"), ("th","🇹🇭","TH"),
+            ("ta","🇮🇳","TA"), ("te","🇮🇳","TE"), ("fa","🇮🇷","FA"), ("ur","🇵🇰","UR"),
+            ("sw","🇰🇪","SW"), ("sk","🇸🇰","SK"), ("sl","🇸🇮","SL"), ("hr","🇭🇷","HR"),
+            ("bg","🇧🇬","BG"), ("lt","🇱🇹","LT"), ("lv","🇱🇻","LV"), ("et","🇪🇪","ET"),
+            ("ms","🇲🇾","MS"), ("gl","","GL"),     ("ca","","CA"),     ("eu","","EU"),
+            ("la","🇻🇦","LA"), ("cy","","CY"),     ("af","🇿🇦","AF"), ("sq","🇦🇱","SQ"),
+            ("am","🇪🇹","AM"), ("is","🇮🇸","IS"), ("eo","","EO"),     ("haw","","HAW"),
+            ("rap","🗿","RAP"),("pa","🇮🇳","PA"), ("jv","🇮🇩","JV"), ("mr","🇮🇳","MR"),
+            ("wuu","🇨🇳","WUU"),("ha","🇳🇬","HA"),("kn","🇮🇳","KN"), ("gu","🇮🇳","GU"),
+            ("tl","🇵🇭","TL"), ("sr","🇷🇸","SR"), ("ka","🇬🇪","KA"), ("hy","🇦🇲","HY"),
+            ("az","🇦🇿","AZ"), ("bn","🇧🇩","BN"), ("ml","🇮🇳","ML"),
         };
 
         // Combined – used only for default-language detection
@@ -261,24 +264,14 @@ namespace FirstApp
 
                 case 4:
                     SelTol = idx;
-                    if (IsColorMode)
-                        RecalcColorToValue();
-                    else
-                    {
-                        ApplyTolRing();
-                        RingsChanged?.Invoke();
-                    }
+                    if (IsColorMode) RecalcColorToValue();
+                    else { ApplyTolRing(); RingsChanged?.Invoke(); }
                     return;
 
                 case 5:
                     SelTcr = idx;
-                    if (IsColorMode)
-                        RecalcColorToValue();
-                    else
-                    {
-                        ApplyTcrRing();
-                        RingsChanged?.Invoke();
-                    }
+                    if (IsColorMode) RecalcColorToValue();
+                    else { ApplyTcrRing(); RingsChanged?.Invoke(); }
                     return;
             }
             if (IsColorMode) RecalcColorToValue();
@@ -355,11 +348,7 @@ namespace FirstApp
             int sigD = _resistorMode >= 1 ? 3 : 2;
             int mulExp = (int)Math.Floor(Math.Log10(value)) - (sigD - 1);
 
-            if (mulExp < -2 || mulExp > 9)
-            {
-                ResultText = "OUT_OF_RANGE";
-                return;
-            }
+            if (mulExp < -2 || mulExp > 9) { ResultText = "OUT_OF_RANGE"; return; }
 
             int sig = (int)Math.Round(value / Math.Pow(10, mulExp));
             if (_resistorMode >= 1)
@@ -472,9 +461,9 @@ namespace FirstApp
         // LOCALIZATION ENGINE
         // ══════════════════════════════════════════════════════════════
 
-        // Cache: only loaded languages live here – secondary languages are
-        // never loaded until the user actually expands the "More" row.
-        private static readonly Dictionary<string, Dictionary<string, string>> _langCache = new();
+        // FIX C: ConcurrentDictionary – thread-sicher für PreloadLang (Background-Thread)
+        // vs. T() (UI-Thread)
+        private static readonly ConcurrentDictionary<string, Dictionary<string, string>> _langCache = new();
 
         private static string GetDefaultLanguage()
         {
@@ -483,7 +472,8 @@ namespace FirstApp
             return supported ? sys : "en";
         }
 
-        private string T(string key)
+        // FIX A: internal statt private – direkt aus MainPage.Loc() aufrufbar, kein Reflection
+        internal string T(string key)
         {
             if (!_langCache.TryGetValue(_lang, out var dict))
                 dict = LoadLang(_lang);
@@ -505,24 +495,25 @@ namespace FirstApp
         {
             try
             {
-                using var stream = FileSystem.OpenAppPackageFileAsync($"{code}.json").Result;
+                using var stream = Task.Run(() =>
+                    FileSystem.OpenAppPackageFileAsync($"{code}.json")).GetAwaiter().GetResult();
                 using var reader = new StreamReader(stream);
-                string json = reader.ReadToEnd();
-                var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(json)
-                           ?? new Dictionary<string, string>();
-                _langCache[code] = dict;
+                var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(reader.ReadToEnd())
+                           ?? new();
+                _langCache.TryAdd(code, dict);
                 return dict;
             }
             catch
             {
-                _langCache[code] = new Dictionary<string, string>();
-                return _langCache[code];
+                var empty = new Dictionary<string, string>();
+                _langCache.TryAdd(code, empty);
+                return empty;
             }
         }
 
         /// <summary>
         /// Pre-loads the JSON for a given language code into the cache.
-        /// Call this from a background thread when the user expands "More languages"
+        /// Call from a background thread when the user expands "More languages"
         /// so that switching feels instant afterwards.
         /// </summary>
         public static void PreloadLang(string code)

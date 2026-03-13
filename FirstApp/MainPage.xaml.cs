@@ -46,6 +46,41 @@ namespace FirstApp
         // --- Language section state
         private bool _langExpanded = false;
         private bool _secondaryChipsBuilt = false;
+        private string _langChipsBuiltFor = "";   // FIX D
+
+        // --- Reference panel cache
+        private string _refContentBuiltFor = "";    // FIX B
+
+        // ══════════════════════════════════════════════════════════════
+        // FIX E: UI COLOR PALETTE  –  static readonly, einmalig geparst
+        // ══════════════════════════════════════════════════════════════
+        // Aktiv-Blau (Tabs, ausgewählte Chips)
+        private static readonly Color CUiBlue = Color.FromArgb("#2563EB");
+        // Dunkle Chip-Hintergründe
+        private static readonly Color CUiChipDark = Color.FromArgb("#1F2937");
+        private static readonly Color CUiDropDark = Color.FromArgb("#1A2535");
+        private static readonly Color CUiChipEmpty = Color.FromArgb("#2A2A2A");
+        // Textfarben
+        private static readonly Color CUiTextMuted = Color.FromArgb("#64748B");
+        private static readonly Color CUiTextSub = Color.FromArgb("#94A3B8");
+        private static readonly Color CUiTextLight = Color.FromArgb("#E2E8F0");
+        private static readonly Color CUiTextDim = Color.FromArgb("#475569");
+        private static readonly Color CUiTextDimmer = Color.FromArgb("#374151");
+        private static readonly Color CUiTextBlue = Color.FromArgb("#93C5FD");
+        private static readonly Color CUiTextTan = Color.FromArgb("#D2B48C");
+        private static readonly Color CUiTextSteel = Color.FromArgb("#6BA3BE");
+        private static readonly Color CUiTextYellow = Color.FromArgb("#FBBF24");
+        private static readonly Color CUiTextGreen = Color.FromArgb("#10B981");
+        // Hintergründe / Panels
+        private static readonly Color CUiPanelDark = Color.FromArgb("#060D1A");
+        private static readonly Color CUiRowDark1 = Color.FromArgb("#0D1520");
+        private static readonly Color CUiRowDark2 = Color.FromArgb("#070F1A");
+        private static readonly Color CUiHighBg = Color.FromArgb("#0E1F3A");
+        private static readonly Color CUiBadgeDark = Color.FromArgb("#1A2535");
+        // Rahmen / Divider
+        private static readonly Color CUiBorderBlue = Color.FromArgb("#1E3A5F");
+        private static readonly Color CUiBorderDiv = Color.FromArgb("#1E293B");
+        private static readonly Color CUiBorderNone = Color.FromArgb("#444444");
 
         // INIT
 
@@ -84,9 +119,8 @@ namespace FirstApp
             _vm.SetMode(_vm.ResistorMode);
         }
 
-        // --- Language / locale change
-        private void OnVmPropertyChanged(object? sender,
-    System.ComponentModel.PropertyChangedEventArgs e)
+        // ── Language / locale change ──────────────────────────────────
+        private void OnVmPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName is "" or nameof(ResistorViewModel.Lang))
             {
@@ -97,10 +131,10 @@ namespace FirstApp
             }
         }
 
-        // --- App title update
+        // ── App title update ──────────────────────────────────────────
         private void UpdateWindowTitle()
         {
-            #if ANDROID
+#if ANDROID
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
@@ -116,16 +150,16 @@ namespace FirstApp
                 }
                 else if (OperatingSystem.IsAndroidVersionAtLeast(21))
                 {
-            #pragma warning disable CA1422
+#pragma warning disable CA1422
                     activity.SetTaskDescription(
                         new Android.App.ActivityManager.TaskDescription(_vm.TitleText));
-            #pragma warning restore CA1422
+#pragma warning restore CA1422
                 }
             });
-            #endif
+#endif
         }
 
-        // --- JIT pre-warm
+        // ── Lifecycle ─────────────────────────────────────────────────
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -139,24 +173,19 @@ namespace FirstApp
             UpdateWindowTitle();
         }
 
+        // FIX G: Ressourcen beim Verlassen der Page freigeben
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
+            _textCts?.Cancel();
+            _textCts?.Dispose();
+            _textCts = null;
         }
 
         private async Task PreWarmJit()
         {
             await Task.Yield();
-            await Task.WhenAll(
-                ResistorView.FadeTo(1, 1),
-                ResistorView.TranslateTo(0, 0, 1),
-                ValueToColorLayout.FadeTo(1, 1),
-                ValueToColorLayout.TranslateTo(0, 0, 1),
-                ColorToValueLayout.FadeTo(1, 1),
-                ColorToValueLayout.TranslateTo(0, 0, 1),
-                SettingsPanel.TranslateTo(0, SettingsPanel.TranslationY, 1),
-                SettingsOverlay.FadeTo(0, 1)
-            );
+            ResistorView.Invalidate();
         }
 
         // UNIT DROPDOWN  (Ohm / K / M / G)
@@ -164,7 +193,6 @@ namespace FirstApp
         private async void OnUnitBtnTapped(object? sender, TappedEventArgs e)
         {
             if (_unitAnimBusy) return;
-
             if (_unitDropdownOpen) await CloseUnitDropdown();
             else await OpenUnitDropdown();
         }
@@ -175,10 +203,9 @@ namespace FirstApp
             _unitAnimBusy = true;
             _unitDropdownOpen = true;
 
-            // Absolute position of UnitBtn relative to RootGrid
             var pos = GetAbsolutePosition(UnitBtn, RootGrid);
-            double left = pos.X;  // left edge of button
-            double top = pos.Y + UnitBtn.Height + 4;  // just below button
+            double left = pos.X;
+            double top = pos.Y + UnitBtn.Height + 4;
 
             UnitDropdown.Margin = new Thickness(left, top, 0, 0);
             UnitDropdown.TranslationY = -10;
@@ -186,15 +213,16 @@ namespace FirstApp
             UnitDropdown.IsVisible = true;
             UnitChevron.Text = "▴";
 
-            await Task.WhenAll(
-                UnitDropdown.FadeTo(1, DropMs, Easing.CubicOut),
-                UnitDropdown.TranslateTo(0, 0, DropMs, Easing.CubicOut)
-            );
-
-            _unitAnimBusy = false;
+            try
+            {
+                await Task.WhenAll(
+                    UnitDropdown.FadeTo(1, DropMs, Easing.CubicOut),
+                    UnitDropdown.TranslateTo(0, 0, DropMs, Easing.CubicOut)
+                );
+            }
+            finally { _unitAnimBusy = false; }
         }
 
-        // Walks up the visual tree from element to relativeTo, summing X/Y offsets.
         private static Point GetAbsolutePosition(VisualElement element, VisualElement relativeTo)
         {
             double x = 0, y = 0;
@@ -215,13 +243,18 @@ namespace FirstApp
             _unitDropdownOpen = false;
             UnitChevron.Text = "▾";
 
-            await Task.WhenAll(
-                UnitDropdown.FadeTo(0, DropMs, Easing.CubicIn),
-                UnitDropdown.TranslateTo(0, -10, DropMs, Easing.CubicIn)
-            );
-
-            UnitDropdown.IsVisible = false;
-            _unitAnimBusy = false;
+            try
+            {
+                await Task.WhenAll(
+                    UnitDropdown.FadeTo(0, DropMs, Easing.CubicIn),
+                    UnitDropdown.TranslateTo(0, -10, DropMs, Easing.CubicIn)
+                );
+            }
+            finally
+            {
+                UnitDropdown.IsVisible = false;
+                _unitAnimBusy = false;
+            }
         }
 
         // -- Option taps
@@ -238,7 +271,6 @@ namespace FirstApp
             TriggerRecalc();
         }
 
-        // Updates button label and option highlight silently (no animation).
         private void SetUnitSilent(int idx)
         {
             _unitIdx = idx;
@@ -247,20 +279,15 @@ namespace FirstApp
 
         private void ApplyUnitHighlight()
         {
-            // Button label
             UnitBtnLabel.Text = UnitLabels[_unitIdx];
-
-            // Highlight active option
             Border[] opts = { UnitOpt0, UnitOpt1, UnitOpt2, UnitOpt3 };
             for (int i = 0; i < opts.Length; i++)
             {
                 bool active = i == _unitIdx;
-                opts[i].BackgroundColor = active
-                    ? Color.FromArgb("#2563EB")
-                    : Color.FromArgb("#1A2535");
+                opts[i].BackgroundColor = active ? CUiBlue : CUiDropDark;   // FIX E
                 if (opts[i].Content is Label lbl)
                 {
-                    lbl.TextColor = active ? Colors.White : Color.FromArgb("#94A3B8");
+                    lbl.TextColor = active ? Colors.White : CUiTextSub; // FIX E
                     lbl.FontAttributes = active ? FontAttributes.Bold : FontAttributes.None;
                 }
             }
@@ -280,26 +307,28 @@ namespace FirstApp
             int dir = newMode > _vm.ResistorMode ? 1 : -1;
             double w = ResistorViewContainer.Width > 0 ? ResistorViewContainer.Width : 300;
 
-            await Task.WhenAll(
-                ResistorView.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
-                ResistorView.FadeTo(0, SlideMs, Easing.CubicIn)
-            );
+            try
+            {
+                await Task.WhenAll(
+                    ResistorView.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
+                    ResistorView.FadeTo(0, SlideMs, Easing.CubicIn)
+                );
 
-            _vm.SetMode(newMode);
-            RebuildToleranceChips();
-            if (newMode == 2) RebuildTcrChips();
-            UpdateResistorTypeTabs();
-            ResistorView.Invalidate();
+                _vm.SetMode(newMode);
+                RebuildToleranceChips();
+                if (newMode == 2) RebuildTcrChips();
+                UpdateResistorTypeTabs();
+                ResistorView.Invalidate();
 
-            ResistorView.TranslationX = dir * w;
-            ResistorView.Opacity = 0;
+                ResistorView.TranslationX = dir * w;
+                ResistorView.Opacity = 0;
 
-            await Task.WhenAll(
-                ResistorView.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
-                ResistorView.FadeTo(1, SlideMs, Easing.CubicOut)
-            );
-
-            _resAnimBusy = false;
+                await Task.WhenAll(
+                    ResistorView.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
+                    ResistorView.FadeTo(1, SlideMs, Easing.CubicOut)
+                );
+            }
+            finally { _resAnimBusy = false; }
         }
 
         private void UpdateResistorTypeTabs()
@@ -319,7 +348,6 @@ namespace FirstApp
             if (_vm.InputMode == newMode || _inputAnimBusy) return;
             _inputAnimBusy = true;
 
-            // close unit dropdown if open
             if (_unitDropdownOpen) await CloseUnitDropdown();
 
             int dir = newMode > _vm.InputMode ? 1 : -1;
@@ -328,29 +356,31 @@ namespace FirstApp
                 ? (VisualElement)ValueToColorLayout
                 : ColorToValueLayout;
 
-            await Task.WhenAll(
-                outgoing.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
-                outgoing.FadeTo(0, SlideMs, Easing.CubicIn)
-            );
+            try
+            {
+                await Task.WhenAll(
+                    outgoing.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
+                    outgoing.FadeTo(0, SlideMs, Easing.CubicIn)
+                );
 
-            _vm.SetInputMode(newMode);
-            UpdateInputModeTabs();
+                _vm.SetInputMode(newMode);
+                UpdateInputModeTabs();
 
-            var incoming = newMode == 0
-                ? (VisualElement)ValueToColorLayout
-                : ColorToValueLayout;
-            incoming.TranslationX = dir * w;
-            incoming.Opacity = 0;
+                var incoming = newMode == 0
+                    ? (VisualElement)ValueToColorLayout
+                    : ColorToValueLayout;
+                incoming.TranslationX = dir * w;
+                incoming.Opacity = 0;
 
-            await Task.WhenAll(
-                incoming.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
-                incoming.FadeTo(1, SlideMs, Easing.CubicOut)
-            );
+                await Task.WhenAll(
+                    incoming.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
+                    incoming.FadeTo(1, SlideMs, Easing.CubicOut)
+                );
 
-            outgoing.TranslationX = 0;
-            outgoing.Opacity = 1;
-
-            _inputAnimBusy = false;
+                outgoing.TranslationX = 0;
+                outgoing.Opacity = 1;
+            }
+            finally { _inputAnimBusy = false; }
         }
 
         private void UpdateInputModeTabs()
@@ -363,8 +393,8 @@ namespace FirstApp
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetSegTab(Border tab, Label lbl, bool active)
         {
-            tab.BackgroundColor = active ? Color.FromArgb("#2563EB") : Colors.Transparent;
-            lbl.TextColor = active ? Colors.White : Color.FromArgb("#64748B");
+            tab.BackgroundColor = active ? CUiBlue : Colors.Transparent;  // FIX E
+            lbl.TextColor = active ? Colors.White : CUiTextMuted;   // FIX E
             lbl.FontAttributes = active ? FontAttributes.Bold : FontAttributes.None;
         }
 
@@ -397,6 +427,8 @@ namespace FirstApp
         private void RebuildTcrChips() =>
             BuildChipRow(TcrChipsLayout, _chipsTcr, ResistorViewModel.TcrData, 5, _vm.SelTcr, pill: true);
 
+        // Erstellt die Series-Chips einmalig.
+        // Für reine Highlight-Wechsel → UpdateSeriesChipsHighlight()
         private void RebuildSeriesChips()
         {
             SeriesChipsMain.Children.Clear();
@@ -420,36 +452,59 @@ namespace FirstApp
                         else if (formatted.EndsWith("M")) { newUnit = 2; numPart = formatted[..^1]; }
                         else if (formatted.EndsWith("k")) { newUnit = 1; numPart = formatted[..^1]; }
 
+                        // FIX F: try/finally damit _suppressTextChanged nie hängen bleibt
                         _suppressTextChanged = true;
-                        ResistanceEntry.Text = numPart;
-                        _suppressTextChanged = false;
+                        try { ResistanceEntry.Text = numPart; }
+                        finally { _suppressTextChanged = false; }
 
                         SetUnitSilent(newUnit);
                         TriggerRecalc();
                     }
 
-                    RebuildSeriesChips();
+                    UpdateSeriesChipsHighlight();
                 }));
                 SeriesChipsMain.Children.Add(chip);
             }
         }
 
+        // Aktualisiert nur Farbe/Schrift der bestehenden Series-Chips.
+        private void UpdateSeriesChipsHighlight()
+        {
+            foreach (var child in SeriesChipsMain.Children)
+            {
+                if (child is not Border chip) continue;
+                if (chip.Content is not Label lbl) continue;
+                if (!int.TryParse(lbl.Text.AsSpan(1), out int s)) continue;
+
+                bool sel = s == _vm.SelectedSeries;
+                chip.BackgroundColor = sel ? CUiBlue : CUiChipDark;       // FIX E
+                chip.Stroke = sel ? Colors.White : Colors.Transparent;
+                chip.StrokeThickness = sel ? 1.5 : 0;
+                lbl.FontAttributes = sel ? FontAttributes.Bold : FontAttributes.None;
+            }
+        }
+
         // -- Language chip helpers
+
+        // FIX D: Chips nur neu bauen wenn Sprache gewechselt hat
         private void RebuildPrimaryLangChips()
         {
+            if (_langChipsBuiltFor != _vm.Lang)
+            {
+                LangChipsLayout.Children.Clear();
+                foreach (var (code, flag, shortName) in ResistorViewModel.PrimaryLanguages)
+                    LangChipsLayout.Children.Add(MakeLangChip(code, flag, shortName));
+                _langChipsBuiltFor = _vm.Lang;
+            }
+
+            // State immer zurücksetzen (Settings wurde neu geöffnet)
             _langExpanded = false;
             _secondaryChipsBuilt = false;
             LangChipsSecondary.Children.Clear();
-
             MoreLangsRow.IsVisible = false;
             MoreLangsRow.Opacity = 1;
             MoreLangsRow.TranslationY = 0;
-
             UpdateMoreToggleLabel();
-
-            LangChipsLayout.Children.Clear();
-            foreach (var (code, flag, shortName) in ResistorViewModel.PrimaryLanguages)
-                LangChipsLayout.Children.Add(MakeLangChip(code, flag, shortName));
         }
 
         private void EnsureSecondaryChipsBuilt()
@@ -500,17 +555,17 @@ namespace FirstApp
                     {
                         new Image
                         {
-                            Source        = ImageSource.FromFile($"flag_{code}.png"),
-                            HeightRequest = 14, WidthRequest = 22,
-                            Aspect        = Aspect.AspectFit,
+                            Source          = ImageSource.FromFile($"flag_{code}.png"),
+                            HeightRequest   = 14, WidthRequest = 22,
+                            Aspect          = Aspect.AspectFit,
                             VerticalOptions = LayoutOptions.Center,
                         },
                         new Label
                         {
-                            Text           = shortName,
-                            TextColor      = Colors.White,
-                            FontSize       = 13,
-                            FontAttributes = sel ? FontAttributes.Bold : FontAttributes.None,
+                            Text                  = shortName,
+                            TextColor             = Colors.White,
+                            FontSize              = 13,
+                            FontAttributes        = sel ? FontAttributes.Bold : FontAttributes.None,
                             VerticalTextAlignment = TextAlignment.Center,
                             VerticalOptions       = LayoutOptions.Center,
                         }
@@ -521,7 +576,7 @@ namespace FirstApp
             var chip = new Border
             {
                 StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(14) },
-                BackgroundColor = sel ? Color.FromArgb("#2563EB") : Color.FromArgb("#1F2937"),
+                BackgroundColor = sel ? CUiBlue : CUiChipDark,          // FIX E
                 Stroke = sel ? Colors.White : Colors.Transparent,
                 StrokeThickness = sel ? 1.5 : 0,
                 Padding = new Thickness(12, 8),
@@ -533,6 +588,7 @@ namespace FirstApp
             {
                 bool wasExpanded = _langExpanded;
                 _vm.Lang = cap;
+                _langChipsBuiltFor = "";   // Cache invalidieren
                 RebuildPrimaryLangChips();
 
                 if (wasExpanded)
@@ -584,7 +640,6 @@ namespace FirstApp
             MoreLangsLabel.Text = _langExpanded ? $"▲  {less}" : $"▼  {more}";
         }
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SetSel(List<Border> list, int idx)
         {
@@ -601,7 +656,7 @@ namespace FirstApp
             bool empty = bg == Colors.Transparent || bg == ResistorViewModel.CNone;
             var chip = new Border
             {
-                BackgroundColor = empty ? Color.FromArgb("#2A2A2A") : bg,
+                BackgroundColor = empty ? CUiChipEmpty : bg,             // FIX E
                 StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(pill ? 10 : 18) },
                 Stroke = sel ? Colors.White : Colors.Transparent,
                 StrokeThickness = sel ? 2.5 : 0,
@@ -626,7 +681,7 @@ namespace FirstApp
         private static Border MakeSeriesChip(int s, bool sel) => new Border
         {
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
-            BackgroundColor = sel ? Color.FromArgb("#2563EB") : Color.FromArgb("#1F2937"),
+            BackgroundColor = sel ? CUiBlue : CUiChipDark,              // FIX E
             Stroke = sel ? Colors.White : Colors.Transparent,
             StrokeThickness = sel ? 1.5 : 0,
             Padding = new Thickness(14, 8),
@@ -657,7 +712,6 @@ namespace FirstApp
         {
             if (!_vm.IsValueMode || _suppressTextChanged) return;
 
-            // -- Auto-detect a trailing unit suffix typed by the user
             string raw = e.NewTextValue ?? "";
             string upper = raw.TrimEnd().ToUpperInvariant();
 
@@ -669,21 +723,21 @@ namespace FirstApp
 
             if (detectedUnit >= 0)
             {
+                // FIX F: try/finally – Flag hängt nie bei Exception
                 _suppressTextChanged = true;
-                ResistanceEntry.Text = raw[..^1];
-                _suppressTextChanged = false;
+                try { ResistanceEntry.Text = raw[..^1]; }
+                finally { _suppressTextChanged = false; }
                 SetUnitSilent(detectedUnit);
             }
 
-            // Close dropdown if open (user started typing)
             if (_unitDropdownOpen) _ = CloseUnitDropdown();
-
             TriggerRecalc();
         }
 
         private void TriggerRecalc()
         {
             _textCts?.Cancel();
+            _textCts?.Dispose();
             _textCts = new CancellationTokenSource();
             var token = _textCts.Token;
 
@@ -714,7 +768,7 @@ namespace FirstApp
             _settingsOpen = true;
 
             if (_unitDropdownOpen) await CloseUnitDropdown();
-            RebuildPrimaryLangChips();
+            RebuildPrimaryLangChips();   // FIX D: nur neu wenn Sprache gewechselt
 
             SettingsOverlay.IsVisible = true;
             SettingsOverlay.InputTransparent = false;
@@ -753,7 +807,6 @@ namespace FirstApp
         private async void OnAboutTapped(object sender, TappedEventArgs e)
         {
             _aboutExpanded = !_aboutExpanded;
-
             if (_aboutExpanded)
             {
                 AboutExpanded.IsVisible = true;
@@ -775,8 +828,7 @@ namespace FirstApp
         private const string DeveloperUrl = "https://yourapp.com/about";
 
         private void OnSupportTapped(object sender, TappedEventArgs e)
-            => _ = Launcher.OpenAsync(
-                   $"mailto:{SupportEmail}?subject=Resistor%20Calculator%20Feedback");
+            => _ = Launcher.OpenAsync($"mailto:{SupportEmail}?subject=Resistor%20Calculator%20Feedback");
 
         private void OnPrivacyTapped(object sender, TappedEventArgs e)
             => _ = Browser.OpenAsync(PrivacyPolicyUrl, BrowserLaunchMode.SystemPreferred);
@@ -796,8 +848,7 @@ namespace FirstApp
             _refOpen = true;
 
             if (_unitDropdownOpen) await CloseUnitDropdown();
-
-            BuildReferenceContent();   // (re)build so language is current
+            EnsureReferenceContent();   // FIX B: nur neu wenn Sprache gewechselt
 
             RefOverlay.IsVisible = true;
             RefOverlay.InputTransparent = false;
@@ -826,65 +877,55 @@ namespace FirstApp
             => OnCloseReference(sender, e);
         private void OnRefPanelTapped(object sender, TappedEventArgs e) { /* consume */ }
 
-
         // ──────────────────────────────────────────────────────────
         // REFERENCE CONTENT BUILDER
         // ──────────────────────────────────────────────────────────
 
-        // Builds the scrollable reference content (color table + E-series)
+        // FIX B: nur neu bauen wenn Sprache gewechselt hat
+        private void EnsureReferenceContent()
+        {
+            if (_refContentBuiltFor == _vm.Lang) return;
+            BuildReferenceContent();
+            _refContentBuiltFor = _vm.Lang;
+        }
+
         private void BuildReferenceContent()
         {
             RefContent.Children.Clear();
 
-            // ── Localised title
             RefTitleLabel.Text = Loc("refTitle", "Reference");
 
-            // ── Section 1: Reading order tip
             RefContent.Children.Add(BuildSectionHeader(Loc("refTip", "Reading Direction")));
             RefContent.Children.Add(BuildReadingTip());
+            RefContent.Children.Add(new BoxView { HeightRequest = 1, BackgroundColor = CUiBorderDiv }); // FIX E
 
-            RefContent.Children.Add(new BoxView { HeightRequest = 1, BackgroundColor = Color.FromArgb("#1E293B") });
-
-            // ── Section 2: Color Band Table
             RefContent.Children.Add(BuildSectionHeader(Loc("refColors", "Color Codes")));
             RefContent.Children.Add(BuildColorTable());
+            RefContent.Children.Add(new BoxView { HeightRequest = 1, BackgroundColor = CUiBorderDiv }); // FIX E
 
-            RefContent.Children.Add(new BoxView { HeightRequest = 1, BackgroundColor = Color.FromArgb("#1E293B") });
-
-            // ── Section 3: E-Series
             RefContent.Children.Add(BuildSectionHeader(Loc("refESeries", "E-Series")));
             RefContent.Children.Add(BuildESeriesSection());
         }
 
-        // ── Localization helper (falls back to defaultText)
+        // FIX A: Kein Reflection mehr – T() ist internal
         private string Loc(string key, string defaultText)
         {
-            // Re-use the ViewModel's translated text if exposed; otherwise fallback.
-            // Extend ResistorViewModel.T() or duplicate minimal lookup here.
-            try
-            {
-                var t = typeof(ResistorViewModel)
-                    .GetMethod("T", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (t != null) return (string?)t.Invoke(_vm, new object[] { key }) ?? defaultText;
-            }
-            catch { /* ignore */ }
-            return defaultText;
+            var val = _vm.T(key);
+            return val != key ? val : defaultText;
         }
 
-        // ── Generic section header label
         private static Label BuildSectionHeader(string text) => new Label
         {
             Text = text,
             FontSize = 14,
             FontAttributes = FontAttributes.Bold,
-            TextColor = Color.FromArgb("#94A3B8"),
+            TextColor = CUiTextSub,   // FIX E
             Margin = new Thickness(0, 4, 0, 6)
         };
 
         // ─────────────────────────────────────────────
         // COLOR TABLE
         // ─────────────────────────────────────────────
-        // Columns:  Swatch | Color name | Digit | Multiplier | Tolerance
         private View BuildColorTable()
         {
             var colHeader = Loc("refColor", "Color");
@@ -892,39 +933,37 @@ namespace FirstApp
             var mulHeader = Loc("refMult", "×");
             var tolHeader = Loc("refTol", "Tol.");
 
-            // Data: (bg, fg, name, digit, multiplier, tolerance)
             var rows = new (Color Bg, Color Fg, string Name, string Digit, string Mult, string Tol)[]
             {
-                (ResistorViewModel.CBlack,  Colors.White,  Loc("colBlack",  "Black"),  "0", "×1",      "–"     ),
-                (ResistorViewModel.CBrown,  Colors.White,  Loc("colBrown",  "Brown"),  "1", "×10",     "±1%"   ),
-                (ResistorViewModel.CRed,    Colors.White,  Loc("colRed",    "Red"),    "2", "×100",    "±2%"   ),
-                (ResistorViewModel.COrange, Colors.Black,  Loc("colOrange", "Orange"), "3", "×1k",     "–"     ),
-                (ResistorViewModel.CYellow, Colors.Black,  Loc("colYellow", "Yellow"), "4", "×10k",    "–"     ),
-                (ResistorViewModel.CGreen,  Colors.White,  Loc("colGreen",  "Green"),  "5", "×100k",   "±0.5%" ),
-                (ResistorViewModel.CBlue,   Colors.White,  Loc("colBlue",   "Blue"),   "6", "×1M",     "±0.25%"),
-                (ResistorViewModel.CViolet, Colors.White,  Loc("colViolet", "Violet"), "7", "×10M",    "±0.1%" ),
-                (ResistorViewModel.CGray,   Colors.White,  Loc("colGray",   "Gray"),   "8", "×100M",   "±0.05%"),
-                (ResistorViewModel.CWhite,  Colors.Black,  Loc("colWhite",  "White"),  "9", "×1G",     "–"     ),
-                (ResistorViewModel.CGold,   Colors.Black,  Loc("colGold",   "Gold"),   "–", "×0.1",    "±5%"   ),
-                (ResistorViewModel.CSilver, Colors.Black,  Loc("colSilver", "Silver"), "–", "×0.01",   "±10%"  ),
-                (ResistorViewModel.CNone,   Colors.White,  Loc("colNone",   "None"),   "–", "–",        "±20%"  ),
+                (ResistorViewModel.CBlack,  Colors.White, Loc("colBlack",  "Black"),  "0", "×1",    "–"     ),
+                (ResistorViewModel.CBrown,  Colors.White, Loc("colBrown",  "Brown"),  "1", "×10",   "±1%"   ),
+                (ResistorViewModel.CRed,    Colors.White, Loc("colRed",    "Red"),    "2", "×100",  "±2%"   ),
+                (ResistorViewModel.COrange, Colors.Black, Loc("colOrange", "Orange"), "3", "×1k",   "–"     ),
+                (ResistorViewModel.CYellow, Colors.Black, Loc("colYellow", "Yellow"), "4", "×10k",  "–"     ),
+                (ResistorViewModel.CGreen,  Colors.White, Loc("colGreen",  "Green"),  "5", "×100k", "±0.5%" ),
+                (ResistorViewModel.CBlue,   Colors.White, Loc("colBlue",   "Blue"),   "6", "×1M",   "±0.25%"),
+                (ResistorViewModel.CViolet, Colors.White, Loc("colViolet", "Violet"), "7", "×10M",  "±0.1%" ),
+                (ResistorViewModel.CGray,   Colors.White, Loc("colGray",   "Gray"),   "8", "×100M", "±0.05%"),
+                (ResistorViewModel.CWhite,  Colors.Black, Loc("colWhite",  "White"),  "9", "×1G",   "–"     ),
+                (ResistorViewModel.CGold,   Colors.Black, Loc("colGold",   "Gold"),   "–", "×0.1",  "±5%"   ),
+                (ResistorViewModel.CSilver, Colors.Black, Loc("colSilver", "Silver"), "–", "×0.01", "±10%"  ),
+                (ResistorViewModel.CNone,   Colors.White, Loc("colNone",   "None"),   "–", "–",     "±20%"  ),
             };
 
             var grid = new Grid
             {
                 ColumnDefinitions = new ColumnDefinitionCollection
                 {
-                    new ColumnDefinition { Width = 28 },            // swatch
-                    new ColumnDefinition { Width = GridLength.Star },// name
-                    new ColumnDefinition { Width = 36 },            // digit
-                    new ColumnDefinition { Width = 58 },            // mult
-                    new ColumnDefinition { Width = 52 },            // tol
+                    new ColumnDefinition { Width = 28 },
+                    new ColumnDefinition { Width = GridLength.Star },
+                    new ColumnDefinition { Width = 36 },
+                    new ColumnDefinition { Width = 58 },
+                    new ColumnDefinition { Width = 52 },
                 },
                 RowSpacing = 0,
                 ColumnSpacing = 6,
             };
 
-            // Header row
             grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             void AddHeader(string t, int col)
             {
@@ -932,7 +971,7 @@ namespace FirstApp
                 {
                     Text = t,
                     FontSize = 10,
-                    TextColor = Color.FromArgb("#64748B"),
+                    TextColor = CUiTextMuted,   // FIX E
                     FontAttributes = FontAttributes.Bold,
                     HorizontalTextAlignment = TextAlignment.Center,
                     VerticalTextAlignment = TextAlignment.Center,
@@ -947,37 +986,30 @@ namespace FirstApp
             AddHeader(mulHeader, 3);
             AddHeader(tolHeader, 4);
 
-            // Data rows
             for (int r = 0; r < rows.Length; r++)
             {
                 var row = rows[r];
                 int rowIdx = r + 1;
                 grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-                // Background stripe for readability
                 bool stripe = r % 2 == 0;
                 var bg = new BoxView
                 {
-                    BackgroundColor = stripe
-                        ? Color.FromArgb("#0D1520")
-                        : Color.FromArgb("#070F1A"),
+                    BackgroundColor = stripe ? CUiRowDark1 : CUiRowDark2,  // FIX E
                     CornerRadius = 6,
                     Margin = new Thickness(-2, 1)
                 };
-                Grid.SetRow(bg, rowIdx);
-                Grid.SetColumn(bg, 0);
-                Grid.SetColumnSpan(bg, 5);
+                Grid.SetRow(bg, rowIdx); Grid.SetColumn(bg, 0); Grid.SetColumnSpan(bg, 5);
                 grid.Children.Add(bg);
 
-                // Swatch (colored circle)
                 bool isNone = row.Bg == ResistorViewModel.CNone;
                 var swatch = new Border
                 {
                     WidthRequest = 20,
                     HeightRequest = 20,
-                    BackgroundColor = isNone ? Color.FromArgb("#2A2A2A") : row.Bg,
+                    BackgroundColor = isNone ? CUiChipEmpty : row.Bg,    // FIX E
                     StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(10) },
-                    Stroke = isNone ? Color.FromArgb("#444") : Colors.Transparent,
+                    Stroke = isNone ? CUiBorderNone : Colors.Transparent,  // FIX E
                     StrokeThickness = isNone ? 1 : 0,
                     HorizontalOptions = LayoutOptions.Center,
                     VerticalOptions = LayoutOptions.Center,
@@ -986,7 +1018,6 @@ namespace FirstApp
                 Grid.SetRow(swatch, rowIdx); Grid.SetColumn(swatch, 0);
                 grid.Children.Add(swatch);
 
-                // Name
                 var nameLabel = new Label
                 {
                     Text = row.Name,
@@ -998,12 +1029,11 @@ namespace FirstApp
                 Grid.SetRow(nameLabel, rowIdx); Grid.SetColumn(nameLabel, 1);
                 grid.Children.Add(nameLabel);
 
-                // Digit
                 var digitLabel = new Label
                 {
                     Text = row.Digit,
                     FontSize = 13,
-                    TextColor = Color.FromArgb("#E2E8F0"),
+                    TextColor = CUiTextLight,   // FIX E
                     FontAttributes = FontAttributes.Bold,
                     HorizontalTextAlignment = TextAlignment.Center,
                     VerticalTextAlignment = TextAlignment.Center,
@@ -1012,12 +1042,11 @@ namespace FirstApp
                 Grid.SetRow(digitLabel, rowIdx); Grid.SetColumn(digitLabel, 2);
                 grid.Children.Add(digitLabel);
 
-                // Multiplier
                 var multLabel = new Label
                 {
                     Text = row.Mult,
                     FontSize = 11.5,
-                    TextColor = Color.FromArgb("#10B981"),
+                    TextColor = CUiTextGreen,   // FIX E
                     FontAttributes = FontAttributes.Bold,
                     HorizontalTextAlignment = TextAlignment.Center,
                     VerticalTextAlignment = TextAlignment.Center,
@@ -1026,13 +1055,12 @@ namespace FirstApp
                 Grid.SetRow(multLabel, rowIdx); Grid.SetColumn(multLabel, 3);
                 grid.Children.Add(multLabel);
 
-                // Tolerance
                 string tol = row.Tol;
                 var tolLabel = new Label
                 {
                     Text = tol,
                     FontSize = 11,
-                    TextColor = tol == "–" ? Color.FromArgb("#374151") : Color.FromArgb("#FBBF24"),
+                    TextColor = tol == "–" ? CUiTextDimmer : CUiTextYellow,  // FIX E
                     HorizontalTextAlignment = TextAlignment.Center,
                     VerticalTextAlignment = TextAlignment.Center,
                     Margin = new Thickness(0, 3)
@@ -1044,9 +1072,9 @@ namespace FirstApp
             return new Border
             {
                 Content = grid,
-                BackgroundColor = Color.FromArgb("#060D1A"),
+                BackgroundColor = CUiPanelDark,    // FIX E
                 StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(14) },
-                Stroke = Color.FromArgb("#1E3A5F"),
+                Stroke = CUiBorderBlue,   // FIX E
                 StrokeThickness = 1,
                 Padding = new Thickness(10, 8)
             };
@@ -1055,39 +1083,34 @@ namespace FirstApp
         // E-SERIES SECTION
         private View BuildESeriesSection()
         {
-            // Data: (series, values per decade, typical use, example values)
             var series = new (string Name, string ValsPer, string Use, string Examples)[]
             {
-                ("E3",  "3",   Loc("eUseRough",   "Rough"),   "1.0 – 2.2 – 4.7"),
-                ("E6",  "6",   Loc("eUseGeneral", "General"), "1.0 – 1.5 – 2.2 – 3.3 – 4.7 – 6.8"),
-                ("E12", "12",  Loc("eUseStd",     "Standard"),"1.0 – 1.2 – 1.5 – 1.8 – 2.2 – 2.7 …"),
-                ("E24", "24",  Loc("eUseCommon",  "Common"),  "1.0 – 1.1 – 1.2 – 1.3 – 1.5 – 1.6 …"),
-                ("E48", "48",  Loc("eUsePrecise", "Precise"), "1.00 – 1.05 – 1.10 – 1.15 …"),
-                ("E96", "96",  Loc("eUseHigh",    "High prec."),"1.00 – 1.02 – 1.05 – 1.07 …"),
-                ("E192","192", Loc("eUseUltra",   "Ultra prec."),"1.000 – 1.010 – 1.020 …"),
+                ("E3",  "3",   Loc("eUseRough",   "Rough"),       "1.0 – 2.2 – 4.7"),
+                ("E6",  "6",   Loc("eUseGeneral", "General"),     "1.0 – 1.5 – 2.2 – 3.3 – 4.7 – 6.8"),
+                ("E12", "12",  Loc("eUseStd",     "Standard"),    "1.0 – 1.2 – 1.5 – 1.8 – 2.2 – 2.7 …"),
+                ("E24", "24",  Loc("eUseCommon",  "Common"),      "1.0 – 1.1 – 1.2 – 1.3 – 1.5 – 1.6 …"),
+                ("E48", "48",  Loc("eUsePrecise", "Precise"),     "1.00 – 1.05 – 1.10 – 1.15 …"),
+                ("E96", "96",  Loc("eUseHigh",    "High prec."),  "1.00 – 1.02 – 1.05 – 1.07 …"),
+                ("E192","192", Loc("eUseUltra",   "Ultra prec."), "1.000 – 1.010 – 1.020 …"),
             };
 
             var stack = new VerticalStackLayout { Spacing = 6 };
-
-            // Sub-header
             stack.Children.Add(new Label
             {
                 Text = Loc("eSeriesHint", "Standardised values per decade (×1, ×10, ×100 …)"),
                 FontSize = 11,
-                TextColor = Color.FromArgb("#64748B"),
+                TextColor = CUiTextMuted,   // FIX E
                 Margin = new Thickness(0, 0, 0, 4)
             });
 
             foreach (var s in series)
             {
-                // Highlight E12 / E24 as most common
                 bool highlight = s.Name == "E12" || s.Name == "E24";
-
                 var card = new Border
                 {
                     StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(12) },
-                    BackgroundColor = highlight ? Color.FromArgb("#0E1F3A") : Color.FromArgb("#060D1A"),
-                    Stroke = highlight ? Color.FromArgb("#2563EB") : Color.FromArgb("#1E3A5F"),
+                    BackgroundColor = highlight ? CUiHighBg : CUiPanelDark,      // FIX E
+                    Stroke = highlight ? CUiBlue : CUiBorderBlue,        // FIX E
                     StrokeThickness = highlight ? 1.5 : 1,
                     Padding = new Thickness(12, 9)
                 };
@@ -1104,11 +1127,10 @@ namespace FirstApp
                     ColumnSpacing = 8
                 };
 
-                // Series name badge
                 var badge = new Border
                 {
                     StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(8) },
-                    BackgroundColor = highlight ? Color.FromArgb("#2563EB") : Color.FromArgb("#1A2535"),
+                    BackgroundColor = highlight ? CUiBlue : CUiBadgeDark,        // FIX E
                     Padding = new Thickness(0),
                     WidthRequest = 40,
                     HeightRequest = 26,
@@ -1122,49 +1144,41 @@ namespace FirstApp
                         VerticalTextAlignment = TextAlignment.Center
                     }
                 };
-                Grid.SetColumn(badge, 0);
-                inner.Children.Add(badge);
+                Grid.SetColumn(badge, 0); inner.Children.Add(badge);
 
-                // Values per decade
                 var vpdLabel = new Label
                 {
                     Text = s.ValsPer,
                     FontSize = 13,
                     FontAttributes = FontAttributes.Bold,
-                    TextColor = Color.FromArgb("#10B981"),
+                    TextColor = CUiTextGreen,  // FIX E
                     VerticalTextAlignment = TextAlignment.Center,
                     HorizontalTextAlignment = TextAlignment.Center
                 };
-                Grid.SetColumn(vpdLabel, 1);
-                inner.Children.Add(vpdLabel);
+                Grid.SetColumn(vpdLabel, 1); inner.Children.Add(vpdLabel);
 
-                // Use label
                 var useLabel = new Label
                 {
                     Text = s.Use,
                     FontSize = 11.5,
-                    TextColor = highlight ? Color.FromArgb("#93C5FD") : Color.FromArgb("#94A3B8"),
+                    TextColor = highlight ? CUiTextBlue : CUiTextSub,  // FIX E
                     VerticalTextAlignment = TextAlignment.Center
                 };
-                Grid.SetColumn(useLabel, 2);
-                inner.Children.Add(useLabel);
+                Grid.SetColumn(useLabel, 2); inner.Children.Add(useLabel);
 
-                // Example values
                 var exLabel = new Label
                 {
                     Text = s.Examples,
                     FontSize = 10,
-                    TextColor = Color.FromArgb("#475569"),
+                    TextColor = CUiTextDim,      // FIX E
                     VerticalTextAlignment = TextAlignment.Center,
                     LineBreakMode = LineBreakMode.TailTruncation
                 };
-                Grid.SetColumn(exLabel, 3);
-                inner.Children.Add(exLabel);
+                Grid.SetColumn(exLabel, 3); inner.Children.Add(exLabel);
 
                 card.Content = inner;
                 stack.Children.Add(card);
             }
-
             return stack;
         }
 
@@ -1179,8 +1193,8 @@ namespace FirstApp
             return new Border
             {
                 StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(14) },
-                BackgroundColor = Color.FromArgb("#060D1A"),
-                Stroke = Color.FromArgb("#1E3A5F"),
+                BackgroundColor = CUiPanelDark,    // FIX E
+                Stroke = CUiBorderBlue,   // FIX E
                 StrokeThickness = 1,
                 Padding = new Thickness(14, 12),
                 Content = new VerticalStackLayout
@@ -1188,11 +1202,11 @@ namespace FirstApp
                     Spacing = 7,
                     Children =
                     {
-                        new Label { Text = tip4,   FontSize = 12, TextColor = Color.FromArgb("#D2B48C") },
-                        new Label { Text = tip5,   FontSize = 12, TextColor = Color.FromArgb("#6BA3BE") },
-                        new Label { Text = tip6,   FontSize = 12, TextColor = Color.FromArgb("#6BA3BE") },
-                        new BoxView { HeightRequest = 1, BackgroundColor = Color.FromArgb("#1E293B"), Margin = new Thickness(0,2) },
-                        new Label { Text = tipDir, FontSize = 11.5, TextColor = Color.FromArgb("#FBBF24"),
+                        new Label { Text = tip4,   FontSize = 12,   TextColor = CUiTextTan   }, // FIX E
+                        new Label { Text = tip5,   FontSize = 12,   TextColor = CUiTextSteel }, // FIX E
+                        new Label { Text = tip6,   FontSize = 12,   TextColor = CUiTextSteel }, // FIX E
+                        new BoxView { HeightRequest = 1, BackgroundColor = CUiBorderDiv, Margin = new Thickness(0,2) }, // FIX E
+                        new Label { Text = tipDir, FontSize = 11.5, TextColor = CUiTextYellow, // FIX E
                             FontAttributes = FontAttributes.Bold }
                     }
                 }
@@ -1234,7 +1248,6 @@ namespace FirstApp
                 for (int i = 0; i < _rings.Count; i++)
                 {
                     if (i == g1) x += GroupExtra;
-
                     var c = _rings[i];
                     if (!ResistorViewModel.IsInvisibleRing(c))
                     {
