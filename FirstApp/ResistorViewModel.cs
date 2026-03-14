@@ -132,6 +132,7 @@ namespace FirstApp
         private int _selectedSeries = 12;
         private string _lang = "en";
         private string _resultText = "0 Ω";
+        private int _themeIndex = 0;
 
         // ──────────────────────────────────────────────────────────────
         // BAND SELECTION INDICES
@@ -169,6 +170,12 @@ namespace FirstApp
             set { if (!Set(ref _lang, value)) return; Preferences.Set("pref_lang", _lang); NotifyAll(); }
         }
         public string ResultText { get => _resultText; private set => Set(ref _resultText, value); }
+
+        public int ThemeIndex
+        {
+            get => _themeIndex;
+            set { if (Set(ref _themeIndex, value)) Preferences.Set("pref_theme", value); }
+        }
 
         // ──────────────────────────────────────────────────────────────
         // UI VISIBILITY FLAGS
@@ -234,6 +241,7 @@ namespace FirstApp
         public ResistorViewModel()
         {
             _lang = Preferences.Get("pref_lang", GetDefaultLanguage());
+            _themeIndex = Preferences.Get("pref_theme", 0);
             _selectedSeries = Preferences.Get("pref_series", 12);
             _resistorMode = 1;
             InitRings();

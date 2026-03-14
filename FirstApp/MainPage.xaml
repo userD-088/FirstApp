@@ -18,7 +18,7 @@
             <VerticalStackLayout Spacing="0">
 
                 <!-- header -->
-                <Border Padding="15,40,15,22" StrokeThickness="0">
+                <Border x:Name="HeaderBdr" Padding="15,40,15,22" StrokeThickness="0">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                             <GradientStop Color="#0F172A" Offset="0"/>
@@ -28,13 +28,9 @@
                     <Grid ColumnDefinitions="44,*,44">
                         <Button Grid.Column="0"
                                 Text="?"
-                                FontSize="18"
-                                FontAttributes="Bold"
-                                TextColor="#94A3B8"
-                                BackgroundColor="Transparent"
-                                WidthRequest="44"
-                                HeightRequest="44"
-                                Padding="0"
+                                FontSize="18" FontAttributes="Bold"
+                                TextColor="#94A3B8" BackgroundColor="Transparent"
+                                WidthRequest="44" HeightRequest="44" Padding="0"
                                 VerticalOptions="Center"
                                 Clicked="OnOpenReference"/>
                         <VerticalStackLayout Grid.Column="1" Spacing="3" HorizontalOptions="Center">
@@ -53,16 +49,14 @@
                         <Button Grid.Column="2"
                                 ImageSource="settings.svg"
                                 BackgroundColor="Transparent"
-                                WidthRequest="50"
-                                HeightRequest="50"
-                                Padding="0"
+                                WidthRequest="50" HeightRequest="50" Padding="0"
                                 VerticalOptions="Center"
                                 Clicked="OnOpenSettings"/>
                     </Grid>
                 </Border>
 
                 <!-- resistor card -->
-                <Border Margin="20,12" Padding="16,14"
+                <Border x:Name="ResCardBdr" Margin="20,12" Padding="16,14"
                         StrokeShape="RoundRectangle 28"
                         Stroke="#2563EB" StrokeThickness="1.5">
                     <Border.Background>
@@ -71,251 +65,269 @@
                             <GradientStop Color="#0F172A" Offset="1"/>
                         </LinearGradientBrush>
                     </Border.Background>
-                    <VerticalStackLayout Spacing="12">
+                    <!-- Grid wrapper so corner brackets can overlay the content -->
+                    <Grid>
+                        <VerticalStackLayout Spacing="12">
 
-                        <!-- resistor type tabs -->
-                        <Border BackgroundColor="#060D1A"
-                                StrokeShape="RoundRectangle 13"
-                                Stroke="#1E3A5F" StrokeThickness="1"
-                                Padding="0">
-                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="0">
-                                <Border x:Name="ResTab0" Grid.Column="0"
-                                        BackgroundColor="#1A2535" Stroke="#1E293B" 
-                                        StrokeThickness="0" StrokeShape="RoundRectangle 0"
-                                        Padding="0,11">
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnResTab0Tapped"/>
-                                    </Border.GestureRecognizers>
-                                    <Label x:Name="ResTabLabel0" Text="{Binding Band4BtnText}"
-                                           FontSize="11" TextColor="#64748B" MaxLines="1"
-                                           LineBreakMode="TailTruncation"
-                                           HorizontalTextAlignment="Center"
-                                           VerticalTextAlignment="Center"/>
-                                </Border>
-                                <Border x:Name="ResTab1" Grid.Column="1"
-                                        BackgroundColor="#2563EB" Stroke="#1E293B" 
-                                        StrokeThickness="0"
-                                        Padding="0,11">
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnResTab1Tapped"/>
-                                    </Border.GestureRecognizers>
-                                    <Label x:Name="ResTabLabel1" Text="{Binding Band5BtnText}"
-                                           FontSize="11" FontAttributes="Bold" TextColor="White"
-                                           MaxLines="1" LineBreakMode="TailTruncation"
-                                           HorizontalTextAlignment="Center"
-                                           VerticalTextAlignment="Center"/>
-                                </Border>
-                                <Border x:Name="ResTab2" Grid.Column="2"
-                                        BackgroundColor="#1A2535" Stroke="#1E293B" 
-                                        StrokeThickness="0"
-                                        Padding="0,11">
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnResTab2Tapped"/>
-                                    </Border.GestureRecognizers>
-                                    <Label x:Name="ResTabLabel2" Text="{Binding Band6BtnText}"
-                                           FontSize="11" TextColor="#64748B" MaxLines="1"
-                                           LineBreakMode="TailTruncation"
-                                           HorizontalTextAlignment="Center"
-                                           VerticalTextAlignment="Center"/>
-                                </Border>
+                            <!-- resistor type tabs -->
+                            <Border BackgroundColor="#060D1A"
+                                    StrokeShape="RoundRectangle 13"
+                                    Stroke="#1E3A5F" StrokeThickness="1"
+                                    Padding="0">
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="0">
+                                    <Border x:Name="ResTab0" Grid.Column="0"
+                                            BackgroundColor="#1A2535" Stroke="#1E293B"
+                                            StrokeThickness="0" StrokeShape="RoundRectangle 0"
+                                            Padding="0,11">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnResTab0Tapped"/>
+                                        </Border.GestureRecognizers>
+                                        <Label x:Name="ResTabLabel0" Text="{Binding Band4BtnText}"
+                                               FontSize="11" TextColor="#64748B" MaxLines="1"
+                                               LineBreakMode="TailTruncation"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"/>
+                                    </Border>
+                                    <Border x:Name="ResTab1" Grid.Column="1"
+                                            BackgroundColor="#2563EB" Stroke="#1E293B"
+                                            StrokeThickness="0" Padding="0,11">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnResTab1Tapped"/>
+                                        </Border.GestureRecognizers>
+                                        <Label x:Name="ResTabLabel1" Text="{Binding Band5BtnText}"
+                                               FontSize="11" FontAttributes="Bold" TextColor="White"
+                                               MaxLines="1" LineBreakMode="TailTruncation"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"/>
+                                    </Border>
+                                    <Border x:Name="ResTab2" Grid.Column="2"
+                                            BackgroundColor="#1A2535" Stroke="#1E293B"
+                                            StrokeThickness="0" Padding="0,11">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnResTab2Tapped"/>
+                                        </Border.GestureRecognizers>
+                                        <Label x:Name="ResTabLabel2" Text="{Binding Band6BtnText}"
+                                               FontSize="11" TextColor="#64748B" MaxLines="1"
+                                               LineBreakMode="TailTruncation"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <!-- resistor graphic -->
+                            <Grid x:Name="ResistorViewContainer"
+                                  HeightRequest="80" WidthRequest="300"
+                                  HorizontalOptions="Center"
+                                  IsClippedToBounds="True">
+                                <GraphicsView x:Name="ResistorView"/>
                             </Grid>
-                        </Border>
 
-                        <!-- resistor graphic -->
-                        <Grid x:Name="ResistorViewContainer"
-                              HeightRequest="80" WidthRequest="300"
-                              HorizontalOptions="Center"
-                              IsClippedToBounds="True">
-                            <GraphicsView x:Name="ResistorView"/>
-                        </Grid>
+                        </VerticalStackLayout>
 
-                    </VerticalStackLayout>
+                        <!-- Cyber corner brackets overlay -->
+                        <GraphicsView x:Name="ResCardCorners"
+                                      InputTransparent="True"
+                                      IsVisible="False"
+                                      HorizontalOptions="Fill"
+                                      VerticalOptions="Fill"/>
+                    </Grid>
                 </Border>
 
                 <!-- input card -->
-                <Border Margin="20,0,20,30" Padding="18,16"
+                <Border x:Name="InputCardBdr" Margin="20,0,20,30" Padding="18,16"
                         StrokeShape="RoundRectangle 24"
                         BackgroundColor="#0D1520"
                         Stroke="#2563EB" StrokeThickness="1.5">
-                    <VerticalStackLayout Spacing="14">
+                    <!-- Grid wrapper so corner brackets can overlay the content -->
+                    <Grid>
+                        <VerticalStackLayout Spacing="14">
 
-                        <!-- input mode tabs -->
-                        <Border BackgroundColor="#060D1A"
-                                StrokeShape="RoundRectangle 13"
-                                Stroke="#1E3A5F" StrokeThickness="1"
-                                Padding="-1">
-                            <Grid ColumnDefinitions="*,*" ColumnSpacing="-2">
-                                <Border x:Name="InputTab0" Grid.Column="0"
-                                        BackgroundColor="#2563EB" Stroke="#1E293B" 
-                                        StrokeShape="RoundRectangle 0" 
-                                        Padding="0,12">
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnInputTab0Tapped"/>
-                                    </Border.GestureRecognizers>
-                                    <Label x:Name="InputTabLabel0" Text="{Binding ValToColTabText}"
-                                           FontSize="12" FontAttributes="Bold" TextColor="White"
-                                           MaxLines="1" LineBreakMode="TailTruncation"
-                                           HorizontalTextAlignment="Center"
-                                           VerticalTextAlignment="Center"/>
-                                </Border>
-                                <Border x:Name="InputTab1" Grid.Column="1"
-                                        BackgroundColor="Transparent" Stroke="#1E293B"
-                                        StrokeShape="RoundRectangle 0" 
-                                        Padding="0,12">
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnInputTab1Tapped"/>
-                                    </Border.GestureRecognizers>
-                                    <Label x:Name="InputTabLabel1" Text="{Binding ColToValTabText}"
-                                           FontSize="12" TextColor="#64748B"
-                                           MaxLines="1" LineBreakMode="TailTruncation"
-                                           HorizontalTextAlignment="Center"
-                                           VerticalTextAlignment="Center"/>
-                                </Border>
-                            </Grid>
-                        </Border>
+                            <!-- input mode tabs -->
+                            <Border BackgroundColor="#060D1A"
+                                    StrokeShape="RoundRectangle 13"
+                                    Stroke="#1E3A5F" StrokeThickness="1"
+                                    Padding="-1">
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="-2">
+                                    <Border x:Name="InputTab0" Grid.Column="0"
+                                            BackgroundColor="#2563EB" Stroke="#1E293B"
+                                            StrokeShape="RoundRectangle 0" Padding="0,12">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnInputTab0Tapped"/>
+                                        </Border.GestureRecognizers>
+                                        <Label x:Name="InputTabLabel0" Text="{Binding ValToColTabText}"
+                                               FontSize="12" FontAttributes="Bold" TextColor="White"
+                                               MaxLines="1" LineBreakMode="TailTruncation"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"/>
+                                    </Border>
+                                    <Border x:Name="InputTab1" Grid.Column="1"
+                                            BackgroundColor="Transparent" Stroke="#1E293B"
+                                            StrokeShape="RoundRectangle 0" Padding="0,12">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnInputTab1Tapped"/>
+                                        </Border.GestureRecognizers>
+                                        <Label x:Name="InputTabLabel1" Text="{Binding ColToValTabText}"
+                                               FontSize="12" TextColor="#64748B"
+                                               MaxLines="1" LineBreakMode="TailTruncation"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
 
-                        <BoxView HeightRequest="1" BackgroundColor="#1E2D40"/>
+                            <BoxView HeightRequest="1" BackgroundColor="#1E2D40"/>
 
-                        <!-- animated content area -->
-                        <Grid x:Name="InputContentGrid" IsClippedToBounds="True">
+                            <!-- animated content area -->
+                            <Grid x:Name="InputContentGrid" IsClippedToBounds="True">
 
-                            <!-- value to color mode -->
-                            <VerticalStackLayout x:Name="ValueToColorLayout"
-                                                 IsVisible="{Binding IsValueMode}"
-                                                 Spacing="14">
-                                <VerticalStackLayout Spacing="5">
-                                    <Label Text="{Binding ResistanceLabelText}"
-                                           FontSize="13" TextColor="#9CA3AF"/>
+                                <!-- value to color mode -->
+                                <VerticalStackLayout x:Name="ValueToColorLayout"
+                                                     IsVisible="{Binding IsValueMode}"
+                                                     Spacing="14">
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label Text="{Binding ResistanceLabelText}"
+                                               FontSize="13" TextColor="#9CA3AF"/>
+                                        <Grid ColumnDefinitions="*,auto" ColumnSpacing="8">
+                                            <Entry x:Name="ResistanceEntry"
+                                                   Grid.Column="0"
+                                                   Placeholder="e.g. 470"
+                                                   Keyboard="Numeric"
+                                                   BackgroundColor="#111827" TextColor="White"
+                                                   PlaceholderColor="#4B5563"
+                                                   HeightRequest="46" FontSize="15"
+                                                   TextChanged="OnResistanceTextChanged"/>
+                                            <Border x:Name="UnitBtn"
+                                                    Grid.Column="1"
+                                                    BackgroundColor="#111827"
+                                                    StrokeShape="RoundRectangle 12"
+                                                    Stroke="#1E3A5F" StrokeThickness="1"
+                                                    WidthRequest="64" HeightRequest="46"
+                                                    VerticalOptions="Center">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnUnitBtnTapped"/>
+                                                </Border.GestureRecognizers>
+                                                <HorizontalStackLayout Spacing="3"
+                                                                       HorizontalOptions="Center"
+                                                                       VerticalOptions="Center">
+                                                    <Label x:Name="UnitBtnLabel" Text="Ω"
+                                                           TextColor="White" FontSize="15"
+                                                           FontAttributes="Bold"
+                                                           VerticalTextAlignment="Center"/>
+                                                    <Label x:Name="UnitChevron" Text="▾"
+                                                           TextColor="#64748B" FontSize="10"
+                                                           VerticalTextAlignment="Center"
+                                                           Margin="0,2,0,0"/>
+                                                </HorizontalStackLayout>
+                                            </Border>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Spacing="6">
+                                        <Label Text="{Binding NormSeriesLabelText}"
+                                               FontSize="13" TextColor="#9CA3AF"/>
+                                        <ScrollView Orientation="Horizontal"
+                                                    HorizontalScrollBarVisibility="Never">
+                                            <HorizontalStackLayout x:Name="SeriesChipsMain"
+                                                                   Spacing="8" Padding="2,2"/>
+                                        </ScrollView>
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
 
-                                    <!-- entry + unit button -->
-                                    <Grid ColumnDefinitions="*,auto" ColumnSpacing="8">
-
-                                        <Entry x:Name="ResistanceEntry"
-                                               Grid.Column="0"
-                                               Placeholder="e.g. 470"
-                                               Keyboard="Numeric"
-                                               BackgroundColor="#111827" TextColor="White"
-                                               PlaceholderColor="#4B5563"
-                                               HeightRequest="46" FontSize="15"
-                                               TextChanged="OnResistanceTextChanged"/>
-
-                                        <!-- unit button -->
-                                        <Border x:Name="UnitBtn"
-                                                Grid.Column="1"
-                                                BackgroundColor="#111827"
-                                                StrokeShape="RoundRectangle 12"
-                                                Stroke="#1E3A5F" StrokeThickness="1"
-                                                WidthRequest="64" HeightRequest="46"
-                                                VerticalOptions="Center">
-                                            <Border.GestureRecognizers>
-                                                <TapGestureRecognizer Tapped="OnUnitBtnTapped"/>
-                                            </Border.GestureRecognizers>
-                                            <HorizontalStackLayout Spacing="3"
-                                                                   HorizontalOptions="Center"
-                                                                   VerticalOptions="Center">
-                                                <Label x:Name="UnitBtnLabel" Text="Ω"
-                                                       TextColor="White"
-                                                       FontSize="15" FontAttributes="Bold"
-                                                       VerticalTextAlignment="Center"/>
-                                                <Label x:Name="UnitChevron" Text="▾"
-                                                       TextColor="#64748B" FontSize="10"
-                                                       VerticalTextAlignment="Center"
-                                                       Margin="0,2,0,0"/>
-                                            </HorizontalStackLayout>
-                                        </Border>
-
+                                <!-- color to value mode -->
+                                <VerticalStackLayout x:Name="ColorToValueLayout"
+                                                     IsVisible="{Binding IsColorMode}"
+                                                     Spacing="10">
+                                    <Label x:Name="ResultLabel"
+                                           Text="{Binding ResultText}"
+                                           FontSize="26" FontAttributes="Bold"
+                                           TextColor="#10B981" HorizontalOptions="Center"
+                                           Margin="0,2,0,4"/>
+                                    <Grid ColumnDefinitions="58,*" ColumnSpacing="6">
+                                        <Label Grid.Column="0" Text="{Binding Ring1Text}"
+                                               FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
+                                        <ScrollView Grid.Column="1" Orientation="Horizontal"
+                                                    HorizontalScrollBarVisibility="Never">
+                                            <HorizontalStackLayout x:Name="Band1ChipsLayout"
+                                                                   Spacing="6" Padding="2,2"/>
+                                        </ScrollView>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="58,*" ColumnSpacing="6">
+                                        <Label Grid.Column="0" Text="{Binding Ring2Text}"
+                                               FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
+                                        <ScrollView Grid.Column="1" Orientation="Horizontal"
+                                                    HorizontalScrollBarVisibility="Never">
+                                            <HorizontalStackLayout x:Name="Band2ChipsLayout"
+                                                                   Spacing="6" Padding="2,2"/>
+                                        </ScrollView>
+                                    </Grid>
+                                    <Grid IsVisible="{Binding Ring3Visible}"
+                                          ColumnDefinitions="58,*" ColumnSpacing="6">
+                                        <Label Grid.Column="0" Text="{Binding Ring3Text}"
+                                               FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
+                                        <ScrollView Grid.Column="1" Orientation="Horizontal"
+                                                    HorizontalScrollBarVisibility="Never">
+                                            <HorizontalStackLayout x:Name="Band3ChipsLayout"
+                                                                   Spacing="6" Padding="2,2"/>
+                                        </ScrollView>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="58,*" ColumnSpacing="6">
+                                        <Label Grid.Column="0" Text="{Binding MultText}"
+                                               FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
+                                        <ScrollView Grid.Column="1" Orientation="Horizontal"
+                                                    HorizontalScrollBarVisibility="Never">
+                                            <HorizontalStackLayout x:Name="MultiplierChipsLayout"
+                                                                   Spacing="6" Padding="2,2"/>
+                                        </ScrollView>
                                     </Grid>
                                 </VerticalStackLayout>
-                                <VerticalStackLayout Spacing="6">
-                                    <Label Text="{Binding NormSeriesLabelText}"
-                                           FontSize="13" TextColor="#9CA3AF"/>
-                                    <ScrollView Orientation="Horizontal"
-                                                HorizontalScrollBarVisibility="Never">
-                                        <HorizontalStackLayout x:Name="SeriesChipsMain"
-                                                               Spacing="8" Padding="2,2"/>
-                                    </ScrollView>
-                                </VerticalStackLayout>
-                            </VerticalStackLayout>
 
-                            <!-- color to value mode -->
-                            <VerticalStackLayout x:Name="ColorToValueLayout"
-                                                 IsVisible="{Binding IsColorMode}"
-                                                 Spacing="10">
-                                <Label Text="{Binding ResultText}"
-                                       FontSize="26" FontAttributes="Bold"
-                                       TextColor="#10B981" HorizontalOptions="Center"
-                                       Margin="0,2,0,4"/>
-                                <Grid ColumnDefinitions="58,*" ColumnSpacing="6">
-                                    <Label Grid.Column="0" Text="{Binding Ring1Text}"
-                                           FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
-                                    <ScrollView Grid.Column="1" Orientation="Horizontal"
-                                                HorizontalScrollBarVisibility="Never">
-                                        <HorizontalStackLayout x:Name="Band1ChipsLayout"
-                                                               Spacing="6" Padding="2,2"/>
-                                    </ScrollView>
-                                </Grid>
-                                <Grid ColumnDefinitions="58,*" ColumnSpacing="6">
-                                    <Label Grid.Column="0" Text="{Binding Ring2Text}"
-                                           FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
-                                    <ScrollView Grid.Column="1" Orientation="Horizontal"
-                                                HorizontalScrollBarVisibility="Never">
-                                        <HorizontalStackLayout x:Name="Band2ChipsLayout"
-                                                               Spacing="6" Padding="2,2"/>
-                                    </ScrollView>
-                                </Grid>
-                                <Grid IsVisible="{Binding Ring3Visible}"
-                                      ColumnDefinitions="58,*" ColumnSpacing="6">
-                                    <Label Grid.Column="0" Text="{Binding Ring3Text}"
-                                           FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
-                                    <ScrollView Grid.Column="1" Orientation="Horizontal"
-                                                HorizontalScrollBarVisibility="Never">
-                                        <HorizontalStackLayout x:Name="Band3ChipsLayout"
-                                                               Spacing="6" Padding="2,2"/>
-                                    </ScrollView>
-                                </Grid>
-                                <Grid ColumnDefinitions="58,*" ColumnSpacing="6">
-                                    <Label Grid.Column="0" Text="{Binding MultText}"
-                                           FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
-                                    <ScrollView Grid.Column="1" Orientation="Horizontal"
-                                                HorizontalScrollBarVisibility="Never">
-                                        <HorizontalStackLayout x:Name="MultiplierChipsLayout"
-                                                               Spacing="6" Padding="2,2"/>
-                                    </ScrollView>
-                                </Grid>
-                            </VerticalStackLayout>
+                            </Grid>
 
-                        </Grid>
+                            <BoxView HeightRequest="1" BackgroundColor="#1E2D40"/>
 
-                        <BoxView HeightRequest="1" BackgroundColor="#1E2D40"/>
+                            <!-- tolerance -->
+                            <Grid ColumnDefinitions="58,*" ColumnSpacing="6">
+                                <Label Grid.Column="0" Text="{Binding TolText}"
+                                       FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
+                                <ScrollView Grid.Column="1" Orientation="Horizontal"
+                                            HorizontalScrollBarVisibility="Never">
+                                    <HorizontalStackLayout x:Name="ToleranceChipsLayout"
+                                                           Spacing="6" Padding="2,2"/>
+                                </ScrollView>
+                            </Grid>
 
-                        <!-- tolerance -->
-                        <Grid ColumnDefinitions="58,*" ColumnSpacing="6">
-                            <Label Grid.Column="0" Text="{Binding TolText}"
-                                   FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
-                            <ScrollView Grid.Column="1" Orientation="Horizontal"
-                                        HorizontalScrollBarVisibility="Never">
-                                <HorizontalStackLayout x:Name="ToleranceChipsLayout"
-                                                       Spacing="6" Padding="2,2"/>
-                            </ScrollView>
-                        </Grid>
+                            <!-- TCR (6-band only) -->
+                            <Grid IsVisible="{Binding TcrVisible}"
+                                  ColumnDefinitions="58,*" ColumnSpacing="6">
+                                <Label Grid.Column="0" Text="{Binding TcrText}"
+                                       FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
+                                <ScrollView Grid.Column="1" Orientation="Horizontal"
+                                            HorizontalScrollBarVisibility="Never">
+                                    <HorizontalStackLayout x:Name="TcrChipsLayout"
+                                                           Spacing="6" Padding="2,2"/>
+                                </ScrollView>
+                            </Grid>
 
-                        <!-- TCR (6-band only) -->
-                        <Grid IsVisible="{Binding TcrVisible}"
-                              ColumnDefinitions="58,*" ColumnSpacing="6">
-                            <Label Grid.Column="0" Text="{Binding TcrText}"
-                                   FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
-                            <ScrollView Grid.Column="1" Orientation="Horizontal"
-                                        HorizontalScrollBarVisibility="Never">
-                                <HorizontalStackLayout x:Name="TcrChipsLayout"
-                                                       Spacing="6" Padding="2,2"/>
-                            </ScrollView>
-                        </Grid>
+                        </VerticalStackLayout>
 
-                    </VerticalStackLayout>
+                        <!-- Cyber corner brackets overlay -->
+                        <GraphicsView x:Name="InputCardCorners"
+                                      InputTransparent="True"
+                                      IsVisible="False"
+                                      HorizontalOptions="Fill"
+                                      VerticalOptions="Fill"/>
+                    </Grid>
                 </Border>
 
             </VerticalStackLayout>
         </ScrollView>
+
+        <!-- Scanlines overlay -->
+        <GraphicsView x:Name="ScanlinesView"
+                      InputTransparent="True"
+                      IsVisible="False"
+                      HorizontalOptions="Fill"
+                      VerticalOptions="Fill"/>
 
         <!-- settings overlay -->
         <Grid x:Name="SettingsOverlay" IsVisible="False"
@@ -342,7 +354,6 @@
 
                 <VerticalStackLayout Spacing="20">
 
-                    <!-- drag handle -->
                     <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2"
                              BackgroundColor="#334155" HorizontalOptions="Center"
                              Margin="0,4,0,0"/>
@@ -355,14 +366,10 @@
                     <VerticalStackLayout Spacing="10">
                         <Label Text="{Binding LangSectionText}"
                                FontSize="13" TextColor="#9CA3AF"/>
-
-                        <!-- primary languages -->
                         <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never"
                                     HeightRequest="60">
                             <HorizontalStackLayout x:Name="LangChipsLayout" Spacing="8" Padding="2,4"/>
                         </ScrollView>
-
-                        <!-- more/less languages toggle -->
                         <Border BackgroundColor="#111827"
                                 StrokeShape="RoundRectangle 10"
                                 Stroke="#1E3A5F" StrokeThickness="1"
@@ -373,14 +380,10 @@
                             </Border.GestureRecognizers>
                             <Label x:Name="MoreLangsLabel"
                                    Text="▼  More languages"
-                                   TextColor="#94A3B8"
-                                   FontSize="13"
+                                   TextColor="#94A3B8" FontSize="13"
                                    VerticalTextAlignment="Center"/>
                         </Border>
-
-                        <!-- secondary languages (lazy) -->
-                        <ScrollView x:Name="MoreLangsRow"
-                                    IsVisible="False"
+                        <ScrollView x:Name="MoreLangsRow" IsVisible="False"
                                     Orientation="Horizontal"
                                     HorizontalScrollBarVisibility="Never"
                                     HeightRequest="60">
@@ -389,7 +392,7 @@
                     </VerticalStackLayout>
 
                     <BoxView HeightRequest="1" BackgroundColor="#1E293B"/>
-                    
+
                     <!-- Select Design -->
                     <Label Text="{Binding DesignLabelText}"
                            FontSize="13" TextColor="#9CA3AF"/>
@@ -398,45 +401,45 @@
                                 StrokeShape="RoundRectangle 16"
                                 Stroke="#1E3A5F" StrokeThickness="1">
                             <Grid ColumnDefinitions="*,*,*">
-                                <Border Grid.Column="0" BackgroundColor="#2563EB" 
-                                        Stroke="#1E293B" StrokeShape="RoundRectangle 0" 
+                                <Border x:Name="DesignTab0" Grid.Column="0"
+                                        BackgroundColor="#2563EB"
+                                        Stroke="#1E293B" StrokeShape="RoundRectangle 0"
                                         Padding="0,12">
                                     <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnSetDefaultDesign"/>
+                                        <TapGestureRecognizer Tapped="OnSetTheme0"/>
                                     </Border.GestureRecognizers>
-                                    <Label Text="{Binding DefaultAppDesign}" Padding="12,0"
+                                    <Label x:Name="DesignLabel0" Text="Default" Padding="12,0"
                                            FontSize="12" FontAttributes="Bold" TextColor="White"
                                            MaxLines="1" LineBreakMode="TailTruncation"
-                                           HorizontalTextAlignment="Center" 
+                                           HorizontalTextAlignment="Center"
                                            VerticalTextAlignment="Center"/>
                                 </Border>
-                                <Border Grid.Column="1" Padding="0,12"
+                                <Border x:Name="DesignTab1" Grid.Column="1" Padding="0,12"
                                         BackgroundColor="Transparent" Stroke="#1E293B"
                                         StrokeShape="RoundRectangle 0">
                                     <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnSetDefaultDesign"/>
+                                        <TapGestureRecognizer Tapped="OnSetTheme1"/>
                                     </Border.GestureRecognizers>
-                                    <Label Text="{Binding DefaultAppDesign}" Padding="12,0"
+                                    <Label x:Name="DesignLabel1" Text="Cyber" Padding="12,0"
                                            FontSize="12" TextColor="#64748B"
                                            MaxLines="1" LineBreakMode="TailTruncation"
-                                           HorizontalTextAlignment="Center" 
+                                           HorizontalTextAlignment="Center"
                                            VerticalTextAlignment="Center"/>
                                 </Border>
-                                <Border Grid.Column="2" Padding="0,12"
-                                        BackgroundColor="Transparent" Stroke="#1E293B" 
+                                <Border x:Name="DesignTab2" Grid.Column="2" Padding="0,12"
+                                        BackgroundColor="Transparent" Stroke="#1E293B"
                                         StrokeShape="RoundRectangle 0">
                                     <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnSetDefaultDesign"/>
+                                        <TapGestureRecognizer Tapped="OnSetTheme2"/>
                                     </Border.GestureRecognizers>
-                                    <Label Text="{Binding DefaultAppDesign}" Padding="12,0"
-                                           FontSize="12" FontAttributes="Bold" TextColor="#64748B"
+                                    <Label x:Name="DesignLabel2" Text="Plasma" Padding="12,0"
+                                           FontSize="12" TextColor="#64748B"
                                            MaxLines="1" LineBreakMode="TailTruncation"
-                                           HorizontalTextAlignment="Center" 
+                                           HorizontalTextAlignment="Center"
                                            VerticalTextAlignment="Center"/>
                                 </Border>
                             </Grid>
                         </Border>
-
                     </HorizontalStackLayout>
 
                     <BoxView HeightRequest="1" BackgroundColor="#1E293B"/>
@@ -449,8 +452,6 @@
                             <TapGestureRecognizer Tapped="OnAboutTapped"/>
                         </Border.GestureRecognizers>
                         <VerticalStackLayout Spacing="5">
-
-                            <!-- Header row (immer sichtbar) -->
                             <Grid ColumnDefinitions="*,20">
                                 <VerticalStackLayout Grid.Column="0" Spacing="3">
                                     <Label Text="{Binding AboutTitleText}"
@@ -460,24 +461,15 @@
                                     <Label Text="{Binding AboutDescText}"
                                            FontSize="12" TextColor="#6B7280"/>
                                 </VerticalStackLayout>
-                                <Label x:Name="AboutChevron"
-                                       Grid.Column="1" Text="›"
+                                <Label x:Name="AboutChevron" Grid.Column="1" Text="›"
                                        FontSize="18" TextColor="#475569"
                                        VerticalTextAlignment="Center"
                                        HorizontalTextAlignment="End"/>
                             </Grid>
-
-                            <!-- Expandable content -->
-                            <VerticalStackLayout x:Name="AboutExpanded"
-                             IsVisible="False" Spacing="8">
-
+                            <VerticalStackLayout x:Name="AboutExpanded" IsVisible="False" Spacing="8">
                                 <BoxView HeightRequest="1" BackgroundColor="#1E293B" Margin="0,6,0,2"/>
-
-                                <!-- Support / Feedback -->
-                                <Border BackgroundColor="#0F172A"
-                                        StrokeShape="RoundRectangle 12"
-                                        Stroke="#1E3A5F" StrokeThickness="1"
-                                        Padding="12,10">
+                                <Border BackgroundColor="#0F172A" StrokeShape="RoundRectangle 12"
+                                        Stroke="#1E3A5F" StrokeThickness="1" Padding="12,10">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnSupportTapped"/>
                                     </Border.GestureRecognizers>
@@ -489,12 +481,8 @@
                                                VerticalTextAlignment="Center" Margin="8,0,0,0"/>
                                     </Grid>
                                 </Border>
-
-                                <!-- Privacy Policy -->
-                                <Border BackgroundColor="#0F172A"
-                                        StrokeShape="RoundRectangle 12"
-                                        Stroke="#1E3A5F" StrokeThickness="1"
-                                        Padding="12,10">
+                                <Border BackgroundColor="#0F172A" StrokeShape="RoundRectangle 12"
+                                        Stroke="#1E3A5F" StrokeThickness="1" Padding="12,10">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnPrivacyTapped"/>
                                     </Border.GestureRecognizers>
@@ -506,12 +494,8 @@
                                                VerticalTextAlignment="Center" Margin="8,0,0,0"/>
                                     </Grid>
                                 </Border>
-
-                                <!-- About the Developer -->
-                                <Border BackgroundColor="#0F172A"
-                                        StrokeShape="RoundRectangle 12"
-                                        Stroke="#1E3A5F" StrokeThickness="1"
-                                        Padding="12,10">
+                                <Border BackgroundColor="#0F172A" StrokeShape="RoundRectangle 12"
+                                        Stroke="#1E3A5F" StrokeThickness="1" Padding="12,10">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnDeveloperTapped"/>
                                     </Border.GestureRecognizers>
@@ -523,17 +507,13 @@
                                                VerticalTextAlignment="Center" Margin="8,0,0,0"/>
                                     </Grid>
                                 </Border>
-
                             </VerticalStackLayout>
-
                             <BoxView HeightRequest="1" BackgroundColor="#1E293B" Margin="0,6,0,4"/>
-
-                            <Label Text="{Binding CopyrightText}"
-                                   FontSize="11" TextColor="#374151"/>
+                            <Label Text="{Binding CopyrightText}" FontSize="11" TextColor="#374151"/>
                         </VerticalStackLayout>
                     </Border>
 
-                    <Button Text="{Binding CloseText}" Clicked="OnCloseSettings"
+                    <Button x:Name="CloseSettingsBtn" Text="{Binding CloseText}" Clicked="OnCloseSettings"
                             BackgroundColor="#2563EB" TextColor="White"
                             CornerRadius="16" HeightRequest="50" FontSize="16"/>
 
@@ -542,16 +522,12 @@
         </Grid>
 
         <!-- reference overlay -->
-        <Grid x:Name="RefOverlay"
-              IsVisible="False"
-              InputTransparent="True"
+        <Grid x:Name="RefOverlay" IsVisible="False" InputTransparent="True"
               BackgroundColor="#BB000000">
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnRefBackdropTapped"/>
             </Grid.GestureRecognizers>
-
-            <Border x:Name="RefPanel"
-                    VerticalOptions="End"
+            <Border x:Name="RefPanel" VerticalOptions="End"
                     StrokeShape="RoundRectangle 28,28,0,0"
                     Stroke="#2563EB" StrokeThickness="1.5"
                     Padding="20,12,20,40">
@@ -564,93 +540,62 @@
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnRefPanelTapped"/>
                 </Border.GestureRecognizers>
-
                 <VerticalStackLayout Spacing="0">
-
-                    <!-- drag handle -->
                     <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2"
-                            BackgroundColor="#334155" HorizontalOptions="Center"
-                            Margin="0,4,0,12"/>
-
-                    <!-- title row -->
+                             BackgroundColor="#334155" HorizontalOptions="Center"
+                             Margin="0,4,0,12"/>
                     <Grid ColumnDefinitions="*,44" Margin="0,0,0,16">
-                        <Label x:Name="RefTitleLabel"
-                               Grid.Column="0"
+                        <Label x:Name="RefTitleLabel" Grid.Column="0"
                                Text="📖  Reference"
                                FontSize="20" FontAttributes="Bold"
-                               TextColor="White"
-                               VerticalOptions="Center"/>
+                               TextColor="White" VerticalOptions="Center"/>
                     </Grid>
-
-                    <!-- scrollable content – built in code-behind -->
-                    <ScrollView MaximumHeightRequest="520"
-                                HorizontalScrollBarVisibility="Never">
+                    <ScrollView MaximumHeightRequest="520" HorizontalScrollBarVisibility="Never">
                         <VerticalStackLayout x:Name="RefContent" Spacing="20"/>
                     </ScrollView>
-
                 </VerticalStackLayout>
             </Border>
         </Grid>
 
-        <!-- unit dropdown (root level, floats over everything) -->
-        <Border x:Name="UnitDropdown"
-                IsVisible="False"
-                HorizontalOptions="Start"
-                VerticalOptions="Start"
+        <!-- unit dropdown -->
+        <Border x:Name="UnitDropdown" IsVisible="False"
+                HorizontalOptions="Start" VerticalOptions="Start"
                 BackgroundColor="#0B1628"
                 StrokeShape="RoundRectangle 16"
                 Stroke="#2563EB" StrokeThickness="1.5"
-                Padding="6"
-                WidthRequest="80"
-                InputTransparent="False">
+                Padding="6" WidthRequest="80" InputTransparent="False">
             <VerticalStackLayout Spacing="3">
-                <Border x:Name="UnitOpt0"
-                        BackgroundColor="#1A2535"
-                        StrokeShape="RoundRectangle 10"
-                        StrokeThickness="0" Padding="0,11">
+                <Border x:Name="UnitOpt0" BackgroundColor="#1A2535"
+                        StrokeShape="RoundRectangle 10" StrokeThickness="0" Padding="0,11">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnUnitOpt0Tapped"/>
                     </Border.GestureRecognizers>
-                    <Label Text="Ω" TextColor="#94A3B8" FontSize="15"
-                           FontAttributes="Bold"
-                           HorizontalTextAlignment="Center"
-                           VerticalTextAlignment="Center"/>
+                    <Label Text="Ω" TextColor="#94A3B8" FontSize="15" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
                 </Border>
-                <Border x:Name="UnitOpt1"
-                        BackgroundColor="#1A2535"
-                        StrokeShape="RoundRectangle 10"
-                        StrokeThickness="0" Padding="0,11">
+                <Border x:Name="UnitOpt1" BackgroundColor="#1A2535"
+                        StrokeShape="RoundRectangle 10" StrokeThickness="0" Padding="0,11">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnUnitOpt1Tapped"/>
                     </Border.GestureRecognizers>
-                    <Label Text="KΩ" TextColor="#94A3B8" FontSize="15"
-                           FontAttributes="Bold"
-                           HorizontalTextAlignment="Center"
-                           VerticalTextAlignment="Center"/>
+                    <Label Text="KΩ" TextColor="#94A3B8" FontSize="15" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
                 </Border>
-                <Border x:Name="UnitOpt2"
-                        BackgroundColor="#1A2535"
-                        StrokeShape="RoundRectangle 10"
-                        StrokeThickness="0" Padding="0,11">
+                <Border x:Name="UnitOpt2" BackgroundColor="#1A2535"
+                        StrokeShape="RoundRectangle 10" StrokeThickness="0" Padding="0,11">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnUnitOpt2Tapped"/>
                     </Border.GestureRecognizers>
-                    <Label Text="MΩ" TextColor="#94A3B8" FontSize="15"
-                           FontAttributes="Bold"
-                           HorizontalTextAlignment="Center"
-                           VerticalTextAlignment="Center"/>
+                    <Label Text="MΩ" TextColor="#94A3B8" FontSize="15" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
                 </Border>
-                <Border x:Name="UnitOpt3"
-                        BackgroundColor="#1A2535"
-                        StrokeShape="RoundRectangle 10"
-                        StrokeThickness="0" Padding="0,11">
+                <Border x:Name="UnitOpt3" BackgroundColor="#1A2535"
+                        StrokeShape="RoundRectangle 10" StrokeThickness="0" Padding="0,11">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnUnitOpt3Tapped"/>
                     </Border.GestureRecognizers>
-                    <Label Text="GΩ" TextColor="#94A3B8" FontSize="15"
-                           FontAttributes="Bold"
-                           HorizontalTextAlignment="Center"
-                           VerticalTextAlignment="Center"/>
+                    <Label Text="GΩ" TextColor="#94A3B8" FontSize="15" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
                 </Border>
             </VerticalStackLayout>
         </Border>
