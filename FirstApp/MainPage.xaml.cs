@@ -1115,9 +1115,9 @@ namespace FirstApp
             }
         }
 
-        private const string SupportEmail = "support@yourapp.com";
-        private const string PrivacyPolicyUrl = "https://yourapp.com/privacy";
-        private const string DeveloperUrl = "https://yourapp.com/about";
+        private const string SupportEmail = "neutron.mail216@proton.me";
+        private const string PrivacyPolicyUrl = "https://yourapp.com/privacy";  //<- replace with actual URLs - Privacy Policy
+        private const string DeveloperUrl = "https://yourapp.com/about";        //<- replace with actual URLs - Paytreon
 
         private void OnSupportTapped(object sender, TappedEventArgs e)
             => _ = Launcher.OpenAsync($"mailto:{SupportEmail}?subject=Resistor%20Calculator%20Feedback");

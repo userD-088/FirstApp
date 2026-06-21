@@ -500,7 +500,7 @@
                                         <TapGestureRecognizer Tapped="OnDeveloperTapped"/>
                                     </Border.GestureRecognizers>
                                     <Grid ColumnDefinitions="22,*">
-                                        <Label Grid.Column="0" Text="👤" FontSize="14"
+                                        <Label Grid.Column="0" Text="🎁" FontSize="14"
                                                VerticalTextAlignment="Center"/>
                                         <Label Grid.Column="1" Text="{Binding AboutDevText}"
                                                FontSize="13" TextColor="#E2E8F0"
