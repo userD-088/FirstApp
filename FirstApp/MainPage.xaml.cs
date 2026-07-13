@@ -1116,15 +1116,25 @@ namespace FirstApp
         }
 
         private const string SupportEmail = "neutron.mail216@proton.me";
-        private const string PrivacyPolicyUrl = "https://yourapp.com/privacy";  //<- replace with actual URLs - Privacy Policy
-        private const string DeveloperUrl = "https://yourapp.com/about";        //<- replace with actual URLs - Paytreon
+        //private const string PrivacyPolicyUrl = " ";  //<- replace with actual URLs - Privacy Policy
+        //private const string DeveloperUrl = " ";        //<- replace with actual URLs - Paytreon
 
         private void OnSupportTapped(object sender, TappedEventArgs e)
             => _ = Launcher.OpenAsync($"mailto:{SupportEmail}?subject=Resistor%20Calculator%20Feedback");
-        private void OnPrivacyTapped(object sender, TappedEventArgs e)
-            => _ = Browser.OpenAsync(PrivacyPolicyUrl, BrowserLaunchMode.SystemPreferred);
-        private void OnDeveloperTapped(object sender, TappedEventArgs e)
-            => _ = Browser.OpenAsync(DeveloperUrl, BrowserLaunchMode.SystemPreferred);
+        //private void OnPrivacyTapped(object sender, TappedEventArgs e)
+        //    => _ = Browser.OpenAsync(PrivacyPolicyUrl, BrowserLaunchMode.SystemPreferred);
+        //private void OnDeveloperTapped(object sender, TappedEventArgs e)
+        //    => _ = Browser.OpenAsync(DeveloperUrl, BrowserLaunchMode.SystemPreferred);
+
+        private async void OnPrivacyTapped(object sender, TappedEventArgs e)
+        {
+            await App.Current.MainPage.DisplayAlert("Warning", "This feature is currently unavailable!", "OK");
+        }
+
+        private async void OnDeveloperTapped(object sender, TappedEventArgs e)
+        {
+            await App.Current.MainPage.DisplayAlert("Warning", "This feature is currently unavailable!", "OK");
+        }
 
         // ══════════════════════════════════════════════════════════════
         // REFERENCE OVERLAY
