@@ -1,530 +1,410 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using Microsoft.Maui.Graphics;
-using System.Text.Json;
+using FirstApp.Core;
 
-namespace FirstApp
+namespace FirstApp;
+
+/// <summary>
+/// Single source of truth for the calculator. Both input modes share the same band
+/// selection, so switching between "value → colour" and "colour → value" keeps the
+/// resistor that is currently shown.
+/// </summary>
+public sealed class ResistorViewModel : INotifyPropertyChanged
 {
-    public sealed class ResistorViewModel : INotifyPropertyChanged
+    public event PropertyChangedEventHandler? PropertyChanged;
+    /// <summary>Raised whenever the drawn band colours change.</summary>
+    public event Action? RingsChanged;
+
+    private void Notify([CallerMemberName] string? n = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
+    private void NotifyAll() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
+
+    private static readonly double[] UnitScales = { 1, 1e3, 1e6, 1e9 };
+    public static readonly string[] UnitLabels = { "Ω", "kΩ", "MΩ", "GΩ" };
+
+    // ──────────────────────────────────────────────────────────────
+    // STATE
+    // ──────────────────────────────────────────────────────────────
+    private int _mode = 1;            // 0 = 4-band, 1 = 5-band, 2 = 6-band
+    private int _inputMode;           // 0 = value → colour, 1 = colour → value
+    private int _unitIndex;
+    private string _entryText = "";
+    private int _series;
+    private bool _showRange;
+
+    private readonly int[] _digits = { 1, 0, 0 };
+    private int _mulIdx = ColorCodes.MultiplierX1;
+    private int _tolIdx = ColorCodes.Tolerance5Default;
+    private int _tcrIdx = ColorCodes.TcrDefault;
+
+    private BandColor[] _rings = Array.Empty<BandColor>();
+    private double _nominal = double.NaN;   // NaN = no valid value
+    private double _suggestion = double.NaN;
+
+    // ──────────────────────────────────────────────────────────────
+    // LOCALISATION  –  XAML: Text="{Binding [title]}"
+    // ──────────────────────────────────────────────────────────────
+    public string this[string key] => Loc.T(key);
+
+    public string Lang
     {
-        // ──────────────────────────────────────────────────────────────
-        // PROPERTY CHANGE / MVVM HELPERS
-        // ──────────────────────────────────────────────────────────────
-        public event PropertyChangedEventHandler? PropertyChanged;
-        private void Notify([CallerMemberName] string? n = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
-        private void NotifyAll()
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
-        private bool Set<T>(ref T f, T v, [CallerMemberName] string? n = null)
+        get => Loc.Language;
+        set
         {
-            if (EqualityComparer<T>.Default.Equals(f, v)) return false;
-            f = v; Notify(n); return true;
+            if (value == Loc.Language) return;
+            Loc.SetLanguage(value);
+            AppSettings.Language = Loc.Language;
+            Recalculate(notifyAll: true);
         }
+    }
 
-        // ──────────────────────────────────────────────────────────────
-        // COLOR CONSTANTS (RESISTOR COLOR STANDARD)
-        // ──────────────────────────────────────────────────────────────
-        internal static readonly Color CBlack = Color.FromRgb(0, 0, 0);
-        internal static readonly Color CBrown = Color.FromRgb(96, 64, 0);
-        internal static readonly Color CRed = Color.FromRgb(200, 32, 32);
-        internal static readonly Color COrange = Color.FromRgb(230, 110, 0);
-        internal static readonly Color CYellow = Color.FromRgb(220, 200, 0);
-        internal static readonly Color CGreen = Color.FromRgb(0, 140, 60);
-        internal static readonly Color CBlue = Color.FromRgb(30, 80, 200);
-        internal static readonly Color CViolet = Color.FromRgb(120, 40, 160);
-        internal static readonly Color CGray = Color.FromRgb(120, 120, 120);
-        internal static readonly Color CWhite = Color.FromRgb(255, 255, 255);
-        internal static readonly Color CSilver = Color.FromRgb(180, 180, 180);
-        internal static readonly Color CGold = Color.FromRgb(200, 160, 0);
-        internal static readonly Color CNone = Color.FromArgb("#1A1A1A");
+    public double TitleFontSize
+    {
+        get { int l = this["title"].Length; return l > 28 ? 17.0 : l > 22 ? 20.0 : l > 16 ? 22.0 : 24.0; }
+    }
 
-        // ──────────────────────────────────────────────────────────────
-        // COLOR BAND DATA TABLES
-        // ──────────────────────────────────────────────────────────────
-        public static readonly (Color Bg, string Lbl, Color Fg)[] DigitData =
+    public string AppVersionText => $"Resistor Calculator v{AppInfo.VersionString}";
+
+    // ──────────────────────────────────────────────────────────────
+    // MODE PROPERTIES
+    // ──────────────────────────────────────────────────────────────
+    public int Mode => _mode;
+    public int InputMode => _inputMode;
+    public bool IsValueMode => _inputMode == 0;
+    public bool IsColorMode => _inputMode == 1;
+    public bool Ring3Visible => _mode >= 1;
+    public bool TcrVisible => _mode == 2;
+    public int SigDigits => _mode == 0 ? 2 : 3;
+
+    public BandOption[] ToleranceOptions => _mode == 0 ? ColorCodes.Tolerance4 : ColorCodes.Tolerance5;
+
+    public int Digit(int i) => _digits[i];
+    public int MultiplierIndex => _mulIdx;
+    public int ToleranceIndex => _tolIdx;
+    public int TcrIndex => _tcrIdx;
+    public IReadOnlyList<BandColor> Rings => _rings;
+    public Color BodyColor { get; private set; } = Color.FromArgb("#6FA8C7");
+
+    public string EntryText
+    {
+        get => _entryText;
+        set
         {
-            (CBlack,"0",CWhite),(CBrown,"1",CWhite),(CRed,"2",CWhite),(COrange,"3",CBlack),
-            (CYellow,"4",CBlack),(CGreen,"5",CWhite),(CBlue,"6",CWhite),(CViolet,"7",CWhite),
-            (CGray,"8",CWhite),(CWhite,"9",CBlack),
-        };
-        public static readonly (Color Bg, string Lbl, Color Fg)[] MultData =
+            value ??= "";
+            if (value == _entryText) return;
+            _entryText = value;
+            Notify();
+            if (IsValueMode) Recalculate();
+        }
+    }
+
+    public int UnitIndex
+    {
+        get => _unitIndex;
+        set
         {
-            (CSilver,"×0.01",CBlack),(CGold,"×0.1",CBlack),(CBlack,"×1",CWhite),(CBrown,"×10",CWhite),
-            (CRed,"×100",CWhite),(COrange,"×1k",CBlack),(CYellow,"×10k",CBlack),(CGreen,"×100k",CWhite),
-            (CBlue,"×1M",CWhite),(CViolet,"×10M",CWhite),(CGray,"×100M",CWhite),(CWhite,"×1G",CBlack),
-        };
-        public static readonly (Color Bg, string Lbl, Color Fg)[] TolData4 =
+            value = Math.Clamp(value, 0, 3);
+            if (value == _unitIndex) return;
+            _unitIndex = value;
+            Notify();
+            if (IsValueMode) Recalculate();
+        }
+    }
+
+    public int Series
+    {
+        get => _series;
+        set
         {
-            (CRed,"±2%",CWhite),(CGold,"±5%",CBlack),(CSilver,"±10%",CBlack),(CNone,"±20%",CWhite),
-        };
-        public static readonly (Color Bg, string Lbl, Color Fg)[] TolData5 =
+            if (value == _series) return;
+            _series = value;
+            AppSettings.Series = value;
+            Notify();
+            Recalculate();
+        }
+    }
+
+    public bool ShowRange
+    {
+        get => _showRange;
+        set { if (value == _showRange) return; _showRange = value; Notify(); Notify(nameof(HasRange)); }
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // OUTPUT PROPERTIES
+    // ──────────────────────────────────────────────────────────────
+    public string ResultValue { get; private set; } = "—";
+    public string ResultDetail { get; private set; } = "";
+    public string ResultRange { get; private set; } = "";
+    public bool HasRange => _showRange && ResultRange.Length > 0;
+    public string BandNames { get; private set; } = "";
+    public string StatusText { get; private set; } = "";
+    public bool HasStatus => StatusText.Length > 0;
+    public bool StatusIsError { get; private set; }
+    public string SuggestionText { get; private set; } = "";
+    public bool HasSuggestion => SuggestionText.Length > 0;
+    public bool HasValidValue => !double.IsNaN(_nominal);
+
+    /// <summary>Plain text for the clipboard, e.g. "4.7 kΩ ±1% (Yellow, Violet, Black, Brown, Brown)".</summary>
+    public string ClipboardText
+        => HasValidValue ? $"{ResultValue} {ResultDetail}".Trim() + (BandNames.Length > 0 ? $" ({BandNames.Replace(" · ", ", ")})" : "") : "";
+
+    // ══════════════════════════════════════════════════════════════
+    // CONSTRUCTOR
+    // ══════════════════════════════════════════════════════════════
+    public ResistorViewModel()
+    {
+        Loc.SetLanguage(AppSettings.Language);
+        _series = AppSettings.Series;
+        _showRange = AppSettings.ShowRange;
+        if (AppSettings.RememberState) RestoreState(AppSettings.LastState);
+        ApplyBody();
+        Recalculate();
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // PUBLIC API
+    // ══════════════════════════════════════════════════════════════
+    public void SetMode(int mode)
+    {
+        mode = Math.Clamp(mode, 0, 2);
+        if (mode == _mode) return;
+
+        double keep = _nominal;
+        double tolPercent = ToleranceOptions[Math.Clamp(_tolIdx, 0, ToleranceOptions.Length - 1)].Value;
+
+        _mode = mode;
+        _tolIdx = FindTolerance(ToleranceOptions, tolPercent, mode == 0 ? ColorCodes.Tolerance4Default : ColorCodes.Tolerance5Default);
+        ApplyBody();
+
+        // Colour mode: keep the resistance (re-encoded with the new number of digits)
+        if (IsColorMode && !double.IsNaN(keep)) EncodeIntoSelection(keep);
+
+        Notify(nameof(Mode)); Notify(nameof(Ring3Visible)); Notify(nameof(TcrVisible));
+        Notify(nameof(ToleranceOptions)); Notify(nameof(SigDigits));
+        Recalculate();
+    }
+
+    public void SetInputMode(int mode)
+    {
+        mode = Math.Clamp(mode, 0, 1);
+        if (mode == _inputMode) return;
+        _inputMode = mode;
+
+        // Switching to value mode: pre-fill the entry with the resistor that is shown
+        if (mode == 0 && !double.IsNaN(_nominal)) WriteEntry(_nominal);
+
+        Notify(nameof(InputMode)); Notify(nameof(IsValueMode)); Notify(nameof(IsColorMode));
+        Recalculate();
+    }
+
+    /// <summary>band: 0-2 digits, 3 multiplier, 4 tolerance, 5 TCR.</summary>
+    public void SelectBand(int band, int idx)
+    {
+        switch (band)
         {
-            (CGray,"±0.05%",CWhite),(CViolet,"±0.1%",CWhite),(CBlue,"±0.25%",CWhite),
-            (CGreen,"±0.5%",CWhite),(CBrown,"±1%",CWhite),(CRed,"±2%",CWhite),(CGold,"±5%",CBlack),
-        };
-        public static readonly (Color Bg, string Lbl, Color Fg)[] TcrData =
+            case 0: case 1: case 2: _digits[band] = Math.Clamp(idx, 0, 9); break;
+            case 3: _mulIdx = Math.Clamp(idx, 0, ColorCodes.Multipliers.Length - 1); break;
+            case 4: _tolIdx = Math.Clamp(idx, 0, ToleranceOptions.Length - 1); break;
+            case 5: _tcrIdx = Math.Clamp(idx, 0, ColorCodes.Tcr.Length - 1); break;
+        }
+        if (band <= 3 && IsValueMode) return; // digits are driven by the entry in value mode
+        Recalculate();
+    }
+
+    /// <summary>Rounds the current value to the selected E-series (if a suggestion exists).</summary>
+    public void ApplySuggestion()
+    {
+        if (double.IsNaN(_suggestion)) return;
+        ApplyValue(_suggestion);
+    }
+
+    public void ApplyValue(double value)
+    {
+        if (IsValueMode) WriteEntry(value);
+        else EncodeIntoSelection(value);
+        Recalculate();
+    }
+
+    public void ResetInput()
+    {
+        _digits[0] = 1; _digits[1] = 0; _digits[2] = 0;
+        _mulIdx = ColorCodes.MultiplierX1;
+        _tcrIdx = ColorCodes.TcrDefault;
+        _tolIdx = _mode == 0 ? ColorCodes.Tolerance4Default : ColorCodes.Tolerance5Default;
+        _entryText = ""; _unitIndex = 0;
+        Notify(nameof(EntryText)); Notify(nameof(UnitIndex));
+        Recalculate(notifyAll: true);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // CALCULATION
+    // ══════════════════════════════════════════════════════════════
+    private void Recalculate(bool notifyAll = false)
+    {
+        string status = "";
+        bool error = false;
+
+        if (IsValueMode)
         {
-            (CBrown,"100",CWhite),(CRed,"50",CWhite),(COrange,"15",CBlack),
-            (CYellow,"25",CBlack),(CBlue,"10",CWhite),(CViolet,"5",CWhite),
-        };
-
-        // ──────────────────────────────────────────────────────────────
-        // SUPPORTED UI LANGUAGES
-        // ──────────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// Create a custom language by (code, flag emoji, short label).
-        /// The code is used to load the corresponding JSON in \Resources\Localization,
-        /// so it must match the filename (without .json).
-        /// Emoji can be used; rare languages use png "" (empty string),
-        /// png is in format flag_{code}.png in Images\Flags.
-        /// </summary>
-
-        // Main languages
-        public static readonly (string Code, string Flag, string Short)[] PrimaryLanguages =
-        {
-            ("en","🇬🇧","EN"), ("de","🇩🇪","DE"), ("es","🇪🇸","ES"), ("ru","🇷🇺","RU"), ("fr","🇫🇷","FR"),
-            ("pt","🇵🇹","PT"), ("ja","🇯🇵","JA"), ("zh","🇨🇳","ZH"),
-        };
-
-        // Secondary languages – only loaded when user clicks "More languages"
-        public static readonly (string Code, string Flag, string Short)[] SecondaryLanguages =
-        {
-            ("af","🇿🇦","AF"),("am","🇪🇹","AM"),("ar","🇸🇦","AR"),("az","🇦🇿","AZ"),
-            ("bg","🇧🇬","BG"),("bn","🇧🇩","BN"),("cs","🇨🇿","CS"),("da","🇩🇰","DA"),
-            ("el","🇬🇷","EL"),("et","🇪🇪","ET"),("fa","🇮🇷","FA"),("fi","🇫🇮","FI"),
-            ("gu","🇮🇳","GU"),("ha","🇳🇬","HA"),("he","🇮🇱","HE"),("hi","🇮🇳","HI"),
-            ("hr","🇭🇷","HR"),("hu","🇭🇺","HU"),("hy","🇦🇲","HY"),("id","🇮🇩","ID"),
-            ("is","🇮🇸","IS"),("it","🇮🇹","IT"),("jv","🇮🇩","JV"),("ka","🇬🇪","KA"),
-            ("kn","🇮🇳","KN"),("ko","🇰🇷","KO"),("ku","","KU"),("la","🇻🇦","LA"),
-            ("lt","🇱🇹","LT"),("lv","🇱🇻","LV"),("ml","🇮🇳","ML"),("mr","🇮🇳","MR"),
-            ("ms","🇲🇾","MS"),("nl","🇳🇱","NL"),("no","🇳🇴","NO"),("pa","🇮🇳","PA"),
-            ("pl","🇵🇱","PL"),("ro","🇷🇴","RO"),("sk","🇸🇰","SK"),("sl","🇸🇮","SL"),
-            ("sq","🇦🇱","SQ"),("sr","🇷🇸","SR"),("sv","🇸🇪","SV"),("sw","🇰🇪","SW"),
-            ("ta","🇮🇳","TA"),("te","🇮🇳","TE"),("th","🇹🇭","TH"),("tl","🇵🇭","TL"),
-            ("tr","🇹🇷","TR"),("uk","🇺🇦","UK"),("ur","🇵🇰","UR"),("vi","🇻🇳","VI")
-        };
-
-        // Combined – used only for default-language detection
-        private static readonly (string Code, string Flag, string Short)[] _allLanguages
-            = [.. PrimaryLanguages, .. SecondaryLanguages];
-
-        // ──────────────────────────────────────────────────────────────
-        // RESISTOR STATE (BAND COLORS, etc.)
-        // ──────────────────────────────────────────────────────────────
-        public readonly List<Color> Rings = new();
-        private Color _bodyColor = Colors.SteelBlue;
-        public Color BodyColor => _bodyColor;
-        public static bool IsInvisibleRing(Color c) => c == CNone;
-        public event Action? RingsChanged;
-
-        // ──────────────────────────────────────────────────────────────
-        // INTERNAL STATE FIELDS
-        // ──────────────────────────────────────────────────────────────
-        private int _resistorMode = 1;
-        private int _inputMode = 0;
-        private int _selectedSeries = 12;
-        private string _lang = "en";
-        private string _resultText = "0 Ω";
-        private int _themeIndex = 0;
-
-        // ──────────────────────────────────────────────────────────────
-        // BAND SELECTION INDICES
-        // ──────────────────────────────────────────────────────────────
-        public int Sel1 = 1, Sel2 = 0, Sel3 = 0, SelMul = 2, SelTol = 4, SelTcr = 0;
-
-        // ──────────────────────────────────────────────────────────────
-        // VIEWMODEL PROPERTIES
-        // ──────────────────────────────────────────────────────────────
-        public int ResistorMode
-        {
-            get => _resistorMode;
-            private set
+            if (string.IsNullOrWhiteSpace(_entryText))
             {
-                if (_resistorMode == value) return;
-                _resistorMode = value;
-                Notify(); Notify(nameof(Ring3Visible)); Notify(nameof(TcrVisible));
-                Notify(nameof(ModeLabelText)); Notify(nameof(CurrentTolData));
+                _nominal = double.NaN;
+                status = Loc.T("enterValue");
             }
-        }
-        public int InputMode
-        {
-            get => _inputMode;
-            private set
+            else if (!TryGetEntryValue(out double v))
             {
-                if (_inputMode == value) return;
-                _inputMode = value;
-                Notify(); Notify(nameof(IsColorMode)); Notify(nameof(IsValueMode));
+                _nominal = double.NaN;
+                status = Loc.T("invalidInput"); error = true;
             }
-        }
-        public int SelectedSeries { get => _selectedSeries; set => Set(ref _selectedSeries, value); }
-        public string Lang
-        {
-            get => _lang;
-            set { if (!Set(ref _lang, value)) return; Preferences.Set("pref_lang", _lang); NotifyAll(); }
-        }
-        public string ResultText { get => _resultText; private set => Set(ref _resultText, value); }
-
-        public int ThemeIndex
-        {
-            get => _themeIndex;
-            set { if (Set(ref _themeIndex, value)) Preferences.Set("pref_theme", value); }
-        }
-
-        // ──────────────────────────────────────────────────────────────
-        // UI VISIBILITY FLAGS
-        // ──────────────────────────────────────────────────────────────
-        public bool Ring3Visible => _resistorMode >= 1;
-        public bool TcrVisible => _resistorMode == 2;
-        public bool IsColorMode => _inputMode == 1;
-        public bool IsValueMode => _inputMode == 0;
-
-        // ──────────────────────────────────────────────────────────────
-        // DATA SOURCES DEPENDING ON MODE
-        // ──────────────────────────────────────────────────────────────
-        public (Color Bg, string Lbl, Color Fg)[] CurrentTolData
-            => _resistorMode == 0 ? TolData4 : TolData5;
-
-        // ──────────────────────────────────────────────────────────────
-        // LOCALIZED UI TEXT PROPERTIES
-        // ──────────────────────────────────────────────────────────────
-        public string TitleText => T("title");
-        public string SubtitleText => T("subtitle");
-        public string ModeLabelText => _resistorMode switch { 0 => T("band4"), 1 => T("band5"), _ => T("band6") };
-        public string ResistanceLabelText => T("resistance");
-        public string NormSeriesLabelText => T("normSeries");
-        public string Ring1Text => T("ring1");
-        public string Ring2Text => T("ring2");
-        public string Ring3Text => T("ring3");
-        public string MultText => T("mult");
-        public string TolText => T("tol");
-        public string TcrText => T("tcr");
-        public string SettingsTitleText => T("settings");
-        public string LangSectionText => T("language");
-        public string AboutTitleText => T("about");
-        public string AboutDescText => T("aboutDesc");
-        public string CopyrightText => T("copyright");
-        public string CloseText => T("close");
-        public string WarningTitle => T("warning");
-        public string OutOfRangeText => T("outOfRange");
-        public string ValToColTabText => T("valToCol");
-        public string ColToValTabText => T("colToVal");
-        public string Band4BtnText => T("band4");
-        public string Band5BtnText => T("band5");
-        public string Band6BtnText => T("band6");
-        public string MoreLangsText => T("moreLangs");
-        public string LessLangsText => T("lessLangs");
-        public string SupportText => T("support");
-        public string PrivacyPolicyText => T("privacyPolicy");
-        public string AboutDevText => T("aboutDev");
-        public string DefaultAppDesign => T("defaultAppDesign");
-        public string DesignLabelText => T("designLabelText");
-
-        // ──────────────────────────────────────────────────────────────
-        // APP INFO
-        // ──────────────────────────────────────────────────────────────
-        public string AppVersionText => $"Resistor Calculator v{AppInfo.VersionString}";
-        public double TitleFontSize
-        {
-            get { int l = TitleText.Length; return l > 28 ? 17.0 : l > 22 ? 20.0 : l > 16 ? 22.0 : 24.0; }
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // CONSTRUCTOR
-        // ══════════════════════════════════════════════════════════════
-        public ResistorViewModel()
-        {
-            _lang = Preferences.Get("pref_lang", GetDefaultLanguage());
-            _themeIndex = Preferences.Get("pref_theme", 0);
-            _selectedSeries = Preferences.Get("pref_series", 12);
-            _resistorMode = 1;
-            InitRings();
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // PUBLIC API (UI INTERACTION)
-        // ══════════════════════════════════════════════════════════════
-        public void SetMode(int mode)
-        {
-            Rings.Clear();
-            _bodyColor = mode == 0 ? Color.FromArgb("#D2B48C") : Colors.SteelBlue;
-
-            int count = mode switch { 0 => 4, 1 => 5, _ => 6 };
-            for (int i = 0; i < count; i++) Rings.Add(CBlack);
-
-            SelTol = mode == 0 ? 1 : 4; SelTcr = 0;
-            ResistorMode = mode;
-            Recalc();
-        }
-        public void SetInputMode(int mode) { InputMode = mode; Recalc(); }
-        public void OnBandSelected(int band, int idx)
-        {
-            switch (band)
+            else if (!EncodeIntoSelection(v, out double encoded))
             {
-                case 0: Sel1 = idx; break;
-                case 1: Sel2 = idx; break;
-                case 2: Sel3 = idx; break;
-                case 3: SelMul = idx; break;
-
-                case 4:
-                    SelTol = idx;
-                    if (IsColorMode) RecalcColorToValue();
-                    else { ApplyTolRing(); RingsChanged?.Invoke(); }
-                    return;
-
-                case 5:
-                    SelTcr = idx;
-                    if (IsColorMode) RecalcColorToValue();
-                    else { ApplyTcrRing(); RingsChanged?.Invoke(); }
-                    return;
-            }
-            if (IsColorMode) RecalcColorToValue();
-        }
-
-        public void RecalcFromText(string? text)
-        {
-            ResultText = "";
-            double v = ParseInput(text);
-            if (v < 0) return;
-
-            FillRingsFromValue(v);
-            ApplyTolRing();
-            if (_resistorMode == 2) ApplyTcrRing();
-            RingsChanged?.Invoke();
-        }
-        public double SetSeries(int series, string? currentText)
-        {
-            SelectedSeries = series;
-            Preferences.Set("pref_series", series);
-            double v = ParseInput(currentText);
-            if (v <= 0) return -1;
-
-            double rounded = RoundToSeries(v, series);
-            RecalcFromText(FormatR(rounded));
-            return rounded;
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // INTERNAL CALCULATION LOGIC
-        // ══════════════════════════════════════════════════════════════
-        private void InitRings()
-        {
-            Rings.Clear();
-            int count = _resistorMode switch { 0 => 4, 1 => 5, _ => 6 };
-            for (int i = 0; i < count; i++) Rings.Add(CBlack);
-        }
-        private void Recalc() => RecalcColorToValue();
-        private void RecalcColorToValue()
-        {
-            if (Rings.Count == 0) return;
-            int multExp = SelMul - 2;
-            double baseVal;
-            if (_resistorMode >= 1)
-            {
-                baseVal = (Sel1 * 100) + (Sel2 * 10) + Sel3;
-                SafeSet(0, DigitColor(Sel1)); SafeSet(1, DigitColor(Sel2));
-                SafeSet(2, DigitColor(Sel3)); SafeSet(3, MultColor(multExp));
+                _nominal = double.NaN;
+                status = Loc.T("outOfRange"); error = true;
             }
             else
             {
-                baseVal = (Sel1 * 10) + Sel2;
-                SafeSet(0, DigitColor(Sel1)); SafeSet(1, DigitColor(Sel2)); SafeSet(2, MultColor(multExp));
-            }
-            ApplyTolRing();
-            if (_resistorMode == 2) ApplyTcrRing();
-
-            double final = baseVal * Math.Pow(10, multExp);
-            var tolData = CurrentTolData;
-            string tolStr = SelTol < tolData.Length ? tolData[SelTol].Lbl : "";
-            string tcrStr = (_resistorMode == 2 && SelTcr < TcrData.Length) ? $" {TcrData[SelTcr].Lbl}ppm" : "";
-            ResultText = $"{FormatR(final)}Ω  {tolStr}{tcrStr}";
-            RingsChanged?.Invoke();
-        }
-        private void FillRingsFromValue(double value)
-        {
-            if (value == 0)
-            {
-                int cap = _resistorMode >= 1 ? 4 : 3;
-                for (int i = 0; i < cap && i < Rings.Count; i++) Rings[i] = CBlack;
-                return;
-            }
-
-            int sigD = _resistorMode >= 1 ? 3 : 2;
-            int mulExp = (int)Math.Floor(Math.Log10(value)) - (sigD - 1);
-
-            if (mulExp < -2 || mulExp > 9) { ResultText = "OUT_OF_RANGE"; return; }
-
-            int sig = (int)Math.Round(value / Math.Pow(10, mulExp));
-            if (_resistorMode >= 1)
-            {
-                SafeSet(0, DigitColor(sig / 100));
-                SafeSet(1, DigitColor((sig / 10) % 10));
-                SafeSet(2, DigitColor(sig % 10));
-                SafeSet(3, MultColor(mulExp));
-            }
-            else
-            {
-                SafeSet(0, DigitColor(sig / 10));
-                SafeSet(1, DigitColor(sig % 10));
-                SafeSet(2, MultColor(mulExp));
+                _nominal = encoded;
+                if (!ResistorMath.IsSameValue(encoded, v))
+                    status = string.Format(CultureInfo.InvariantCulture, Loc.T("roundedTo"), SigDigits);
             }
         }
-        private void ApplyTolRing()
+        else
         {
-            int ti = _resistorMode == 0 ? 3 : 4;
-            var d = CurrentTolData;
-            if (SelTol < d.Length) SafeSet(ti, d[SelTol].Bg);
-        }
-        private void ApplyTcrRing()
-        {
-            if (SelTcr < TcrData.Length) SafeSet(5, TcrData[SelTcr].Bg);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SafeSet(int idx, Color c)
-        {
-            if ((uint)idx < (uint)Rings.Count) Rings[idx] = c;
+            _nominal = ResistorMath.Decode(_digits.AsSpan(0, SigDigits), _mulIdx + ResistorMath.MinExp);
         }
 
-        // ══════════════════════════════════════════════════════════════
-        // VALUE PARSING / FORMATTING
-        // ══════════════════════════════════════════════════════════════
-        public static double ParseInput(string? raw)
+        BuildRings();
+        BuildTexts(status, error);
+
+        if (notifyAll) { NotifyAll(); }
+        else
         {
-            if (string.IsNullOrWhiteSpace(raw)) return -1;
-
-            string s = raw.Trim().ToUpperInvariant().Replace(",", ".");
-            double mul = 1;
-
-            if (s.EndsWith("K")) { mul = 1e3; s = s[..^1]; }
-            else if (s.EndsWith("M")) { mul = 1e6; s = s[..^1]; }
-            else if (s.EndsWith("G")) { mul = 1e9; s = s[..^1]; }
-
-            return double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out double r)
-                ? r * mul : -1;
+            Notify(nameof(ResultValue)); Notify(nameof(ResultDetail)); Notify(nameof(ResultRange));
+            Notify(nameof(HasRange)); Notify(nameof(BandNames)); Notify(nameof(StatusText));
+            Notify(nameof(HasStatus)); Notify(nameof(StatusIsError)); Notify(nameof(SuggestionText));
+            Notify(nameof(HasSuggestion)); Notify(nameof(HasValidValue));
         }
-        public static string FormatR(double v) => v switch
-        {
-            >= 1e9 => (v / 1e9).ToString("0.##", CultureInfo.InvariantCulture) + "G",
-            >= 1e6 => (v / 1e6).ToString("0.##", CultureInfo.InvariantCulture) + "M",
-            >= 1e3 => (v / 1e3).ToString("0.##", CultureInfo.InvariantCulture) + "k",
-            _ => Math.Round(v, 2).ToString("0.##", CultureInfo.InvariantCulture)
-        };
-        public static double RoundToSeries(double value, int series)
-        {
-            if (value <= 0) return value;
+        RingsChanged?.Invoke();
+    }
 
-            double decade = Math.Pow(10, Math.Floor(Math.Log10(value)));
-            double norm = value / decade, best = 1, minD = double.MaxValue;
+    private void BuildRings()
+    {
+        int count = _mode switch { 0 => 4, 1 => 5, _ => 6 };
+        if (_rings.Length != count) _rings = new BandColor[count];
+        int sig = SigDigits;
+        for (int i = 0; i < sig; i++) _rings[i] = ColorCodes.DigitColor(_digits[i]);
+        _rings[sig] = ColorCodes.Multipliers[_mulIdx].Color;
+        _rings[sig + 1] = ToleranceOptions[Math.Clamp(_tolIdx, 0, ToleranceOptions.Length - 1)].Color;
+        if (count == 6) _rings[5] = ColorCodes.Tcr[_tcrIdx].Color;
+    }
 
-            for (int n = 0; n <= series; n++)
-            {
-                double c = Math.Round(Math.Pow(10, (double)n / series), 2);
-                double d = Math.Abs(c - norm);
-                if (d < minD) { minD = d; best = c; }
-            }
-            return Math.Round(best * decade, 3);
+    private void BuildTexts(string status, bool error)
+    {
+        StatusText = status;
+        StatusIsError = error;
+        var tol = ToleranceOptions[Math.Clamp(_tolIdx, 0, ToleranceOptions.Length - 1)];
+
+        if (double.IsNaN(_nominal))
+        {
+            ResultValue = "—"; ResultDetail = ""; ResultRange = ""; BandNames = "";
+            SuggestionText = ""; _suggestion = double.NaN;
+            return;
         }
 
-        // ══════════════════════════════════════════════════════════════
-        // COLOR LOOKUP HELPERS
-        // ══════════════════════════════════════════════════════════════
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Color DigitColor(int d) => d switch
-        {
-            0 => CBlack,
-            1 => CBrown,
-            2 => CRed,
-            3 => COrange,
-            4 => CYellow,
-            5 => CGreen,
-            6 => CBlue,
-            7 => CViolet,
-            8 => CGray,
-            9 => CWhite,
-            _ => Colors.Transparent
-        };
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Color MultColor(int exp) => exp switch
-        {
-            -2 => CSilver,
-            -1 => CGold,
-            0 => CBlack,
-            1 => CBrown,
-            2 => CRed,
-            3 => COrange,
-            4 => CYellow,
-            5 => CGreen,
-            6 => CBlue,
-            7 => CViolet,
-            8 => CGray,
-            9 => CWhite,
-            _ => Colors.Transparent
-        };
+        ResultValue = ResistorMath.FormatOhm(_nominal);
+        ResultDetail = _mode == 2 ? $"{tol.Label}  ·  {ColorCodes.Tcr[_tcrIdx].Label} ppm/K" : tol.Label;
+        ResultRange = _nominal > 0 ? ResistorMath.FormatRange(_nominal, tol.Value) : "";
 
-        // ══════════════════════════════════════════════════════════════
-        // LOCALIZATION ENGINE
-        // ══════════════════════════════════════════════════════════════
+        var names = new string[_rings.Length];
+        for (int i = 0; i < _rings.Length; i++) names[i] = Loc.T(_rings[i].Key);
+        BandNames = string.Join(" · ", names);
 
-        private static readonly ConcurrentDictionary<string, Dictionary<string, string>> _langCache = new();
-
-        private static string GetDefaultLanguage()
+        if (_nominal > 0 && !ResistorMath.IsInSeries(_nominal, _series))
         {
-            var sys = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-            bool supported = Array.Exists(_allLanguages, l => l.Code == sys);
-            return supported ? sys : "en";
+            _suggestion = ResistorMath.RoundToSeries(_nominal, _series);
+            SuggestionText = string.Format(CultureInfo.InvariantCulture, Loc.T("nearestStd"), $"E{_series}")
+                             + $"  →  {ResistorMath.FormatOhm(_suggestion)}";
         }
-
-        internal string T(string key)
+        else
         {
-            if (!_langCache.TryGetValue(_lang, out var dict))
-                dict = LoadLang(_lang);
-
-            if (dict.TryGetValue(key, out var val)) return val;
-
-            // Fallback to English
-            if (_lang != "en")
-            {
-                if (!_langCache.TryGetValue("en", out var en))
-                    en = LoadLang("en");
-                if (en.TryGetValue(key, out var enVal)) return enVal;
-            }
-
-            return key; // last resort: return the key itself
+            _suggestion = double.NaN;
+            SuggestionText = "";
         }
+    }
 
-        private static Dictionary<string, string> LoadLang(string code)
+    private bool TryGetEntryValue(out double value)
+    {
+        if (!ResistorMath.TryParse(_entryText, out value)) return false;
+        // An explicit letter (4k7, 2M2, 4R7…) wins over the unit selector
+        bool hasLetter = _entryText.AsSpan().IndexOfAny("kKmMgGrR") >= 0;
+        if (!hasLetter) value *= UnitScales[_unitIndex];
+        return true;
+    }
+
+    private bool EncodeIntoSelection(double value) => EncodeIntoSelection(value, out _);
+
+    private bool EncodeIntoSelection(double value, out double encoded)
+    {
+        Span<int> d = stackalloc int[3];
+        if (!ResistorMath.TryEncode(value, SigDigits, d, out int exp, out encoded)) return false;
+        for (int i = 0; i < SigDigits; i++) _digits[i] = d[i];
+        _mulIdx = ColorCodes.MultiplierIndex(exp);
+        return true;
+    }
+
+    private void WriteEntry(double value)
+    {
+        var (num, unit) = ResistorMath.SplitForEntry(value);
+        _unitIndex = unit;
+        _entryText = num;
+        Notify(nameof(UnitIndex));
+        Notify(nameof(EntryText));
+    }
+
+    private void ApplyBody()
+        => BodyColor = _mode == 0 ? Color.FromArgb("#D9BC8C") : Color.FromArgb("#6FA8C7");
+
+    private static int FindTolerance(BandOption[] opts, double percent, int fallback)
+    {
+        for (int i = 0; i < opts.Length; i++) if (opts[i].Value == percent) return i;
+        return fallback;
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // PERSISTENCE
+    // ══════════════════════════════════════════════════════════════
+    public void SaveState()
+    {
+        if (!AppSettings.RememberState) return;
+        string entry = _entryText.Replace("|", "");
+        AppSettings.LastState = string.Join('|',
+            _mode, _inputMode, $"{_digits[0]},{_digits[1]},{_digits[2]}", _mulIdx, _tolIdx, _tcrIdx, _unitIndex, entry);
+    }
+
+    private void RestoreState(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return;
+        try
         {
-            try
-            {
-                using var stream = Task.Run(() =>
-                    FileSystem.OpenAppPackageFileAsync($"{code}.json")).GetAwaiter().GetResult();
-                using var reader = new StreamReader(stream);
-                var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(reader.ReadToEnd())
-                           ?? new();
-                _langCache.TryAdd(code, dict);
-                return dict;
-            }
-            catch
-            {
-                var empty = new Dictionary<string, string>();
-                _langCache.TryAdd(code, empty);
-                return empty;
-            }
+            var p = s.Split('|');
+            if (p.Length < 8) return;
+            _mode = Math.Clamp(int.Parse(p[0], CultureInfo.InvariantCulture), 0, 2);
+            _inputMode = Math.Clamp(int.Parse(p[1], CultureInfo.InvariantCulture), 0, 1);
+            var d = p[2].Split(',');
+            for (int i = 0; i < 3 && i < d.Length; i++) _digits[i] = Math.Clamp(int.Parse(d[i], CultureInfo.InvariantCulture), 0, 9);
+            _mulIdx = Math.Clamp(int.Parse(p[3], CultureInfo.InvariantCulture), 0, ColorCodes.Multipliers.Length - 1);
+            _tolIdx = Math.Clamp(int.Parse(p[4], CultureInfo.InvariantCulture), 0, ToleranceOptions.Length - 1);
+            _tcrIdx = Math.Clamp(int.Parse(p[5], CultureInfo.InvariantCulture), 0, ColorCodes.Tcr.Length - 1);
+            _unitIndex = Math.Clamp(int.Parse(p[6], CultureInfo.InvariantCulture), 0, 3);
+            _entryText = p[7];
         }
-
-        /// <summary>
-        /// Pre-loads the JSON for a given language code into the cache.
-        /// Call from a background thread when the user expands "More languages"
-        /// so that switching feels instant afterwards.
-        /// </summary>
-        public static void PreloadLang(string code)
+        catch
         {
-            if (!_langCache.ContainsKey(code))
-                LoadLang(code);
+            // Corrupt state → defaults
+            _mode = 1; _inputMode = 0; _entryText = ""; _unitIndex = 0;
+            _digits[0] = 1; _digits[1] = 0; _digits[2] = 0;
+            _mulIdx = ColorCodes.MultiplierX1; _tolIdx = ColorCodes.Tolerance5Default; _tcrIdx = ColorCodes.TcrDefault;
         }
     }
 }

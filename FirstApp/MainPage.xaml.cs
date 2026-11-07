@@ -1,1475 +1,733 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Shapes;
-using Microsoft.Maui.Graphics;
+﻿using System.ComponentModel;
+using FirstApp.Core;
+using FirstApp.UI;
 
-namespace FirstApp
+namespace FirstApp;
+
+public partial class MainPage : ContentPage
 {
-    public partial class MainPage : ContentPage
+    private readonly ResistorViewModel _vm;
+
+    // Chips per band: 0-2 digits, 3 multiplier, 4 tolerance, 5 TCR
+    private readonly List<Border>[] _bandChips = { new(), new(), new(), new(), new(), new() };
+    private readonly List<Border> _seriesChips = new();
+    private readonly Border[] _unitTabs = new Border[4];
+    private readonly Label[] _unitLabels = new Label[4];
+    private bool _colorRowsBuilt;
+    private int _tolChipsMode = -1;
+
+    // Settings snapshot (read once, updated by the settings sheet)
+    private bool _anim;
+    private bool _haptics;
+
+    // Animation guards
+    private bool _resAnimBusy, _inputAnimBusy, _sheetBusy, _introPlayed;
+    private const uint SlideMs = 200;
+    private const double OutSlide = 0.30;
+
+    // Bottom sheet
+    private enum SheetKind { None, Settings, Reference }
+    private SheetKind _sheet = SheetKind.None;
+    private SettingsView? _settingsView;
+    private View? _referenceView;
+    private string _referenceKey = "";
+
+    // Cyber FX
+    private readonly ScanlinesDrawable _scanlines = new();
+    private readonly CornerBracketDrawable _resCorners = new(), _inputCorners = new();
+    private CancellationTokenSource? _fxCts;
+
+    private int _toastVersion;
+
+    // ══════════════════════════════════════════════════════════════
+    // CONSTRUCTOR
+    // ══════════════════════════════════════════════════════════════
+    public MainPage()
     {
-        private readonly ResistorViewModel _vm;
+        InitializeComponent();
 
-        // --- Chip lists
-        private readonly List<Border> _chips1 = new();
-        private readonly List<Border> _chips2 = new();
-        private readonly List<Border> _chips3 = new();
-        private readonly List<Border> _chipsMul = new();
-        private readonly List<Border> _chipsTol = new();
-        private readonly List<Border> _chipsTcr = new();
+        Theme.Set(AppSettings.Theme);
+        _anim = AppSettings.Animations;
+        _haptics = AppSettings.Haptics;
 
-        // --- Unit dropdown
-        private static readonly string[] UnitLabels = { "Ω", "KΩ", "MΩ", "GΩ" };
-        private static readonly string[] UnitSuffixes = { "", "k", "M", "G" };
-        private int _unitIdx = 0;
-        private bool _unitDropdownOpen = false;
-        private bool _unitAnimBusy = false;
-        private bool _suppressTextChanged = false;
+        _vm = new ResistorViewModel();
+        BindingContext = _vm;
 
-        // --- Animation guards
-        private bool _resAnimBusy;
-        private bool _inputAnimBusy;
-        private bool _settingsOpen;
+        ResistorView.Drawable = new ResistorDrawable(_vm);
+        ScanlinesView.Drawable = _scanlines;
+        ResCardCorners.Drawable = _resCorners;
+        InputCardCorners.Drawable = _inputCorners;
 
-        // --- Text debounce
-        private CancellationTokenSource? _textCts;
+        BuildUnitTabs();
+        BuildSeriesChips();
+        RebuildToleranceChips();
+        if (_vm.IsColorMode) EnsureColorRows();
+        if (_vm.Mode == 2) RebuildTcrChips();
 
-        // --- Animation constants
-        private const uint SlideMs = 200;
-        private const double OutSlide = 0.30;
-        private const uint DropMs = 160;
-        private const uint ChipPressMs = 55;
-        private const uint ChipReleaseMs = 75;
-        private const uint TabPunchMs = 80;
-        private const uint CardFlyMs = 170;
-        private const double CardFlyOffset = 38.0;
+        SheetOverlay.Opacity = 0;
 
-        // --- Language section state
-        private bool _langExpanded = false;
-        private bool _secondaryChipsBuilt = false;
-        private string _langChipsBuiltFor = "";
+        _vm.RingsChanged += OnRingsChanged;
+        _vm.PropertyChanged += OnVmPropertyChanged;
 
-        // --- Reference panel cache
-        private string _refContentBuiltFor = "";
+        ApplyTheme();
+        UpdateStatusColor();
+        RefreshChipSelection();
+    }
 
-        // --- Intro animation guard
-        private bool _introPlayed = false;
+    /// <summary>Called by the app when it goes to the background.</summary>
+    public void SaveState() => _vm.SaveState();
 
-        // ── Theme-abhängige Farben ──────────────────────────────────────
-        private static Color CUiBlue = Color.FromArgb("#2563EB");
-        private static Color CUiChipDark = Color.FromArgb("#1F2937");
-        private static Color CUiDropDark = Color.FromArgb("#1A2535");
-        private static Color CUiHighBg = Color.FromArgb("#0E1F3A");
-        private static Color CUiBadgeDark = Color.FromArgb("#1A2535");
-        private static Color CUiBorderBlue = Color.FromArgb("#1E3A5F");
+    // ══════════════════════════════════════════════════════════════
+    // LIFECYCLE
+    // ══════════════════════════════════════════════════════════════
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        UpdateWindowTitle();
+        ApplySystemBars();
+        StartCyberEffects();
 
-        // ── Statische Farben ────────────────────────────────────────────
-        private static readonly Color CUiChipEmpty = Color.FromArgb("#2A2A2A");
-        private static readonly Color CUiTextMuted = Color.FromArgb("#64748B");
-        private static readonly Color CUiTextSub = Color.FromArgb("#94A3B8");
-        private static readonly Color CUiTextLight = Color.FromArgb("#E2E8F0");
-        private static readonly Color CUiTextDim = Color.FromArgb("#475569");
-        private static readonly Color CUiTextDimmer = Color.FromArgb("#374151");
-        private static readonly Color CUiTextBlue = Color.FromArgb("#93C5FD");
-        private static readonly Color CUiTextTan = Color.FromArgb("#D2B48C");
-        private static readonly Color CUiTextSteel = Color.FromArgb("#6BA3BE");
-        private static readonly Color CUiTextYellow = Color.FromArgb("#FBBF24");
-        private static readonly Color CUiTextGreen = Color.FromArgb("#10B981");
-        private static readonly Color CUiPanelDark = Color.FromArgb("#060D1A");
-        private static readonly Color CUiRowDark1 = Color.FromArgb("#0D1520");
-        private static readonly Color CUiRowDark2 = Color.FromArgb("#070F1A");
-        private static readonly Color CUiBorderDiv = Color.FromArgb("#1E293B");
-        private static readonly Color CUiBorderNone = Color.FromArgb("#444444");
-
-        // ══════════════════════════════════════════════════════════════
-        // THEME SYSTEM
-        // ══════════════════════════════════════════════════════════════
-
-        private readonly struct ThemeProfile
+        if (!_introPlayed && _anim && Theme.Current.HasCyberFx)
         {
-            public readonly string DisplayName;
-            public readonly Color Accent, AccentBorder, ChipDark, DropDark, HighBg, BadgeDark;
-            public readonly string BgStart, BgMid, BgEnd, HdrStart, HdrEnd, CardStart, CardEnd, InputCardBg;
-
-            public ThemeProfile(string name,
-                Color accent, Color accentBorder, Color chipDark, Color dropDark,
-                Color highBg, Color badgeDark,
-                string bgStart, string bgMid, string bgEnd,
-                string hdrStart, string hdrEnd,
-                string cardStart, string cardEnd, string inputCardBg)
-            {
-                DisplayName = name;
-                Accent = accent; AccentBorder = accentBorder;
-                ChipDark = chipDark; DropDark = dropDark;
-                HighBg = highBg; BadgeDark = badgeDark;
-                BgStart = bgStart; BgMid = bgMid; BgEnd = bgEnd;
-                HdrStart = hdrStart; HdrEnd = hdrEnd;
-                CardStart = cardStart; CardEnd = cardEnd;
-                InputCardBg = inputCardBg;
-            }
+            _introPlayed = true;
+            _ = PlayIntroAnimation();
         }
+    }
 
-        private static readonly ThemeProfile[] Themes =
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        StopCyberEffects();
+        _vm.SaveState();
+    }
+
+    protected override bool OnBackButtonPressed()
+    {
+        if (_sheet != SheetKind.None) { _ = CloseSheet(); return true; }
+        return base.OnBackButtonPressed();
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // VIEWMODEL EVENTS
+    // ══════════════════════════════════════════════════════════════
+    private void OnRingsChanged()
+    {
+        ResistorView.Invalidate();
+        RefreshChipSelection();
+    }
+
+    private void OnVmPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
         {
-            new ThemeProfile("Default",
-                Color.FromArgb("#2563EB"), Color.FromArgb("#1E3A5F"),
-                Color.FromArgb("#1F2937"), Color.FromArgb("#1A2535"),
-                Color.FromArgb("#0E1F3A"), Color.FromArgb("#1A2535"),
-                "#000000","#1A2A3F","#203A53","#0F172A","#1E293B","#020617","#0F172A","#0D1520"),
-
-            new ThemeProfile("Cyber",
-                Color.FromArgb("#00E5FF"), Color.FromArgb("#005066"),
-                Color.FromArgb("#041520"), Color.FromArgb("#031018"),
-                Color.FromArgb("#021828"), Color.FromArgb("#031018"),
-                "#000000","#000D1A","#001525","#000508","#000F1C","#000305","#000A14","#000810"),
-
-            new ThemeProfile("Plasma",
-                Color.FromArgb("#8B5CF6"), Color.FromArgb("#3D1F7A"),
-                Color.FromArgb("#1A0F30"), Color.FromArgb("#150C28"),
-                Color.FromArgb("#1F0F40"), Color.FromArgb("#150C28"),
-                "#050010","#0F0525","#160830","#080018","#120228","#030010","#08001C","#0A0018"),
-        };
-
-        private bool IsCyber => _vm.ThemeIndex == 1;
-
-        // ══════════════════════════════════════════════════════════════
-        // CYBER EFFECTS – DRAWABLES
-        // ══════════════════════════════════════════════════════════════
-
-        /// <summary>Scanlines that scroll downward via Offset.</summary>
-        public sealed class ScanlinesDrawable : IDrawable
-        {
-            public float Offset { get; set; } = 0f;
-
-            public void Draw(ICanvas canvas, RectF rect)
-            {
-                const float spacing = 4f;
-                canvas.StrokeColor = Color.FromRgba(0, 230, 255, 16);
-                canvas.StrokeSize = 1f;
-                float start = (Offset % spacing) - spacing;
-                for (float y = start; y < rect.Height; y += spacing)
-                    canvas.DrawLine(0, y, rect.Width, y);
-            }
+            case "" or null:            // language changed → everything
+                UpdateAllTabs();
+                UpdateStatusColor();
+                UpdateWindowTitle();
+                RebuildChipsForLanguage();
+                break;
+            case nameof(ResistorViewModel.Mode):
+                RebuildToleranceChips();
+                if (_vm.Mode == 2) RebuildTcrChips();
+                UpdateResTabs();
+                break;
+            case nameof(ResistorViewModel.InputMode):
+                if (_vm.IsColorMode) EnsureColorRows();
+                UpdateInputTabs();
+                break;
+            case nameof(ResistorViewModel.UnitIndex):
+                UpdateUnitTabs();
+                break;
+            case nameof(ResistorViewModel.Series):
+                UpdateSeriesChips();
+                break;
+            case nameof(ResistorViewModel.StatusIsError):
+                UpdateStatusColor();
+                break;
         }
+    }
 
-        /// <summary>Cyber HUD corner brackets drawn inside a card.</summary>
-        public sealed class CornerBracketDrawable : IDrawable
+    private void UpdateStatusColor()
+        => StatusLabel.TextColor = _vm.StatusIsError ? Theme.Error : Theme.TextSub;
+
+    // ══════════════════════════════════════════════════════════════
+    // THEME
+    // ══════════════════════════════════════════════════════════════
+    private void ApplyTheme()
+    {
+        var t = Theme.Current;
+        bool cyber = t.HasCyberFx;
+
+        Background = Theme.Gradient(t.PageBg, diagonal: true);
+        HeaderBdr.Background = Theme.Gradient(t.HeaderBg, diagonal: false);
+
+        foreach (var card in new[] { ResCardBdr, InputCardBdr })
         {
-            public Color Accent { get; set; } = Color.FromArgb("#00E5FF");
-
-            public void Draw(ICanvas canvas, RectF rect)
-            {
-                const float size = 16f;
-                const float thick = 2f;
-                const float inset = 3f;
-                float r = rect.Width - inset;
-                float b = rect.Height - inset;
-
-                canvas.StrokeColor = Accent;
-                canvas.StrokeSize = thick;
-                canvas.StrokeLineCap = LineCap.Square;
-
-                // Top-left
-                canvas.DrawLine(inset, inset, inset + size, inset);
-                canvas.DrawLine(inset, inset, inset, inset + size);
-                // Top-right
-                canvas.DrawLine(r, inset, r - size, inset);
-                canvas.DrawLine(r, inset, r, inset + size);
-                // Bottom-left
-                canvas.DrawLine(inset, b, inset + size, b);
-                canvas.DrawLine(inset, b, inset, b - size);
-                // Bottom-right
-                canvas.DrawLine(r, b, r - size, b);
-                canvas.DrawLine(r, b, r, b - size);
-            }
+            card.Stroke = t.Accent;
+            card.StrokeThickness = cyber ? 2 : 1.5;
+            card.StrokeShape = Theme.Round(t.CardRadius);
         }
+        ResCardBdr.Background = Theme.Gradient(t.CardBg, diagonal: true);
+        InputCardBdr.Background = new SolidColorBrush(t.InputCardBg);
 
-        // ══════════════════════════════════════════════════════════════
-        // CYBER EFFECTS – ANIMATION LOOPS
-        // ══════════════════════════════════════════════════════════════
-
-        private CancellationTokenSource? _cyberEffectsCts;
-        private ScanlinesDrawable? _scanlinesDrawable;
-        private CornerBracketDrawable? _resCornerDrawable;
-        private CornerBracketDrawable? _inputCornerDrawable;
-
-        private void StartCyberEffects()
+        foreach (var b in new[] { ResTabsBdr, InputTabsBdr, UnitTabsBdr })
         {
-            StopCyberEffects();
-            _cyberEffectsCts = new CancellationTokenSource();
-            var token = _cyberEffectsCts.Token;
-
-            _ = RunScanlineLoop(token);
-            _ = RunGlitchLoop(token);
+            b.Stroke = t.AccentBorder;
+            b.StrokeShape = Theme.Round(t.ControlRadius);
         }
+        EntryBdr.Stroke = t.AccentBorder;
+        EntryBdr.StrokeShape = Theme.Round(t.ControlRadius);
+        SuggestionBdr.Stroke = t.Accent;
+        SuggestionBdr.BackgroundColor = t.HighBg;
+        SuggestionBdr.StrokeShape = Theme.Round(t.ControlRadius);
 
-        private void StopCyberEffects()
-        {
-            _cyberEffectsCts?.Cancel();
-            _cyberEffectsCts?.Dispose();
-            _cyberEffectsCts = null;
+        ResultLabel.TextColor = t.Result;
 
-            // Reset result label opacity in case glitch froze it
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                if (ResultLabel != null) ResultLabel.Opacity = 1;
-            });
-        }
+        SheetPanel.Stroke = t.Accent;
+        SheetPanel.Background = Theme.Gradient(new[] { t.SheetTop, t.SheetBottom }, diagonal: false);
 
-        // ── Moving scanlines (~30 fps) ────────────────────────────────
-        private async Task RunScanlineLoop(CancellationToken token)
+        _resCorners.Accent = t.Accent;
+        _inputCorners.Accent = t.Accent;
+        ResCardCorners.IsVisible = cyber;
+        InputCardCorners.IsVisible = cyber;
+        ResCardCorners.Invalidate();
+        InputCardCorners.Invalidate();
+        ScanlinesView.IsVisible = cyber;
+
+        StopCyberEffects();
+        StartCyberEffects();
+
+        UpdateAllTabs();
+        UpdateSeriesChips();
+        ApplySystemBars();
+    }
+
+    private void UpdateAllTabs()
+    {
+        UpdateResTabs();
+        UpdateInputTabs();
+        UpdateUnitTabs();
+    }
+
+    private void ApplySystemBars()
+    {
+        bool fs = AppSettings.Fullscreen;
+        HeaderBdr.Padding = new Thickness(12, fs ? 40 : 14, 12, 18);
+        SystemUi.Apply(fs, Theme.Current.HeaderBg[0]);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // CYBER EFFECTS  (only with Cyber theme + animations enabled)
+    // ══════════════════════════════════════════════════════════════
+    private void StartCyberEffects()
+    {
+        // Animations need a platform handler → started from OnAppearing at the earliest
+        if (Handler == null || !Theme.Current.HasCyberFx || !_anim || _fxCts != null) return;
+        _fxCts = new CancellationTokenSource();
+        var token = _fxCts.Token;
+
+        // Scanlines: translate a pre-drawn layer → no redraw per frame
+        var scroll = new Animation(v => ScanlinesView.TranslationY = v, 0, ScanlinesDrawable.Spacing * 2);
+        scroll.Commit(ScanlinesView, "scan", 16, 450, Easing.Linear, repeat: () => !token.IsCancellationRequested);
+
+        _ = RunGlitchLoop(token);
+    }
+
+    private void StopCyberEffects()
+    {
+        _fxCts?.Cancel();
+        _fxCts?.Dispose();
+        _fxCts = null;
+        if (Handler != null) ScanlinesView.AbortAnimation("scan");
+        ScanlinesView.TranslationY = 0;
+        ResultLabel.Opacity = 1;
+    }
+
+    private async Task RunGlitchLoop(CancellationToken token)
+    {
+        var rng = Random.Shared;
+        try
         {
             while (!token.IsCancellationRequested)
             {
-                if (_scanlinesDrawable != null)
-                {
-                    _scanlinesDrawable.Offset += 0.6f;
-                    if (_scanlinesDrawable.Offset > 200f) _scanlinesDrawable.Offset = 0f;
-                    MainThread.BeginInvokeOnMainThread(() => ScanlinesView?.Invalidate());
-                }
-                try { await Task.Delay(33, token); } catch { break; }
-            }
-        }
-
-        // ── Random glitch flicker on result label ─────────────────────
-        private async Task RunGlitchLoop(CancellationToken token)
-        {
-            var rng = new Random();
-            while (!token.IsCancellationRequested)
-            {
-                // Wait 3–9 seconds between glitches
-                try { await Task.Delay(rng.Next(3000, 9000), token); } catch { break; }
-                if (token.IsCancellationRequested) break;
-
-                // 2-4 quick flickers
+                await Task.Delay(rng.Next(3000, 9000), token);
                 int flickers = rng.Next(2, 5);
                 for (int i = 0; i < flickers; i++)
                 {
-                    MainThread.BeginInvokeOnMainThread(() => { if (ResultLabel != null) ResultLabel.Opacity = 0.08; });
-                    try { await Task.Delay(rng.Next(30, 55), token); } catch { break; }
-                    MainThread.BeginInvokeOnMainThread(() => { if (ResultLabel != null) ResultLabel.Opacity = 1.0; });
-                    try { await Task.Delay(rng.Next(35, 90), token); } catch { break; }
+                    ResultLabel.Opacity = 0.08;
+                    await Task.Delay(rng.Next(30, 55), token);
+                    ResultLabel.Opacity = 1.0;
+                    await Task.Delay(rng.Next(35, 90), token);
                 }
             }
         }
+        catch (TaskCanceledException) { }
+        finally { ResultLabel.Opacity = 1.0; }
+    }
 
-        // ══════════════════════════════════════════════════════════════
-        // CHIP BOUNCE  (Cyber only)
-        // ══════════════════════════════════════════════════════════════
-
-        private static async Task ChipBounce(Border chip)
+    private async Task PlayIntroAnimation()
+    {
+        const uint ms = 170; const double offset = 38;
+        View[] parts = { HeaderBdr, ResCardBdr, InputCardBdr };
+        foreach (var p in parts) { p.Opacity = 0; p.TranslationY = offset; }
+        await Task.Yield();
+        for (int i = 0; i < parts.Length; i++)
         {
-            await chip.ScaleTo(0.82, ChipPressMs, Easing.CubicIn);
-            await chip.ScaleTo(1.00, ChipReleaseMs, Easing.SpringOut);
+            var p = parts[i];
+            var a = Task.WhenAll(p.FadeTo(1, ms, Easing.CubicOut), p.TranslateTo(0, 0, ms, Easing.CubicOut));
+            if (i == parts.Length - 1) await a; else await Task.Delay(55);
         }
+    }
 
-        // ══════════════════════════════════════════════════════════════
-        // TAB PUNCH  (Cyber only)
-        // ══════════════════════════════════════════════════════════════
+    private async Task Bounce(View v)
+    {
+        if (!_anim || !Theme.Current.HasCyberFx) return;
+        await v.ScaleTo(0.86, 55, Easing.CubicIn);
+        await v.ScaleTo(1.0, 75, Easing.SpringOut);
+    }
 
-        private static async Task TabPunch(Border tab)
+    // ══════════════════════════════════════════════════════════════
+    // FEEDBACK
+    // ══════════════════════════════════════════════════════════════
+    internal void Tick()
+    {
+        if (!_haptics) return;
+        try { HapticFeedback.Default.Perform(HapticFeedbackType.Click); } catch { /* not supported */ }
+    }
+
+    private async void ShowToast(string text)
+    {
+        int version = ++_toastVersion;
+        ToastLabel.Text = text;
+        Toast.IsVisible = true;
+        if (_anim) { Toast.Opacity = 0; await Toast.FadeTo(1, 140); } else Toast.Opacity = 1;
+        await Task.Delay(1500);
+        if (version != _toastVersion) return;
+        if (_anim) await Toast.FadeTo(0, 200);
+        if (version == _toastVersion) Toast.IsVisible = false;
+    }
+
+    private async void OnResultTapped(object? sender, TappedEventArgs e)
+    {
+        if (!_vm.HasValidValue) return;
+        try
         {
-            await tab.ScaleTo(1.06, TabPunchMs / 2, Easing.CubicOut);
-            await tab.ScaleTo(1.00, TabPunchMs / 2, Easing.CubicIn);
+            await Clipboard.Default.SetTextAsync(_vm.ClipboardText);
+            Tick();
+            ShowToast(_vm["copied"]);
         }
+        catch { /* clipboard unavailable */ }
+    }
 
-        // ══════════════════════════════════════════════════════════════
-        // INTRO CARD FLY-IN  (Cyber only)
-        // ══════════════════════════════════════════════════════════════
+    private void OnSuggestionTapped(object? sender, TappedEventArgs e)
+    {
+        Tick();
+        _vm.ApplySuggestion();
+    }
 
-        private async Task PlayIntroAnimation()
+    // ══════════════════════════════════════════════════════════════
+    // RESISTOR TYPE (4 / 5 / 6 band)
+    // ══════════════════════════════════════════════════════════════
+    private void OnResTabTapped(object? sender, TappedEventArgs e)
+    {
+        if (e.Parameter is string s && int.TryParse(s, out int mode)) _ = SwitchResistorMode(mode);
+    }
+
+    private async Task SwitchResistorMode(int newMode)
+    {
+        if (_vm.Mode == newMode || _resAnimBusy) return;
+        Tick();
+        if (!_anim) { _vm.SetMode(newMode); return; }
+
+        _resAnimBusy = true;
+        int dir = newMode > _vm.Mode ? 1 : -1;
+        double w = ResistorViewContainer.Width > 0 ? ResistorViewContainer.Width : 300;
+        try
         {
-            HeaderBdr.Opacity = 0;
-            HeaderBdr.TranslationY = CardFlyOffset;
-            ResCardBdr.Opacity = 0;
-            ResCardBdr.TranslationY = CardFlyOffset;
-            InputCardBdr.Opacity = 0;
-            InputCardBdr.TranslationY = CardFlyOffset;
-
-            await Task.Yield();
-
-            _ = Task.WhenAll(
-                HeaderBdr.FadeTo(1, CardFlyMs, Easing.CubicOut),
-                HeaderBdr.TranslateTo(0, 0, CardFlyMs, Easing.CubicOut));
-            await Task.Delay(55);
-
-            _ = Task.WhenAll(
-                ResCardBdr.FadeTo(1, CardFlyMs, Easing.CubicOut),
-                ResCardBdr.TranslateTo(0, 0, CardFlyMs, Easing.CubicOut));
-            await Task.Delay(55);
-
             await Task.WhenAll(
-                InputCardBdr.FadeTo(1, CardFlyMs, Easing.CubicOut),
-                InputCardBdr.TranslateTo(0, 0, CardFlyMs, Easing.CubicOut));
+                ResistorView.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
+                ResistorView.FadeTo(0, SlideMs, Easing.CubicIn));
+
+            _vm.SetMode(newMode);
+            var active = newMode switch { 0 => ResTab0, 1 => ResTab1, _ => ResTab2 };
+            _ = Bounce(active);
+
+            ResistorView.TranslationX = dir * w;
+            await Task.WhenAll(
+                ResistorView.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
+                ResistorView.FadeTo(1, SlideMs, Easing.CubicOut));
         }
-
-        // ══════════════════════════════════════════════════════════════
-        // APPLY THEME
-        // ══════════════════════════════════════════════════════════════
-
-        private void ApplyTheme(int idx)
+        finally
         {
-            var t = Themes[Math.Clamp(idx, 0, Themes.Length - 1)];
-            _vm.ThemeIndex = idx;
-            bool isCyber = idx == 1;
+            ResistorView.TranslationX = 0; ResistorView.Opacity = 1;
+            _resAnimBusy = false;
+        }
+    }
 
-            CUiBlue = t.Accent;
-            CUiBorderBlue = t.AccentBorder;
-            CUiChipDark = t.ChipDark;
-            CUiDropDark = t.DropDark;
-            CUiHighBg = t.HighBg;
-            CUiBadgeDark = t.BadgeDark;
+    private void UpdateResTabs()
+    {
+        Ui.SetSegTab(ResTab0, ResTabLabel0, _vm.Mode == 0);
+        Ui.SetSegTab(ResTab1, ResTabLabel1, _vm.Mode == 1);
+        Ui.SetSegTab(ResTab2, ResTabLabel2, _vm.Mode == 2);
+    }
 
-            this.Background = MakeGradient(t.BgStart, t.BgMid, t.BgEnd, diagonal: true);
-            HeaderBdr.Background = MakeGradient(t.HdrStart, t.HdrEnd);
+    // ══════════════════════════════════════════════════════════════
+    // INPUT MODE (value ↔ colour)
+    // ══════════════════════════════════════════════════════════════
+    private void OnInputTabTapped(object? sender, TappedEventArgs e)
+    {
+        if (e.Parameter is string s && int.TryParse(s, out int mode)) _ = SwitchInputMode(mode);
+    }
 
-            ResCardBdr.Stroke = t.Accent;
-            ResCardBdr.StrokeThickness = isCyber ? 2f : 1.5f;
-            ResCardBdr.StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(isCyber ? 6 : 28) };
-            ResCardBdr.Background = MakeGradient(t.CardStart, t.CardEnd, diagonal: true);
+    private async Task SwitchInputMode(int newMode)
+    {
+        if (_vm.InputMode == newMode || _inputAnimBusy) return;
+        Tick();
+        ResistanceEntry.Unfocus();
+        if (newMode == 1) EnsureColorRows();
+        if (!_anim) { _vm.SetInputMode(newMode); return; }
 
-            InputCardBdr.Stroke = t.Accent;
-            InputCardBdr.StrokeThickness = isCyber ? 2f : 1.5f;
-            InputCardBdr.StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(isCyber ? 6 : 24) };
-            InputCardBdr.BackgroundColor = Color.FromArgb(t.InputCardBg);
+        _inputAnimBusy = true;
+        int dir = newMode > _vm.InputMode ? 1 : -1;
+        double w = InputContentGrid.Width > 0 ? InputContentGrid.Width : 300;
+        VisualElement outgoing = _vm.IsValueMode ? ValueToColorLayout : ColorToValueLayout;
+        VisualElement incoming = newMode == 0 ? ValueToColorLayout : ColorToValueLayout;
+        try
+        {
+            await Task.WhenAll(
+                outgoing.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
+                outgoing.FadeTo(0, SlideMs, Easing.CubicIn));
 
-            SettingsPanel.Stroke = t.Accent;
-            RefPanel.Stroke = t.Accent;
+            _vm.SetInputMode(newMode);
+            _ = Bounce(newMode == 0 ? InputTab0 : InputTab1);
 
-            CloseSettingsBtn.BackgroundColor = t.Accent;
-            CloseSettingsBtn.CornerRadius = isCyber ? 6 : 16;
-            // No pulse animation on Close button – removed by design
+            incoming.TranslationX = dir * w;
+            incoming.Opacity = 0;
+            await Task.WhenAll(
+                incoming.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
+                incoming.FadeTo(1, SlideMs, Easing.CubicOut));
+        }
+        finally
+        {
+            outgoing.TranslationX = 0; outgoing.Opacity = 1;
+            incoming.TranslationX = 0; incoming.Opacity = 1;
+            _inputAnimBusy = false;
+        }
+    }
 
-            if (ResultLabel != null)
-                ResultLabel.TextColor = isCyber ? Color.FromArgb("#00E5FF") : Color.FromArgb("#10B981");
+    private void UpdateInputTabs()
+    {
+        Ui.SetSegTab(InputTab0, InputTabLabel0, _vm.IsValueMode);
+        Ui.SetSegTab(InputTab1, InputTabLabel1, _vm.IsColorMode);
+    }
 
-            // ── Scanlines ──────────────────────────────────────────────
-            if (ScanlinesView != null)
+    // ══════════════════════════════════════════════════════════════
+    // UNIT SEGMENTS
+    // ══════════════════════════════════════════════════════════════
+    private void BuildUnitTabs()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            int idx = i;
+            var lbl = new Label
             {
-                if (isCyber)
-                {
-                    if (_scanlinesDrawable == null)
-                        _scanlinesDrawable = new ScanlinesDrawable();
-                    ScanlinesView.Drawable = _scanlinesDrawable;
-                    ScanlinesView.IsVisible = true;
-                }
-                else
-                {
-                    ScanlinesView.IsVisible = false;
-                }
-            }
-
-            // ── Corner brackets ────────────────────────────────────────
-            if (ResCardCorners != null)
-            {
-                if (isCyber)
-                {
-                    if (_resCornerDrawable == null)
-                        _resCornerDrawable = new CornerBracketDrawable();
-                    _resCornerDrawable.Accent = t.Accent;
-                    ResCardCorners.Drawable = _resCornerDrawable;
-                    ResCardCorners.IsVisible = true;
-                }
-                else { ResCardCorners.IsVisible = false; }
-            }
-
-            if (InputCardCorners != null)
-            {
-                if (isCyber)
-                {
-                    if (_inputCornerDrawable == null)
-                        _inputCornerDrawable = new CornerBracketDrawable();
-                    _inputCornerDrawable.Accent = t.Accent;
-                    InputCardCorners.Drawable = _inputCornerDrawable;
-                    InputCardCorners.IsVisible = true;
-                }
-                else { InputCardCorners.IsVisible = false; }
-            }
-
-            // ── Cyber effect loops ──────────────────────────────────────
-            StopCyberEffects();
-            if (isCyber) StartCyberEffects();
-
-            // Trigger intro fly-in again on Cyber switch
-            if (isCyber) _introPlayed = false;
-
-            if (_chips1.Count > 0)
-            {
-                BuildChipRow(Band1ChipsLayout, _chips1, ResistorViewModel.DigitData, 0, _vm.Sel1);
-                BuildChipRow(Band2ChipsLayout, _chips2, ResistorViewModel.DigitData, 1, _vm.Sel2);
-                BuildChipRow(Band3ChipsLayout, _chips3, ResistorViewModel.DigitData, 2, _vm.Sel3);
-                BuildChipRow(MultiplierChipsLayout, _chipsMul, ResistorViewModel.MultData, 3, _vm.SelMul, pill: true);
-                RebuildToleranceChips();
-                if (_vm.ResistorMode == 2) RebuildTcrChips();
-                RebuildSeriesChips();
-            }
-
-            if (!string.IsNullOrEmpty(_langChipsBuiltFor))
-                RebuildPrimaryLangChips();
-
-            UpdateDesignTabs();
-            UpdateResistorTypeTabs();
-            UpdateInputModeTabs();
-            UpdateSeriesChipsHighlight();
-        }
-
-        // ── Gradient helper ───────────────────────────────────────────
-        private static LinearGradientBrush MakeGradient(string start, string end, bool diagonal = false)
-            => new LinearGradientBrush(
-                new GradientStopCollection
-                {
-                    new GradientStop { Color = Color.FromArgb(start), Offset = 0f },
-                    new GradientStop { Color = Color.FromArgb(end),   Offset = 1f },
-                },
-                new Point(0, 0), diagonal ? new Point(1, 1) : new Point(0, 1));
-
-        private static LinearGradientBrush MakeGradient(string start, string mid, string end, bool diagonal = false)
-            => new LinearGradientBrush(
-                new GradientStopCollection
-                {
-                    new GradientStop { Color = Color.FromArgb(start), Offset = 0f   },
-                    new GradientStop { Color = Color.FromArgb(mid),   Offset = 0.5f },
-                    new GradientStop { Color = Color.FromArgb(end),   Offset = 1f   },
-                },
-                new Point(0, 0), diagonal ? new Point(1, 1) : new Point(0, 1));
-
-        private void UpdateDesignTabs()
-        {
-            if (DesignTab0 == null) return;
-            SetSegTab(DesignTab0, DesignLabel0, _vm.ThemeIndex == 0);
-            SetSegTab(DesignTab1, DesignLabel1, _vm.ThemeIndex == 1);
-            SetSegTab(DesignTab2, DesignLabel2, _vm.ThemeIndex == 2);
-        }
-
-        private void OnSetTheme0(object sender, TappedEventArgs e) => ApplyTheme(0);
-        private void OnSetTheme1(object sender, TappedEventArgs e) => ApplyTheme(1);
-        private void OnSetTheme2(object sender, TappedEventArgs e) => ApplyTheme(2);
-
-        // ══════════════════════════════════════════════════════════════
-        // CONSTRUCTOR
-        // ══════════════════════════════════════════════════════════════
-
-        public MainPage()
-        {
-            InitializeComponent();
-
-            _vm = new ResistorViewModel();
-            BindingContext = _vm;
-
-            _vm.RingsChanged += () => ResistorView?.Invalidate();
-            _vm.PropertyChanged += OnVmPropertyChanged;
-
-            BuildChipRow(Band1ChipsLayout, _chips1, ResistorViewModel.DigitData, 0, _vm.Sel1);
-            BuildChipRow(Band2ChipsLayout, _chips2, ResistorViewModel.DigitData, 1, _vm.Sel2);
-            BuildChipRow(Band3ChipsLayout, _chips3, ResistorViewModel.DigitData, 2, _vm.Sel3);
-            BuildChipRow(MultiplierChipsLayout, _chipsMul, ResistorViewModel.MultData, 3, _vm.SelMul, pill: true);
-
-            RebuildToleranceChips();
-            RebuildSeriesChips();
-            RebuildPrimaryLangChips();
-
-            UnitDropdown.Opacity = 0;
-            UnitDropdown.IsVisible = false;
-            ApplyUnitHighlight();
-
-            UpdateResistorTypeTabs();
-            UpdateInputModeTabs();
-
-            ResistorView.Drawable = new ResistorDrawable(_vm.Rings, () => _vm.BodyColor);
-
-            SettingsPanel.TranslationY = 2000;
-            SettingsOverlay.Opacity = 0;
-
-            _vm.SetMode(_vm.ResistorMode);
-            ApplyTheme(_vm.ThemeIndex);
-        }
-
-        // ── Language / locale change ──────────────────────────────────
-        private void OnVmPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName is "" or nameof(ResistorViewModel.Lang))
-            {
-                UpdateResistorTypeTabs();
-                UpdateInputModeTabs();
-                UpdateMoreToggleLabel();
-                UpdateWindowTitle();
-            }
-        }
-
-        // ── App title update ──────────────────────────────────────────
-        private void UpdateWindowTitle()
-        {
-#if ANDROID
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
-                if (activity == null) return;
-                activity.Title = _vm.TitleText;
-                if (OperatingSystem.IsAndroidVersionAtLeast(33))
-                {
-                    var td = new Android.App.ActivityManager.TaskDescription.Builder()
-                        .SetLabel(_vm.TitleText).Build();
-                    activity.SetTaskDescription(td);
-                }
-                else if (OperatingSystem.IsAndroidVersionAtLeast(21))
-                {
-#pragma warning disable CA1422
-                    activity.SetTaskDescription(
-                        new Android.App.ActivityManager.TaskDescription(_vm.TitleText));
-#pragma warning restore CA1422
-                }
-            });
-#endif
-        }
-
-        // ── Lifecycle ─────────────────────────────────────────────────
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            UpdateWindowTitle();
-            _ = PreWarmJit();
-
-            if (!_introPlayed && IsCyber)
-            {
-                _introPlayed = true;
-                _ = PlayIntroAnimation();
-            }
-        }
-
-        protected override void OnHandlerChanged()
-        {
-            base.OnHandlerChanged();
-            UpdateWindowTitle();
-        }
-
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
-            _textCts?.Cancel();
-            _textCts?.Dispose();
-            _textCts = null;
-            StopCyberEffects();
-        }
-
-        private async Task PreWarmJit()
-        {
-            await Task.Yield();
-            ResistorView.Invalidate();
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // UNIT DROPDOWN
-        // ══════════════════════════════════════════════════════════════
-
-        private async void OnUnitBtnTapped(object? sender, TappedEventArgs e)
-        {
-            if (_unitAnimBusy) return;
-            if (_unitDropdownOpen) await CloseUnitDropdown();
-            else await OpenUnitDropdown();
-        }
-
-        private async Task OpenUnitDropdown()
-        {
-            if (_unitAnimBusy) return;
-            _unitAnimBusy = true; _unitDropdownOpen = true;
-
-            var pos = GetAbsolutePosition(UnitBtn, RootGrid);
-            UnitDropdown.Margin = new Thickness(pos.X, pos.Y + UnitBtn.Height + 4, 0, 0);
-            UnitDropdown.TranslationY = -10;
-            UnitDropdown.Opacity = 0;
-            UnitDropdown.IsVisible = true;
-            UnitChevron.Text = "▴";
-
-            try
-            {
-                await Task.WhenAll(
-                    UnitDropdown.FadeTo(1, DropMs, Easing.CubicOut),
-                    UnitDropdown.TranslateTo(0, 0, DropMs, Easing.CubicOut));
-            }
-            finally { _unitAnimBusy = false; }
-        }
-
-        private static Point GetAbsolutePosition(VisualElement element, VisualElement relativeTo)
-        {
-            double x = 0, y = 0;
-            VisualElement? current = element;
-            while (current != null && current != relativeTo)
-            { x += current.X; y += current.Y; current = current.Parent as VisualElement; }
-            return new Point(x, y);
-        }
-
-        private async Task CloseUnitDropdown()
-        {
-            if (_unitAnimBusy || !_unitDropdownOpen) return;
-            _unitAnimBusy = true; _unitDropdownOpen = false; UnitChevron.Text = "▾";
-
-            try
-            {
-                await Task.WhenAll(
-                    UnitDropdown.FadeTo(0, DropMs, Easing.CubicIn),
-                    UnitDropdown.TranslateTo(0, -10, DropMs, Easing.CubicIn));
-            }
-            finally { UnitDropdown.IsVisible = false; _unitAnimBusy = false; }
-        }
-
-        private void OnUnitOpt0Tapped(object? s, TappedEventArgs e) => _ = SelectUnit(0);
-        private void OnUnitOpt1Tapped(object? s, TappedEventArgs e) => _ = SelectUnit(1);
-        private void OnUnitOpt2Tapped(object? s, TappedEventArgs e) => _ = SelectUnit(2);
-        private void OnUnitOpt3Tapped(object? s, TappedEventArgs e) => _ = SelectUnit(3);
-
-        private async Task SelectUnit(int idx)
-        {
-            _unitIdx = idx; ApplyUnitHighlight();
-            await CloseUnitDropdown();
-            TriggerRecalc();
-        }
-
-        private void SetUnitSilent(int idx) { _unitIdx = idx; ApplyUnitHighlight(); }
-
-        private void ApplyUnitHighlight()
-        {
-            UnitBtnLabel.Text = UnitLabels[_unitIdx];
-            Border[] opts = { UnitOpt0, UnitOpt1, UnitOpt2, UnitOpt3 };
-            for (int i = 0; i < opts.Length; i++)
-            {
-                bool active = i == _unitIdx;
-                opts[i].BackgroundColor = active ? CUiBlue : CUiDropDark;
-                if (opts[i].Content is Label lbl)
-                {
-                    lbl.TextColor = active ? Colors.White : CUiTextSub;
-                    lbl.FontAttributes = active ? FontAttributes.Bold : FontAttributes.None;
-                }
-            }
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // RESISTOR-TYPE TABS
-        // ══════════════════════════════════════════════════════════════
-
-        private void OnResTab0Tapped(object? sender, TappedEventArgs e) => _ = SwitchResistorMode(0);
-        private void OnResTab1Tapped(object? sender, TappedEventArgs e) => _ = SwitchResistorMode(1);
-        private void OnResTab2Tapped(object? sender, TappedEventArgs e) => _ = SwitchResistorMode(2);
-
-        private async Task SwitchResistorMode(int newMode)
-        {
-            if (_vm.ResistorMode == newMode || _resAnimBusy) return;
-            _resAnimBusy = true;
-            int dir = newMode > _vm.ResistorMode ? 1 : -1;
-            double w = ResistorViewContainer.Width > 0 ? ResistorViewContainer.Width : 300;
-
-            try
-            {
-                await Task.WhenAll(
-                    ResistorView.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
-                    ResistorView.FadeTo(0, SlideMs, Easing.CubicIn));
-
-                _vm.SetMode(newMode);
-                RebuildToleranceChips();
-                if (newMode == 2) RebuildTcrChips();
-                UpdateResistorTypeTabs(newMode);
-                ResistorView.Invalidate();
-
-                ResistorView.TranslationX = dir * w;
-                ResistorView.Opacity = 0;
-
-                await Task.WhenAll(
-                    ResistorView.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
-                    ResistorView.FadeTo(1, SlideMs, Easing.CubicOut));
-            }
-            finally { _resAnimBusy = false; }
-        }
-
-        private void UpdateResistorTypeTabs() => UpdateResistorTypeTabs(-1);
-        private void UpdateResistorTypeTabs(int punchedTab)
-        {
-            SetSegTab(ResTab0, ResTabLabel0, _vm.ResistorMode == 0);
-            SetSegTab(ResTab1, ResTabLabel1, _vm.ResistorMode == 1);
-            SetSegTab(ResTab2, ResTabLabel2, _vm.ResistorMode == 2);
-            if (!IsCyber || punchedTab < 0) return;
-            Border? active = punchedTab switch { 0 => ResTab0, 1 => ResTab1, 2 => ResTab2, _ => null };
-            if (active != null) _ = TabPunch(active);
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // INPUT-MODE TABS
-        // ══════════════════════════════════════════════════════════════
-
-        private void OnInputTab0Tapped(object? sender, TappedEventArgs e) => _ = SwitchInputMode(0);
-        private void OnInputTab1Tapped(object? sender, TappedEventArgs e) => _ = SwitchInputMode(1);
-
-        private async Task SwitchInputMode(int newMode)
-        {
-            if (_vm.InputMode == newMode || _inputAnimBusy) return;
-            _inputAnimBusy = true;
-            if (_unitDropdownOpen) await CloseUnitDropdown();
-
-            int dir = newMode > _vm.InputMode ? 1 : -1;
-            double w = InputContentGrid.Width > 0 ? InputContentGrid.Width : 300;
-            var outgoing = _vm.IsValueMode ? (VisualElement)ValueToColorLayout : ColorToValueLayout;
-
-            try
-            {
-                await Task.WhenAll(
-                    outgoing.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
-                    outgoing.FadeTo(0, SlideMs, Easing.CubicIn));
-
-                _vm.SetInputMode(newMode);
-                UpdateInputModeTabs(newMode);
-
-                var incoming = newMode == 0 ? (VisualElement)ValueToColorLayout : ColorToValueLayout;
-                incoming.TranslationX = dir * w;
-                incoming.Opacity = 0;
-
-                await Task.WhenAll(
-                    incoming.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
-                    incoming.FadeTo(1, SlideMs, Easing.CubicOut));
-
-                outgoing.TranslationX = 0;
-                outgoing.Opacity = 1;
-            }
-            finally { _inputAnimBusy = false; }
-        }
-
-        private void UpdateInputModeTabs() => UpdateInputModeTabs(-1);
-        private void UpdateInputModeTabs(int punchedTab)
-        {
-            bool v = _vm.IsValueMode;
-            SetSegTab(InputTab0, InputTabLabel0, v);
-            SetSegTab(InputTab1, InputTabLabel1, !v);
-            if (!IsCyber || punchedTab < 0) return;
-            _ = TabPunch(punchedTab == 0 ? InputTab0 : InputTab1);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void SetSegTab(Border tab, Label lbl, bool active)
-        {
-            tab.BackgroundColor = active ? CUiBlue : Colors.Transparent;
-            lbl.TextColor = active ? Colors.White : CUiTextMuted;
-            lbl.FontAttributes = active ? FontAttributes.Bold : FontAttributes.None;
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // CHIP BUILDERS
-        // ══════════════════════════════════════════════════════════════
-
-        private void BuildChipRow(
-            HorizontalStackLayout host, List<Border> list,
-            (Color Bg, string Lbl, Color Fg)[] data,
-            int band, int sel, bool pill = false)
-        {
-            host.Children.Clear(); list.Clear();
-            for (int i = 0; i < data.Length; i++)
-            {
-                int idx = i;
-                var chip = MakeChip(data[i].Bg, data[i].Lbl, data[i].Fg, pill, i == sel);
-                chip.GestureRecognizers.Add(TapAnimated(chip, () =>
-                {
-                    SetSel(list, idx);
-                    _vm.OnBandSelected(band, idx);
-                }));
-                list.Add(chip);
-                host.Children.Add(chip);
-            }
-        }
-
-        private void RebuildToleranceChips() =>
-            BuildChipRow(ToleranceChipsLayout, _chipsTol, _vm.CurrentTolData, 4, _vm.SelTol, pill: true);
-
-        private void RebuildTcrChips() =>
-            BuildChipRow(TcrChipsLayout, _chipsTcr, ResistorViewModel.TcrData, 5, _vm.SelTcr, pill: true);
-
-        private void RebuildSeriesChips()
-        {
-            SeriesChipsMain.Children.Clear();
-            int[] vals = { 3, 6, 12, 24, 48, 96, 192 };
-            foreach (int s in vals)
-            {
-                int cap = s;
-                var chip = MakeSeriesChip(s, s == _vm.SelectedSeries);
-                chip.GestureRecognizers.Add(TapAnimated(chip, () =>
-                {
-                    string fullText = BuildFullText(ResistanceEntry.Text);
-                    double rounded = _vm.SetSeries(cap, fullText);
-                    if (rounded > 0)
-                    {
-                        string formatted = ResistorViewModel.FormatR(rounded);
-                        int newUnit = 0;
-                        string numPart = formatted;
-                        if (formatted.EndsWith("G")) { newUnit = 3; numPart = formatted[..^1]; }
-                        else if (formatted.EndsWith("M")) { newUnit = 2; numPart = formatted[..^1]; }
-                        else if (formatted.EndsWith("k")) { newUnit = 1; numPart = formatted[..^1]; }
-                        _suppressTextChanged = true;
-                        try { ResistanceEntry.Text = numPart; }
-                        finally { _suppressTextChanged = false; }
-                        SetUnitSilent(newUnit);
-                        TriggerRecalc();
-                    }
-                    UpdateSeriesChipsHighlight();
-                }));
-                SeriesChipsMain.Children.Add(chip);
-            }
-        }
-
-        private void UpdateSeriesChipsHighlight()
-        {
-            foreach (var child in SeriesChipsMain.Children)
-            {
-                if (child is not Border chip) continue;
-                if (chip.Content is not Label lbl) continue;
-                if (!int.TryParse(lbl.Text.AsSpan(1), out int s)) continue;
-                bool sel = s == _vm.SelectedSeries;
-                chip.BackgroundColor = sel ? CUiBlue : CUiChipDark;
-                chip.Stroke = sel ? Colors.White : Colors.Transparent;
-                chip.StrokeThickness = sel ? 1.5 : 0;
-                lbl.FontAttributes = sel ? FontAttributes.Bold : FontAttributes.None;
-            }
-        }
-
-        // ── Language chip helpers ─────────────────────────────────────
-
-        private void RebuildPrimaryLangChips()
-        {
-            if (_langChipsBuiltFor != _vm.Lang)
-            {
-                LangChipsLayout.Children.Clear();
-                foreach (var (code, flag, shortName) in ResistorViewModel.PrimaryLanguages)
-                    LangChipsLayout.Children.Add(MakeLangChip(code, flag, shortName));
-                _langChipsBuiltFor = _vm.Lang;
-            }
-            _langExpanded = false; _secondaryChipsBuilt = false;
-            LangChipsSecondary.Children.Clear();
-            MoreLangsRow.IsVisible = false; MoreLangsRow.Opacity = 1; MoreLangsRow.TranslationY = 0;
-            UpdateMoreToggleLabel();
-        }
-
-        private void EnsureSecondaryChipsBuilt()
-        {
-            if (_secondaryChipsBuilt) return;
-            _secondaryChipsBuilt = true;
-            LangChipsSecondary.Children.Clear();
-            foreach (var (code, flag, shortName) in ResistorViewModel.SecondaryLanguages)
-                LangChipsSecondary.Children.Add(MakeLangChip(code, flag, shortName));
-            _ = Task.Run(() => {
-                foreach (var (code, _, _) in ResistorViewModel.SecondaryLanguages)
-                    ResistorViewModel.PreloadLang(code);
-            });
-        }
-
-        private Border MakeLangChip(string code, string flag, string shortName)
-        {
-            string cap = code; bool sel = code == _vm.Lang; bool hasEmoji = !string.IsNullOrWhiteSpace(flag);
-            View chipContent;
-            if (hasEmoji)
-                chipContent = new Label
-                {
-                    Text = $"{flag}  {shortName}",
-                    TextColor = Colors.White,
-                    FontSize = 13,
-                    FontAttributes = sel ? FontAttributes.Bold : FontAttributes.None,
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    VerticalTextAlignment = TextAlignment.Center,
-                    HorizontalOptions = LayoutOptions.Center,
-                    VerticalOptions = LayoutOptions.Center,
-                };
-            else
-                chipContent = new HorizontalStackLayout
-                {
-                    Spacing = 5,
-                    HorizontalOptions = LayoutOptions.Center,
-                    VerticalOptions = LayoutOptions.Center,
-                    Children =
-                    {
-                        new Image { Source = ImageSource.FromFile($"flag_{code}.png"),
-                            HeightRequest = 14, WidthRequest = 22, Aspect = Aspect.AspectFit,
-                            VerticalOptions = LayoutOptions.Center },
-                        new Label { Text = shortName, TextColor = Colors.White, FontSize = 13,
-                            FontAttributes = sel ? FontAttributes.Bold : FontAttributes.None,
-                            VerticalTextAlignment = TextAlignment.Center, VerticalOptions = LayoutOptions.Center }
-                    }
-                };
-
-            var chip = new Border
-            {
-                StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(14) },
-                BackgroundColor = sel ? CUiBlue : CUiChipDark,
-                Stroke = sel ? Colors.White : Colors.Transparent,
-                StrokeThickness = sel ? 1.5 : 0,
-                Padding = new Thickness(12, 8),
-                HeightRequest = 44,
-                Content = chipContent
-            };
-            chip.GestureRecognizers.Add(TapAnimated(chip, () =>
-            {
-                bool wasExpanded = _langExpanded;
-                _vm.Lang = cap; _langChipsBuiltFor = "";
-                RebuildPrimaryLangChips();
-                if (wasExpanded)
-                {
-                    _langExpanded = true; EnsureSecondaryChipsBuilt();
-                    MoreLangsRow.IsVisible = true; MoreLangsRow.Opacity = 1;
-                    MoreLangsRow.TranslationY = 0; UpdateMoreToggleLabel();
-                }
-            }));
-            return chip;
-        }
-
-        private async void OnMoreLangsTapped(object sender, TappedEventArgs e)
-        {
-            _langExpanded = !_langExpanded;
-            UpdateMoreToggleLabel();
-            if (_langExpanded)
-            {
-                EnsureSecondaryChipsBuilt();
-                MoreLangsRow.Opacity = 0; MoreLangsRow.TranslationY = -12; MoreLangsRow.IsVisible = true;
-                await Task.WhenAll(
-                    MoreLangsRow.FadeTo(1, 230, Easing.CubicOut),
-                    MoreLangsRow.TranslateTo(0, 0, 230, Easing.CubicOut));
-            }
-            else
-            {
-                await Task.WhenAll(
-                    MoreLangsRow.FadeTo(0, 180, Easing.CubicIn),
-                    MoreLangsRow.TranslateTo(0, -12, 180, Easing.CubicIn));
-                MoreLangsRow.IsVisible = false; MoreLangsRow.TranslationY = 0;
-            }
-        }
-
-        private void UpdateMoreToggleLabel()
-        {
-            string more = string.IsNullOrEmpty(_vm.MoreLangsText) || _vm.MoreLangsText == "moreLangs"
-                          ? "More languages" : _vm.MoreLangsText;
-            string less = string.IsNullOrEmpty(_vm.LessLangsText) || _vm.LessLangsText == "lessLangs"
-                          ? "Less languages" : _vm.LessLangsText;
-            MoreLangsLabel.Text = _langExpanded ? $"▲  {less}" : $"▼  {more}";
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void SetSel(List<Border> list, int idx)
-        {
-            for (int i = 0; i < list.Count; i++)
-            {
-                list[i].Stroke = i == idx ? Colors.White : Colors.Transparent;
-                list[i].StrokeThickness = i == idx ? 2.5 : 0;
-            }
-        }
-
-        private static Border MakeChip(Color bg, string lbl, Color fg, bool pill, bool sel)
-        {
-            bool empty = bg == Colors.Transparent || bg == ResistorViewModel.CNone;
-            var chip = new Border
-            {
-                BackgroundColor = empty ? CUiChipEmpty : bg,
-                StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(pill ? 10 : 18) },
-                Stroke = sel ? Colors.White : Colors.Transparent,
-                StrokeThickness = sel ? 2.5 : 0,
-                HeightRequest = 36,
-                Padding = pill ? new Thickness(12, 0) : new Thickness(0),
-                Content = new Label
-                {
-                    Text = lbl,
-                    TextColor = fg,
-                    FontSize = pill ? 11 : 13,
-                    FontAttributes = FontAttributes.Bold,
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    VerticalTextAlignment = TextAlignment.Center,
-                    HorizontalOptions = LayoutOptions.Center,
-                    VerticalOptions = LayoutOptions.Center,
-                }
-            };
-            if (!pill) chip.WidthRequest = 36;
-            return chip;
-        }
-
-        private static Border MakeSeriesChip(int s, bool sel) => new Border
-        {
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
-            BackgroundColor = sel ? CUiBlue : CUiChipDark,
-            Stroke = sel ? Colors.White : Colors.Transparent,
-            StrokeThickness = sel ? 1.5 : 0,
-            Padding = new Thickness(14, 8),
-            HeightRequest = 38,
-            Content = new Label
-            {
-                Text = $"E{s}",
-                TextColor = Colors.White,
-                FontSize = 13,
-                FontAttributes = sel ? FontAttributes.Bold : FontAttributes.None,
+                Text = ResistorViewModel.UnitLabels[i],
+                FontSize = 14,
                 HorizontalTextAlignment = TextAlignment.Center,
                 VerticalTextAlignment = TextAlignment.Center,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Center,
-            }
-        };
-
-        private static TapGestureRecognizer Tap(Action a)
-        { var t = new TapGestureRecognizer(); t.Tapped += (_, _) => a(); return t; }
-
-        private TapGestureRecognizer TapAnimated(Border chip, Action logic)
-        {
-            var t = new TapGestureRecognizer();
-            t.Tapped += (_, _) => { logic(); if (IsCyber) _ = ChipBounce(chip); };
-            return t;
+            };
+            var tab = new Border { StrokeThickness = 0, Padding = new Thickness(0, 10), Content = lbl };
+            tab.OnTap(() => { Tick(); _vm.UnitIndex = idx; });
+            Grid.SetColumn(tab, i);
+            UnitGrid.Children.Add(tab);
+            _unitTabs[i] = tab; _unitLabels[i] = lbl;
         }
+    }
 
-        private void OnSetDefaultDesign(object sender, EventArgs e) { }
+    private void UpdateUnitTabs()
+    {
+        for (int i = 0; i < 4; i++) Ui.SetSegTab(_unitTabs[i], _unitLabels[i], i == _vm.UnitIndex);
+    }
 
-        // ══════════════════════════════════════════════════════════════
-        // TEXT ENTRY  (debounced 80 ms)
-        // ══════════════════════════════════════════════════════════════
-
-        private void OnResistanceTextChanged(object sender, TextChangedEventArgs e)
+    // ══════════════════════════════════════════════════════════════
+    // CHIPS
+    // ══════════════════════════════════════════════════════════════
+    private void BuildChipRow(HorizontalStackLayout host, int band, BandOption[] data, bool pill)
+    {
+        var list = _bandChips[band];
+        host.Children.Clear();
+        list.Clear();
+        for (int i = 0; i < data.Length; i++)
         {
-            if (!_vm.IsValueMode || _suppressTextChanged) return;
-            string raw = e.NewTextValue ?? "";
-            string upper = raw.TrimEnd().ToUpperInvariant();
-
-            int detectedUnit = -1;
-            if (upper.EndsWith("G")) detectedUnit = 3;
-            else if (upper.EndsWith("M")) detectedUnit = 2;
-            else if (upper.EndsWith("K")) detectedUnit = 1;
-            else if (upper.EndsWith("Ω") || upper.EndsWith("O")) detectedUnit = 0;
-
-            if (detectedUnit >= 0)
+            int idx = i;
+            var opt = data[i];
+            var chip = Ui.ColorChip(opt, pill, false, $"{_vm[opt.Color.Key]} {opt.Label}");
+            chip.OnTap(() =>
             {
-                _suppressTextChanged = true;
-                try { ResistanceEntry.Text = raw[..^1]; }
-                finally { _suppressTextChanged = false; }
-                SetUnitSilent(detectedUnit);
-            }
-            if (_unitDropdownOpen) _ = CloseUnitDropdown();
-            TriggerRecalc();
+                Tick();
+                _vm.SelectBand(band, idx);
+                _ = Bounce(chip);
+            });
+            list.Add(chip);
+            host.Children.Add(chip);
         }
+    }
 
-        private void TriggerRecalc()
+    /// <summary>Colour → value rows are only needed in colour mode, so they are built lazily.</summary>
+    private void EnsureColorRows()
+    {
+        if (_colorRowsBuilt) return;
+        _colorRowsBuilt = true;
+        BuildChipRow(Band1ChipsLayout, 0, ColorCodes.Digits, false);
+        BuildChipRow(Band2ChipsLayout, 1, ColorCodes.Digits, false);
+        BuildChipRow(Band3ChipsLayout, 2, ColorCodes.Digits, false);
+        BuildChipRow(MultiplierChipsLayout, 3, ColorCodes.Multipliers, true);
+        RefreshChipSelection();
+    }
+
+    private void RebuildToleranceChips()
+    {
+        if (_tolChipsMode == (_vm.Mode == 0 ? 0 : 1)) return;
+        _tolChipsMode = _vm.Mode == 0 ? 0 : 1;
+        BuildChipRow(ToleranceChipsLayout, 4, _vm.ToleranceOptions, true);
+        RefreshChipSelection();
+    }
+
+    private void RebuildTcrChips()
+    {
+        if (_bandChips[5].Count > 0) return;
+        BuildChipRow(TcrChipsLayout, 5, ColorCodes.Tcr, true);
+        RefreshChipSelection();
+    }
+
+    private void RebuildChipsForLanguage()
+    {
+        // Only accessibility descriptions depend on the language
+        if (_colorRowsBuilt) { _colorRowsBuilt = false; EnsureColorRows(); }
+        _tolChipsMode = -1; RebuildToleranceChips();
+        if (_bandChips[5].Count > 0) { _bandChips[5].Clear(); RebuildTcrChips(); }
+    }
+
+    private void RefreshChipSelection()
+    {
+        for (int band = 0; band < 6; band++)
         {
-            _textCts?.Cancel(); _textCts?.Dispose();
-            _textCts = new CancellationTokenSource();
-            var token = _textCts.Token;
-            Task.Delay(80, token).ContinueWith(_ =>
+            var list = _bandChips[band];
+            if (list.Count == 0) continue;
+            int sel = band switch
             {
-                if (token.IsCancellationRequested) return;
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    string fullText = BuildFullText(ResistanceEntry.Text);
-                    _vm.RecalcFromText(fullText);
-                    if (_vm.ResultText == "OUT_OF_RANGE")
-                        DisplayAlert(_vm.WarningTitle, _vm.OutOfRangeText, "OK");
-                });
-            }, TaskScheduler.Default);
+                <= 2 => _vm.Digit(band),
+                3 => _vm.MultiplierIndex,
+                4 => _vm.ToleranceIndex,
+                _ => _vm.TcrIndex,
+            };
+            for (int i = 0; i < list.Count; i++) Ui.SetChipSelected(list[i], i == sel);
         }
+    }
 
-        private string BuildFullText(string? entryText)
+    private void BuildSeriesChips()
+    {
+        SeriesChipsLayout.Children.Clear();
+        _seriesChips.Clear();
+        foreach (int s in ResistorMath.SeriesList)
         {
-            string num = entryText?.Trim() ?? "";
-            return string.IsNullOrEmpty(num) ? num : num + UnitSuffixes[_unitIdx];
+            int series = s;
+            var chip = Ui.TextChip($"E{s}", s == _vm.Series);
+            chip.OnTap(() => { Tick(); _vm.Series = series; _ = Bounce(chip); });
+            _seriesChips.Add(chip);
+            SeriesChipsLayout.Children.Add(chip);
         }
+    }
 
-        // ══════════════════════════════════════════════════════════════
-        // SETTINGS PANEL
-        // ══════════════════════════════════════════════════════════════
+    private void UpdateSeriesChips()
+    {
+        for (int i = 0; i < _seriesChips.Count; i++)
+            Ui.SetTextChipSelected(_seriesChips[i], ResistorMath.SeriesList[i] == _vm.Series);
+    }
 
-        private async void OnOpenSettings(object sender, EventArgs e)
+    // ══════════════════════════════════════════════════════════════
+    // BOTTOM SHEET (settings / reference)
+    // ══════════════════════════════════════════════════════════════
+    private void OnOpenSettings(object? sender, TappedEventArgs e) => _ = OpenSheet(SheetKind.Settings);
+    private void OnOpenReference(object? sender, TappedEventArgs e) => _ = OpenSheet(SheetKind.Reference);
+    private void OnSheetBackdropTapped(object? sender, TappedEventArgs e) => _ = CloseSheet();
+    private void OnSheetCloseTapped(object? sender, TappedEventArgs e) => _ = CloseSheet();
+    private void OnSheetPanelTapped(object? sender, TappedEventArgs e) { /* swallow taps */ }
+    internal void CloseSheetFromChild() => _ = CloseSheet();
+
+    private async Task OpenSheet(SheetKind kind)
+    {
+        if (_sheetBusy || _sheet == kind) return;
+        _sheetBusy = true;
+        Tick();
+        ResistanceEntry.Unfocus();
+        try
         {
-            if (_settingsOpen) return;
-            _settingsOpen = true;
-            if (_unitDropdownOpen) await CloseUnitDropdown();
-            RebuildPrimaryLangChips();
-            SettingsOverlay.IsVisible = true; SettingsOverlay.InputTransparent = false;
-            _aboutExpanded = false; AboutExpanded.IsVisible = false; AboutChevron.Text = "›";
-            await Task.WhenAll(
-                SettingsOverlay.FadeTo(1, 220, Easing.CubicOut),
-                SettingsPanel.TranslateTo(0, 0, 260, Easing.CubicOut));
-        }
-
-        private async void OnCloseSettings(object sender, EventArgs e)
-        {
-            if (!_settingsOpen) return;
-            SettingsOverlay.InputTransparent = true;
-            await Task.WhenAll(
-                SettingsOverlay.FadeTo(0, 200, Easing.CubicIn),
-                SettingsPanel.TranslateTo(0, 2000, 240, Easing.CubicIn));
-            SettingsOverlay.IsVisible = false;
-            _settingsOpen = false;
-        }
-
-        private void OnSettingsBackdropTapped(object sender, TappedEventArgs e) => OnCloseSettings(sender, e);
-        private void OnSettingsPanelTapped(object sender, TappedEventArgs e) { }
-
-        private bool _aboutExpanded = false;
-        private async void OnAboutTapped(object sender, TappedEventArgs e)
-        {
-            _aboutExpanded = !_aboutExpanded;
-            if (_aboutExpanded)
+            if (kind == SheetKind.Settings)
             {
-                AboutExpanded.IsVisible = true; AboutExpanded.Opacity = 0; AboutChevron.Text = "⌄";
-                await AboutExpanded.FadeTo(1, 180, Easing.CubicOut);
+                _settingsView ??= new SettingsView(this, _vm);
+                _settingsView.Rebuild();
+                SheetScroll.Content = _settingsView;
+                SheetTitle.Text = _vm["settings"];
             }
             else
             {
-                AboutChevron.Text = "›";
-                await AboutExpanded.FadeTo(0, 140, Easing.CubicIn);
-                AboutExpanded.IsVisible = false;
-            }
-        }
-
-        private const string SupportEmail = "neutron.mail216@proton.me";
-        //private const string PrivacyPolicyUrl = " ";  //<- replace with actual URLs - Privacy Policy
-        //private const string DeveloperUrl = " ";        //<- replace with actual URLs - Paytreon
-
-        private void OnSupportTapped(object sender, TappedEventArgs e)
-            => _ = Launcher.OpenAsync($"mailto:{SupportEmail}?subject=Resistor%20Calculator%20Feedback");
-        //private void OnPrivacyTapped(object sender, TappedEventArgs e)
-        //    => _ = Browser.OpenAsync(PrivacyPolicyUrl, BrowserLaunchMode.SystemPreferred);
-        //private void OnDeveloperTapped(object sender, TappedEventArgs e)
-        //    => _ = Browser.OpenAsync(DeveloperUrl, BrowserLaunchMode.SystemPreferred);
-
-        private async void OnPrivacyTapped(object sender, TappedEventArgs e)
-        {
-            await App.Current.MainPage.DisplayAlert("Warning", "This feature is currently unavailable!", "OK");
-        }
-
-        private async void OnDeveloperTapped(object sender, TappedEventArgs e)
-        {
-            await App.Current.MainPage.DisplayAlert("Warning", "This feature is currently unavailable!", "OK");
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // REFERENCE OVERLAY
-        // ══════════════════════════════════════════════════════════════
-
-        private bool _refOpen = false;
-
-        private async void OnOpenReference(object sender, EventArgs e)
-        {
-            if (_refOpen) return;
-            _refOpen = true;
-            if (_unitDropdownOpen) await CloseUnitDropdown();
-            EnsureReferenceContent();
-            RefOverlay.IsVisible = true; RefOverlay.InputTransparent = false;
-            await Task.WhenAll(
-                RefOverlay.FadeTo(1, 220, Easing.CubicOut),
-                RefPanel.TranslateTo(0, 0, 260, Easing.CubicOut));
-        }
-
-        private async void OnCloseReference(object sender, EventArgs e)
-        {
-            if (!_refOpen) return;
-            RefOverlay.InputTransparent = true;
-            await Task.WhenAll(
-                RefOverlay.FadeTo(0, 200, Easing.CubicIn),
-                RefPanel.TranslateTo(0, 2000, 240, Easing.CubicIn));
-            RefOverlay.IsVisible = false; _refOpen = false;
-        }
-
-        private void OnRefBackdropTapped(object sender, TappedEventArgs e) => OnCloseReference(sender, e);
-        private void OnRefPanelTapped(object sender, TappedEventArgs e) { }
-
-        // ══════════════════════════════════════════════════════════════
-        // REFERENCE CONTENT BUILDER
-        // ══════════════════════════════════════════════════════════════
-
-        private void EnsureReferenceContent()
-        {
-            if (_refContentBuiltFor == _vm.Lang) return;
-            BuildReferenceContent();
-            _refContentBuiltFor = _vm.Lang;
-        }
-
-        private void BuildReferenceContent()
-        {
-            RefContent.Children.Clear();
-            RefTitleLabel.Text = Loc("refTitle", "Reference");
-            RefContent.Children.Add(BuildSectionHeader(Loc("refTip", "Reading Direction")));
-            RefContent.Children.Add(BuildReadingTip());
-            RefContent.Children.Add(new BoxView { HeightRequest = 1, BackgroundColor = CUiBorderDiv });
-            RefContent.Children.Add(BuildSectionHeader(Loc("refColors", "Color Codes")));
-            RefContent.Children.Add(BuildColorTable());
-            RefContent.Children.Add(new BoxView { HeightRequest = 1, BackgroundColor = CUiBorderDiv });
-            RefContent.Children.Add(BuildSectionHeader(Loc("refESeries", "E-Series")));
-            RefContent.Children.Add(BuildESeriesSection());
-        }
-
-        private string Loc(string key, string defaultText)
-        { var v = _vm.T(key); return v != key ? v : defaultText; }
-
-        private static Label BuildSectionHeader(string text) => new Label
-        {
-            Text = text,
-            FontSize = 14,
-            FontAttributes = FontAttributes.Bold,
-            TextColor = CUiTextSub,
-            Margin = new Thickness(0, 4, 0, 6)
-        };
-
-        private View BuildColorTable()
-        {
-            var rows = new (Color Bg, Color Fg, string Name, string Digit, string Mult, string Tol)[]
-            {
-                (ResistorViewModel.CBlack,  Colors.White, Loc("colBlack",  "Black"),  "0","×1",   "–"    ),
-                (ResistorViewModel.CBrown,  Colors.White, Loc("colBrown",  "Brown"),  "1","×10",  "±1%"  ),
-                (ResistorViewModel.CRed,    Colors.White, Loc("colRed",    "Red"),    "2","×100", "±2%"  ),
-                (ResistorViewModel.COrange, Colors.Black, Loc("colOrange", "Orange"), "3","×1k",  "–"    ),
-                (ResistorViewModel.CYellow, Colors.Black, Loc("colYellow", "Yellow"), "4","×10k", "–"    ),
-                (ResistorViewModel.CGreen,  Colors.White, Loc("colGreen",  "Green"),  "5","×100k","±0.5%"),
-                (ResistorViewModel.CBlue,   Colors.White, Loc("colBlue",   "Blue"),   "6","×1M",  "±0.25%"),
-                (ResistorViewModel.CViolet, Colors.White, Loc("colViolet", "Violet"), "7","×10M", "±0.1%"),
-                (ResistorViewModel.CGray,   Colors.White, Loc("colGray",   "Gray"),   "8","×100M","±0.05%"),
-                (ResistorViewModel.CWhite,  Colors.Black, Loc("colWhite",  "White"),  "9","×1G",  "–"    ),
-                (ResistorViewModel.CGold,   Colors.Black, Loc("colGold",   "Gold"),   "–","×0.1", "±5%"  ),
-                (ResistorViewModel.CSilver, Colors.Black, Loc("colSilver", "Silver"), "–","×0.01","±10%" ),
-                (ResistorViewModel.CNone,   Colors.White, Loc("colNone",   "None"),   "–","–",    "±20%" ),
-            };
-
-            var grid = new Grid
-            {
-                ColumnDefinitions = new ColumnDefinitionCollection
+                string key = $"{_vm.Lang}|{Theme.Index}|{_vm.Series}";
+                if (_referenceView == null || _referenceKey != key)
                 {
-                    new ColumnDefinition{Width=28}, new ColumnDefinition{Width=GridLength.Star},
-                    new ColumnDefinition{Width=36}, new ColumnDefinition{Width=58},
-                    new ColumnDefinition{Width=52},
-                },
-                RowSpacing = 0,
-                ColumnSpacing = 6,
-            };
-            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-
-            string[] hdrs = { "", Loc("refColor", "Color"), Loc("refDigit", "Digit"), Loc("refMult", "×"), Loc("refTol", "Tol.") };
-            for (int c = 0; c < hdrs.Length; c++)
-            {
-                var l = new Label
-                {
-                    Text = hdrs[c],
-                    FontSize = 10,
-                    TextColor = CUiTextMuted,
-                    FontAttributes = FontAttributes.Bold,
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    VerticalTextAlignment = TextAlignment.Center,
-                    Margin = new Thickness(0, 0, 0, 4)
-                };
-                Grid.SetRow(l, 0); Grid.SetColumn(l, c); grid.Children.Add(l);
-            }
-
-            for (int r = 0; r < rows.Length; r++)
-            {
-                var row = rows[r]; int ri = r + 1;
-                grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                var bg = new BoxView
-                {
-                    BackgroundColor = r % 2 == 0 ? CUiRowDark1 : CUiRowDark2,
-                    CornerRadius = 6,
-                    Margin = new Thickness(-2, 1)
-                };
-                Grid.SetRow(bg, ri); Grid.SetColumn(bg, 0); Grid.SetColumnSpan(bg, 5); grid.Children.Add(bg);
-
-                bool isNone = row.Bg == ResistorViewModel.CNone;
-                var sw = new Border
-                {
-                    WidthRequest = 20,
-                    HeightRequest = 20,
-                    BackgroundColor = isNone ? CUiChipEmpty : row.Bg,
-                    StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) },
-                    Stroke = isNone ? CUiBorderNone : Colors.Transparent,
-                    StrokeThickness = isNone ? 1 : 0,
-                    HorizontalOptions = LayoutOptions.Center,
-                    VerticalOptions = LayoutOptions.Center,
-                    Margin = new Thickness(0, 3)
-                };
-                Grid.SetRow(sw, ri); Grid.SetColumn(sw, 0); grid.Children.Add(sw);
-
-                void Cell(View v, int col) { Grid.SetRow(v, ri); Grid.SetColumn(v, col); grid.Children.Add(v); }
-                Cell(new Label
-                {
-                    Text = row.Name,
-                    FontSize = 12.5,
-                    TextColor = Colors.White,
-                    VerticalTextAlignment = TextAlignment.Center,
-                    Margin = new Thickness(2, 3)
-                }, 1);
-                Cell(new Label
-                {
-                    Text = row.Digit,
-                    FontSize = 13,
-                    TextColor = CUiTextLight,
-                    FontAttributes = FontAttributes.Bold,
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    VerticalTextAlignment = TextAlignment.Center,
-                    Margin = new Thickness(0, 3)
-                }, 2);
-                Cell(new Label
-                {
-                    Text = row.Mult,
-                    FontSize = 11.5,
-                    TextColor = CUiTextGreen,
-                    FontAttributes = FontAttributes.Bold,
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    VerticalTextAlignment = TextAlignment.Center,
-                    Margin = new Thickness(0, 3)
-                }, 3);
-                Cell(new Label
-                {
-                    Text = row.Tol,
-                    FontSize = 11,
-                    TextColor = row.Tol == "–" ? CUiTextDimmer : CUiTextYellow,
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    VerticalTextAlignment = TextAlignment.Center,
-                    Margin = new Thickness(0, 3)
-                }, 4);
-            }
-
-            return new Border
-            {
-                Content = grid,
-                BackgroundColor = CUiPanelDark,
-                StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(14) },
-                Stroke = CUiBorderBlue,
-                StrokeThickness = 1,
-                Padding = new Thickness(10, 8)
-            };
-        }
-
-        private View BuildESeriesSection()
-        {
-            var series = new (string Name, string ValsPer, string Use, string Examples)[]
-            {
-                ("E3",  "3",   Loc("eUseRough",   "Rough"),       "1.0 – 2.2 – 4.7"),
-                ("E6",  "6",   Loc("eUseGeneral", "General"),     "1.0 – 1.5 – 2.2 – 3.3 – 4.7 – 6.8"),
-                ("E12", "12",  Loc("eUseStd",     "Standard"),    "1.0 – 1.2 – 1.5 – 1.8 – 2.2 – 2.7 …"),
-                ("E24", "24",  Loc("eUseCommon",  "Common"),      "1.0 – 1.1 – 1.2 – 1.3 – 1.5 – 1.6 …"),
-                ("E48", "48",  Loc("eUsePrecise", "Precise"),     "1.00 – 1.05 – 1.10 – 1.15 …"),
-                ("E96", "96",  Loc("eUseHigh",    "High prec."),  "1.00 – 1.02 – 1.05 – 1.07 …"),
-                ("E192","192", Loc("eUseUltra",   "Ultra prec."), "1.000 – 1.010 – 1.020 …"),
-            };
-
-            var stack = new VerticalStackLayout { Spacing = 6 };
-            stack.Children.Add(new Label
-            {
-                Text = Loc("eSeriesHint", "Standardised values per decade (×1, ×10, ×100 …)"),
-                FontSize = 11,
-                TextColor = CUiTextMuted,
-                Margin = new Thickness(0, 0, 0, 4)
-            });
-
-            foreach (var s in series)
-            {
-                bool hl = s.Name == "E12" || s.Name == "E24";
-                var card = new Border
-                {
-                    StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
-                    BackgroundColor = hl ? CUiHighBg : CUiPanelDark,
-                    Stroke = hl ? CUiBlue : CUiBorderBlue,
-                    StrokeThickness = hl ? 1.5 : 1,
-                    Padding = new Thickness(12, 9)
-                };
-                var inner = new Grid
-                {
-                    ColumnDefinitions = new ColumnDefinitionCollection
-                    {
-                        new ColumnDefinition{Width=44}, new ColumnDefinition{Width=34},
-                        new ColumnDefinition{Width=70}, new ColumnDefinition{Width=GridLength.Star},
-                    },
-                    ColumnSpacing = 8
-                };
-                var badge = new Border
-                {
-                    StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(8) },
-                    BackgroundColor = hl ? CUiBlue : CUiBadgeDark,
-                    Padding = new Thickness(0),
-                    WidthRequest = 40,
-                    HeightRequest = 26,
-                    Content = new Label
-                    {
-                        Text = s.Name,
-                        FontSize = 11.5,
-                        FontAttributes = FontAttributes.Bold,
-                        TextColor = Colors.White,
-                        HorizontalTextAlignment = TextAlignment.Center,
-                        VerticalTextAlignment = TextAlignment.Center
-                    }
-                };
-                Grid.SetColumn(badge, 0); inner.Children.Add(badge);
-                var vpd = new Label
-                {
-                    Text = s.ValsPer,
-                    FontSize = 13,
-                    FontAttributes = FontAttributes.Bold,
-                    TextColor = CUiTextGreen,
-                    VerticalTextAlignment = TextAlignment.Center,
-                    HorizontalTextAlignment = TextAlignment.Center
-                };
-                Grid.SetColumn(vpd, 1); inner.Children.Add(vpd);
-                var use = new Label { Text = s.Use, FontSize = 11.5, TextColor = hl ? CUiTextBlue : CUiTextSub, VerticalTextAlignment = TextAlignment.Center };
-                Grid.SetColumn(use, 2); inner.Children.Add(use);
-                var ex = new Label
-                {
-                    Text = s.Examples,
-                    FontSize = 10,
-                    TextColor = CUiTextDim,
-                    VerticalTextAlignment = TextAlignment.Center,
-                    LineBreakMode = LineBreakMode.TailTruncation
-                };
-                Grid.SetColumn(ex, 3); inner.Children.Add(ex);
-                card.Content = inner; stack.Children.Add(card);
-            }
-            return stack;
-        }
-
-        private View BuildReadingTip() => new Border
-        {
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(14) },
-            BackgroundColor = CUiPanelDark,
-            Stroke = CUiBorderBlue,
-            StrokeThickness = 1,
-            Padding = new Thickness(14, 12),
-            Content = new VerticalStackLayout
-            {
-                Spacing = 7,
-                Children =
-                {
-                    new Label{Text=Loc("tip4band","4-band: Digit · Digit · Multiplier · Tolerance"),FontSize=12,TextColor=CUiTextTan},
-                    new Label{Text=Loc("tip5band","5-band: Digit · Digit · Digit · Multiplier · Tolerance"),FontSize=12,TextColor=CUiTextSteel},
-                    new Label{Text=Loc("tip6band","6-band: Digit · Digit · Digit · Multiplier · Tolerance · TCR"),FontSize=12,TextColor=CUiTextSteel},
-                    new BoxView{HeightRequest=1,BackgroundColor=CUiBorderDiv,Margin=new Thickness(0,2)},
-                    new Label{Text=Loc("tipDir","Read left → right. Gold/Silver gap = right side."),
-                        FontSize=11.5,TextColor=CUiTextYellow,FontAttributes=FontAttributes.Bold}
+                    _referenceView = ReferenceView.Build(_vm);
+                    _referenceKey = key;
                 }
+                SheetScroll.Content = _referenceView;
+                SheetTitle.Text = _vm["refTitle"];
             }
-        };
 
-        // ══════════════════════════════════════════════════════════════
-        // RESISTOR DRAWABLE
-        // ══════════════════════════════════════════════════════════════
+            double h = Height > 0 ? Height : 800;
+            SheetScroll.MaximumHeightRequest = Math.Max(280, h * 0.86 - 110);
 
-        public sealed class ResistorDrawable : IDrawable
-        {
-            private readonly List<Color> _rings;
-            private readonly Func<Color> _body;
-            public ResistorDrawable(List<Color> rings, Func<Color> body) { _rings = rings; _body = body; }
-
-            public void Draw(ICanvas canvas, RectF rect)
+            SheetOverlay.IsVisible = true;
+            _ = SheetScroll.ScrollToAsync(0, 0, false);
+            if (_anim)
             {
-                const float Bw = 210f, Bh = 56f, Rw = 13f, Gap = 25f, GroupExtra = 18f;
-                float cx = rect.Width / 2, cy = rect.Height / 2, bx = cx - Bw / 2, by = cy - Bh / 2;
-
-                canvas.StrokeColor = Colors.Silver; canvas.StrokeSize = 5; canvas.StrokeLineCap = LineCap.Round;
-                canvas.DrawLine(bx - 65, cy, bx, cy); canvas.DrawLine(bx + Bw, cy, bx + Bw + 65, cy);
-
-                canvas.FillColor = Colors.Black.WithAlpha(0.22f); canvas.FillRoundedRectangle(bx, by + 5, Bw, Bh, 28);
-                canvas.FillColor = _body(); canvas.FillRoundedRectangle(bx, by, Bw, Bh, 28);
-                canvas.FillColor = Colors.White.WithAlpha(0.12f); canvas.FillRoundedRectangle(bx + 10, by + 7, Bw - 20, Bh / 3f, 18);
-
-                int count = _rings.Count, g1 = count == 6 ? 4 : count - 1;
-                float x = bx + 30;
-                for (int i = 0; i < _rings.Count; i++)
-                {
-                    if (i == g1) x += GroupExtra;
-                    var c = _rings[i];
-                    if (!ResistorViewModel.IsInvisibleRing(c)) { canvas.FillColor = c; canvas.FillRectangle(x, by, Rw, Bh); }
-                    x += Gap;
-                }
+                SheetPanel.TranslationY = h;
+                SheetOverlay.Opacity = 0;
+                await Task.WhenAll(
+                    SheetOverlay.FadeTo(1, 200, Easing.CubicOut),
+                    SheetPanel.TranslateTo(0, 0, 260, Easing.CubicOut));
             }
+            else
+            {
+                SheetOverlay.Opacity = 1;
+                SheetPanel.TranslationY = 0;
+            }
+            _sheet = kind;
         }
+        finally { _sheetBusy = false; }
+    }
+
+    private async Task CloseSheet()
+    {
+        if (_sheetBusy || _sheet == SheetKind.None) return;
+        _sheetBusy = true;
+        try
+        {
+            if (_anim)
+            {
+                double h = Height > 0 ? Height : 800;
+                await Task.WhenAll(
+                    SheetOverlay.FadeTo(0, 180, Easing.CubicIn),
+                    SheetPanel.TranslateTo(0, h, 220, Easing.CubicIn));
+            }
+            SheetOverlay.IsVisible = false;
+            SheetOverlay.Opacity = 0;
+            _sheet = SheetKind.None;
+            _vm.SaveState();
+        }
+        finally { _sheetBusy = false; }
+    }
+
+    private void OnSheetPanUpdated(object? sender, PanUpdatedEventArgs e)
+    {
+        if (_sheet == SheetKind.None || _sheetBusy) return;
+        switch (e.StatusType)
+        {
+            case GestureStatus.Running:
+                SheetPanel.TranslationY = Math.Max(0, e.TotalY);
+                break;
+            case GestureStatus.Completed:
+            case GestureStatus.Canceled:
+                if (SheetPanel.TranslationY > 110) _ = CloseSheet();
+                else _ = SheetPanel.TranslateTo(0, 0, 150, Easing.CubicOut);
+                break;
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // SETTINGS CALLBACKS (invoked by SettingsView)
+    // ══════════════════════════════════════════════════════════════
+    internal void SelectTheme(int index)
+    {
+        if (index == Theme.Index) return;
+        Theme.Set(index);
+        AppSettings.Theme = Theme.Index;
+        ApplyTheme();
+        _settingsView?.Rebuild();
+    }
+
+    internal void SelectLanguage(string code)
+    {
+        _vm.Lang = code;
+        SheetTitle.Text = _vm["settings"];
+        _settingsView?.Rebuild();
+    }
+
+    internal bool Animations
+    {
+        get => _anim;
+        set
+        {
+            _anim = value; AppSettings.Animations = value;
+            StopCyberEffects(); StartCyberEffects();
+        }
+    }
+
+    internal bool Haptics
+    {
+        get => _haptics;
+        set { _haptics = value; AppSettings.Haptics = value; if (value) Tick(); }
+    }
+
+    internal bool Fullscreen
+    {
+        get => AppSettings.Fullscreen;
+        set { AppSettings.Fullscreen = value; ApplySystemBars(); }
+    }
+
+    internal bool ShowRange
+    {
+        get => _vm.ShowRange;
+        set { _vm.ShowRange = value; AppSettings.ShowRange = value; }
+    }
+
+    internal bool RememberState
+    {
+        get => AppSettings.RememberState;
+        set { AppSettings.RememberState = value; if (!value) AppSettings.LastState = ""; else _vm.SaveState(); }
+    }
+
+    internal async Task ResetSettings()
+    {
+        bool ok = await DisplayAlert(_vm["resetSettings"], _vm["resetConfirm"], _vm["yes"], _vm["cancel"]);
+        if (!ok) return;
+
+        AppSettings.ResetToDefaults();
+        _anim = AppSettings.Animations;
+        _haptics = AppSettings.Haptics;
+        _vm.ShowRange = AppSettings.ShowRange;
+        _vm.Series = AppSettings.Series;
+        _vm.ResetInput();
+        Theme.Set(AppSettings.Theme);
+        ApplyTheme();
+        _settingsView?.Rebuild();
+        ShowToast(_vm["resetDone"]);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // WINDOW TITLE (Android recents)
+    // ══════════════════════════════════════════════════════════════
+    private void UpdateWindowTitle()
+    {
+#if ANDROID
+        var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
+        if (activity == null) return;
+        string title = _vm["title"];
+        activity.Title = title;
+        if (OperatingSystem.IsAndroidVersionAtLeast(33))
+            activity.SetTaskDescription(new Android.App.ActivityManager.TaskDescription.Builder().SetLabel(title).Build());
+        else
+#pragma warning disable CA1422
+            activity.SetTaskDescription(new Android.App.ActivityManager.TaskDescription(title));
+#pragma warning restore CA1422
+#endif
     }
 }

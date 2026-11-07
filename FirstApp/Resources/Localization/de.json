@@ -1,4 +1,4 @@
-﻿{
+{
     "title": "Widerstandsrechner",
     "subtitle": "Farbcode und Wertumrechner",
     "valToCol": "Wert ➞ Farbe",
@@ -24,7 +24,6 @@
     "outOfRange": "Wert außerhalb des Bereichs für Standard-Widerstandsfarben.",
     "moreLangs": "Mehr Sprachen",
     "lessLangs": "Weniger Sprachen",
-
     "refTitle": "Referenz",
     "refColors": "Farbcodes",
     "refColor": "Farbe",
@@ -33,7 +32,6 @@
     "refTol": "Toleranz",
     "refESeries": "E-Serie",
     "refTip": "Leserichtung",
-
     "colBlack": "Schwarz",
     "colBrown": "Braun",
     "colRed": "Rot",
@@ -47,7 +45,6 @@
     "colGold": "Gold",
     "colSilver": "Silber",
     "colNone": "Keine",
-
     "eSeriesHint": "Standardisierte Werte pro Dekade (×1, ×10, ×100 …)",
     "eUseRough": "Grob",
     "eUseGeneral": "Allgemein",
@@ -56,13 +53,39 @@
     "eUsePrecise": "Präzise",
     "eUseHigh": "Hohe Präzision",
     "eUseUltra": "Ultra-Präzision",
-
     "tip4band": "4-Band: Ziffer · Ziffer · Multiplikator · Toleranz",
     "tip5band": "5-Band: Ziffer · Ziffer · Ziffer · Multiplikator · Toleranz",
     "tip6band": "6-Band: Ziffer · Ziffer · Ziffer · Multiplikator · Toleranz · TCR",
     "tipDir": "Von links → rechts lesen. Gold/Silber-Abstand = rechte Seite.",
-
     "support": "Support & Rückmeldung",
     "privacyPolicy": "Datenschutzrichtlinie",
-    "aboutDev": "Entwicklung unterstützen"
+    "aboutDev": "Entwicklung unterstützen",
+    "designLabelText": "App-Design",
+    "themeDefault": "Standard",
+    "themeCyber": "Cyber",
+    "themePlasma": "Plasma",
+    "themeAmoled": "AMOLED",
+    "general": "Allgemein",
+    "animations": "Animationen",
+    "animationsDesc": "Weiche Übergänge und Effekte",
+    "haptics": "Haptisches Feedback",
+    "hapticsDesc": "Kurze Vibration beim Tippen",
+    "fullscreen": "Vollbild",
+    "fullscreenDesc": "Status- und Navigationsleiste ausblenden",
+    "showRange": "Toleranzbereich",
+    "showRangeDesc": "Minimal- und Maximalwert anzeigen",
+    "rememberState": "Letzte Eingabe merken",
+    "rememberStateDesc": "Wert und Farben beim nächsten Start wiederherstellen",
+    "resetSettings": "Einstellungen zurücksetzen",
+    "resetConfirm": "Alle Einstellungen auf Standard zurücksetzen?",
+    "resetDone": "Einstellungen zurückgesetzt",
+    "yes": "Ja",
+    "cancel": "Abbrechen",
+    "copied": "In die Zwischenablage kopiert",
+    "nearestStd": "Nächster {0}-Wert",
+    "roundedTo": "Auf {0} signifikante Stellen gerundet",
+    "enterValue": "Widerstandswert eingeben",
+    "invalidInput": "Ungültige Eingabe – z. B. 4.7, 470 oder 4k7",
+    "unavailable": "Diese Funktion ist derzeit nicht verfügbar.",
+    "perDecade": "Werte / Dekade"
 }

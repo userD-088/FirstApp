@@ -1,4 +1,4 @@
-﻿{
+{
     "title": "Calculatrice Résistances",
     "subtitle": "Convertisseur code couleur",
     "valToCol": "Valeur ➞ Couleur",
@@ -24,7 +24,6 @@
     "outOfRange": "Valeur hors plage pour les codes couleur standard.",
     "moreLangs": "Plus de langues",
     "lessLangs": "Moins de langues",
-
     "refTitle": "Référence",
     "refColors": "Codes couleur",
     "refColor": "Couleur",
@@ -33,7 +32,6 @@
     "refTol": "Tolérance",
     "refESeries": "Série E",
     "refTip": "Sens de lecture",
-
     "colBlack": "Noir",
     "colBrown": "Marron",
     "colRed": "Rouge",
@@ -47,7 +45,6 @@
     "colGold": "Or",
     "colSilver": "Argent",
     "colNone": "Aucun",
-
     "eSeriesHint": "Valeurs standardisées par décade (×1, ×10, ×100 …)",
     "eUseRough": "Approximatif",
     "eUseGeneral": "Général",
@@ -56,13 +53,39 @@
     "eUsePrecise": "Précis",
     "eUseHigh": "Haute précision",
     "eUseUltra": "Ultra précision",
-
     "tip4band": "4 bandes : Chiffre · Chiffre · Multiplicateur · Tolérance",
     "tip5band": "5 bandes : Chiffre · Chiffre · Chiffre · Multiplicateur · Tolérance",
     "tip6band": "6 bandes : Chiffre · Chiffre · Chiffre · Multiplicateur · Tolérance · TCR",
     "tipDir": "Lire de gauche → droite. Espace or/argent = côté droit.",
-
     "support": "Assistance et retour",
     "privacyPolicy": "Politique de confidentialité",
-    "aboutDev": "Soutenir le développement"
+    "aboutDev": "Soutenir le développement",
+    "designLabelText": "Design",
+    "themeDefault": "Par défaut",
+    "themeCyber": "Cyber",
+    "themePlasma": "Plasma",
+    "themeAmoled": "AMOLED",
+    "general": "Général",
+    "animations": "Animations",
+    "animationsDesc": "Transitions et effets fluides",
+    "haptics": "Retour haptique",
+    "hapticsDesc": "Courte vibration au toucher",
+    "fullscreen": "Plein écran",
+    "fullscreenDesc": "Masquer les barres d'état et de navigation",
+    "showRange": "Plage de tolérance",
+    "showRangeDesc": "Afficher les valeurs min. et max.",
+    "rememberState": "Mémoriser la dernière saisie",
+    "rememberStateDesc": "Restaurer valeur et couleurs au prochain démarrage",
+    "resetSettings": "Réinitialiser les paramètres",
+    "resetConfirm": "Réinitialiser tous les paramètres ?",
+    "resetDone": "Paramètres réinitialisés",
+    "yes": "Oui",
+    "cancel": "Annuler",
+    "copied": "Copié dans le presse-papiers",
+    "nearestStd": "Valeur {0} la plus proche",
+    "roundedTo": "Arrondi à {0} chiffres significatifs",
+    "enterValue": "Saisissez une valeur de résistance",
+    "invalidInput": "Saisie invalide – ex. 4.7, 470 ou 4k7",
+    "unavailable": "Cette fonction n'est pas disponible pour le moment.",
+    "perDecade": "valeurs / décade"
 }

@@ -1,4 +1,4 @@
-﻿{
+{
     "title": "电阻计算器",
     "subtitle": "色环代码与阻值转换",
     "valToCol": "阻值 ➞ 色环",
@@ -24,7 +24,6 @@
     "outOfRange": "数值超出标准色环范围。",
     "moreLangs": "更多语言",
     "lessLangs": "收起语言",
-
     "refTitle": "参考",
     "refColors": "颜色代码",
     "refColor": "颜色",
@@ -33,7 +32,6 @@
     "refTol": "容差",
     "refESeries": "E系列",
     "refTip": "读取方向",
-
     "colBlack": "黑",
     "colBrown": "棕",
     "colRed": "红",
@@ -47,7 +45,6 @@
     "colGold": "金",
     "colSilver": "银",
     "colNone": "无",
-
     "eSeriesHint": "每十倍范围的标准化数值 (×1, ×10, ×100 …)",
     "eUseRough": "粗略",
     "eUseGeneral": "通用",
@@ -56,13 +53,39 @@
     "eUsePrecise": "精确",
     "eUseHigh": "高精度",
     "eUseUltra": "超高精度",
-
     "tip4band": "4环：数字 · 数字 · 倍数 · 容差",
     "tip5band": "5环：数字 · 数字 · 数字 · 倍数 · 容差",
     "tip6band": "6环：数字 · 数字 · 数字 · 倍数 · 容差 · TCR",
     "tipDir": "从左 → 右读取。金/银间隙 = 右侧。",
-
     "support": "支持与反馈",
     "privacyPolicy": "隐私政策",
-    "aboutDev": "支持开发"
+    "aboutDev": "支持开发",
+    "designLabelText": "外观",
+    "themeDefault": "默认",
+    "themeCyber": "Cyber",
+    "themePlasma": "Plasma",
+    "themeAmoled": "AMOLED",
+    "general": "常规",
+    "animations": "动画",
+    "animationsDesc": "平滑过渡和效果",
+    "haptics": "触感反馈",
+    "hapticsDesc": "点击时短暂振动",
+    "fullscreen": "全屏",
+    "fullscreenDesc": "隐藏状态栏和导航栏",
+    "showRange": "容差范围",
+    "showRangeDesc": "显示最小值和最大值",
+    "rememberState": "记住上次输入",
+    "rememberStateDesc": "下次启动时恢复数值和颜色",
+    "resetSettings": "重置设置",
+    "resetConfirm": "将所有设置恢复为默认值？",
+    "resetDone": "设置已重置",
+    "yes": "是",
+    "cancel": "取消",
+    "copied": "已复制到剪贴板",
+    "nearestStd": "最接近的 {0} 值",
+    "roundedTo": "已四舍五入到 {0} 位有效数字",
+    "enterValue": "请输入电阻值",
+    "invalidInput": "输入无效 – 例如 4.7、470 或 4k7",
+    "unavailable": "此功能目前不可用。",
+    "perDecade": "个值 / 十倍程"
 }

@@ -1,4 +1,4 @@
-﻿{
+{
     "title": "Resistor Calculator",
     "subtitle": "Color code and value converter",
     "valToCol": "Value ➞ Color",
@@ -24,7 +24,6 @@
     "outOfRange": "Value out of range for standard resistor colors.",
     "moreLangs": "More languages",
     "lessLangs": "Less languages",
-
     "refTitle": "Reference",
     "refColors": "Color Codes",
     "refColor": "Color",
@@ -33,7 +32,6 @@
     "refTol": "Tol.",
     "refESeries": "E-Series",
     "refTip": "Reading Direction",
-
     "colBlack": "Black",
     "colBrown": "Brown",
     "colRed": "Red",
@@ -47,7 +45,6 @@
     "colGold": "Gold",
     "colSilver": "Silver",
     "colNone": "None",
-
     "eSeriesHint": "Standardised values per decade (×1, ×10, ×100 …)",
     "eUseRough": "Rough",
     "eUseGeneral": "General",
@@ -56,16 +53,40 @@
     "eUsePrecise": "Precise",
     "eUseHigh": "High prec.",
     "eUseUltra": "Ultra prec.",
-
     "tip4band": "4-band: Digit · Digit · Multiplier · Tolerance",
     "tip5band": "5-band: Digit · Digit · Digit · Multiplier · Tolerance",
     "tip6band": "6-band: Digit · Digit · Digit · Multiplier · Tolerance · TCR",
     "tipDir": "Read left → right.  Gold/Silver gap = right side.",
-
     "support": "Support & Feedback",
     "privacyPolicy": "Privacy Policy",
     "aboutDev": "Support Development",
-
     "defaultAppDesign": "Default Design",
-    "designLabelText": "App Design"
+    "designLabelText": "App Design",
+    "themeDefault": "Default",
+    "themeCyber": "Cyber",
+    "themePlasma": "Plasma",
+    "themeAmoled": "AMOLED",
+    "general": "General",
+    "animations": "Animations",
+    "animationsDesc": "Smooth transitions and effects",
+    "haptics": "Haptic feedback",
+    "hapticsDesc": "Short vibration on tap",
+    "fullscreen": "Fullscreen",
+    "fullscreenDesc": "Hide status and navigation bar",
+    "showRange": "Tolerance range",
+    "showRangeDesc": "Show minimum and maximum value",
+    "rememberState": "Remember last input",
+    "rememberStateDesc": "Restore value and colors on next start",
+    "resetSettings": "Reset settings",
+    "resetConfirm": "Reset all settings to their defaults?",
+    "resetDone": "Settings reset",
+    "yes": "Yes",
+    "cancel": "Cancel",
+    "copied": "Copied to clipboard",
+    "nearestStd": "Nearest {0} value",
+    "roundedTo": "Rounded to {0} significant digits",
+    "enterValue": "Enter a resistance value",
+    "invalidInput": "Invalid input – e.g. 4.7, 470 or 4k7",
+    "unavailable": "This feature is currently unavailable.",
+    "perDecade": "values / decade"
 }

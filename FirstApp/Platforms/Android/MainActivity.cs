@@ -1,7 +1,8 @@
-﻿using Android.App;
+using Android.App;
 using Android.Content.PM;
 using Android.OS;
-using AndroidX.Core.View;
+using FirstApp.Core;
+using FirstApp.UI;
 
 namespace FirstApp;
 
@@ -18,18 +19,10 @@ namespace FirstApp;
         ConfigChanges.Density)]
 public class MainActivity : MauiAppCompatActivity
 {
-    protected override void OnCreate(Bundle savedInstanceState)
+    protected override void OnCreate(Bundle? savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
-
-        Window.SetDecorFitsSystemWindows(false);
-
-        var controller = new WindowInsetsControllerCompat(
-            Window,
-            Window.DecorView);
-
-        controller.Hide(WindowInsetsCompat.Type.SystemBars());
-        controller.SystemBarsBehavior =
-            WindowInsetsControllerCompat.BehaviorShowTransientBarsBySwipe;
+        if (Window != null)
+            SystemUi.Apply(Window, AppSettings.Fullscreen, Android.Graphics.Color.ParseColor("#0F172A"));
     }
 }

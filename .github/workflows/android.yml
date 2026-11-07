@@ -1,0 +1,56 @@
+name: Android build
+
+on:
+  push:
+    branches: [ "master", "claude/**" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: microsoft
+          java-version: "17"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+
+      - name: Publish (Release, arm64, trimmed + profiled AOT)
+        run: >
+          dotnet publish FirstApp/FirstApp.csproj
+          -f net9.0-android -c Release -o out
+          -p:AndroidSdkDirectory="$ANDROID_HOME"
+
+      - name: Report package size
+        run: |
+          echo "## 📦 Package size" >> "$GITHUB_STEP_SUMMARY"
+          echo "| File | Size |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          for f in out/*.apk out/*.aab; do
+            [ -f "$f" ] || continue
+            echo "| $(basename "$f") | $(du -h "$f" | cut -f1) |" >> "$GITHUB_STEP_SUMMARY"
+          done
+          ls -la out
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: resistor-calculator-android
+          path: |
+            out/*.apk
+            out/*.aab

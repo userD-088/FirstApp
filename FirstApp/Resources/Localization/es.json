@@ -1,4 +1,4 @@
-﻿{
+{
     "title": "Calculadora Resistencias",
     "subtitle": "Conversor código de colores",
     "valToCol": "Valor ➞ Color",
@@ -24,7 +24,6 @@
     "outOfRange": "Valor fuera de rango para colores estándar.",
     "moreLangs": "Más idiomas",
     "lessLangs": "Menos idiomas",
-
     "refTitle": "Referencia",
     "refColors": "Códigos de color",
     "refColor": "Color",
@@ -33,7 +32,6 @@
     "refTol": "Tolerancia",
     "refESeries": "Serie E",
     "refTip": "Dirección de lectura",
-
     "colBlack": "Negro",
     "colBrown": "Marrón",
     "colRed": "Rojo",
@@ -47,7 +45,6 @@
     "colGold": "Oro",
     "colSilver": "Plata",
     "colNone": "Ninguno",
-
     "eSeriesHint": "Valores estandarizados por década (×1, ×10, ×100 …)",
     "eUseRough": "Aproximado",
     "eUseGeneral": "General",
@@ -56,13 +53,39 @@
     "eUsePrecise": "Preciso",
     "eUseHigh": "Alta precisión",
     "eUseUltra": "Ultra precisión",
-
     "tip4band": "4 bandas: Dígito · Dígito · Multiplicador · Tolerancia",
     "tip5band": "5 bandas: Dígito · Dígito · Dígito · Multiplicador · Tolerancia",
     "tip6band": "6 bandas: Dígito · Dígito · Dígito · Multiplicador · Tolerancia · TCR",
     "tipDir": "Leer de izquierda → derecha. Espacio oro/plata = lado derecho.",
-
     "support": "Soporte y comentarios",
     "privacyPolicy": "Política de privacidad",
-    "aboutDev": "Apoyar el desarrollo"
+    "aboutDev": "Apoyar el desarrollo",
+    "designLabelText": "Diseño",
+    "themeDefault": "Predeterminado",
+    "themeCyber": "Cyber",
+    "themePlasma": "Plasma",
+    "themeAmoled": "AMOLED",
+    "general": "General",
+    "animations": "Animaciones",
+    "animationsDesc": "Transiciones y efectos suaves",
+    "haptics": "Respuesta háptica",
+    "hapticsDesc": "Vibración breve al tocar",
+    "fullscreen": "Pantalla completa",
+    "fullscreenDesc": "Ocultar barras de estado y navegación",
+    "showRange": "Rango de tolerancia",
+    "showRangeDesc": "Mostrar valor mínimo y máximo",
+    "rememberState": "Recordar última entrada",
+    "rememberStateDesc": "Restaurar valor y colores al iniciar",
+    "resetSettings": "Restablecer ajustes",
+    "resetConfirm": "¿Restablecer todos los ajustes?",
+    "resetDone": "Ajustes restablecidos",
+    "yes": "Sí",
+    "cancel": "Cancelar",
+    "copied": "Copiado al portapapeles",
+    "nearestStd": "Valor {0} más cercano",
+    "roundedTo": "Redondeado a {0} cifras significativas",
+    "enterValue": "Introduce un valor de resistencia",
+    "invalidInput": "Entrada no válida – p. ej. 4.7, 470 o 4k7",
+    "unavailable": "Esta función no está disponible actualmente.",
+    "perDecade": "valores / década"
 }

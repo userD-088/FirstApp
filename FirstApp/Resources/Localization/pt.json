@@ -1,4 +1,4 @@
-﻿{
+{
     "title": "Calculadora Resistores",
     "subtitle": "Conversor de código de cores",
     "valToCol": "Valor ➞ Cor",
@@ -24,7 +24,6 @@
     "outOfRange": "Valor fora do intervalo para cores padrão.",
     "moreLangs": "Mais idiomas",
     "lessLangs": "Menos idiomas",
-
     "refTitle": "Referência",
     "refColors": "Códigos de cores",
     "refColor": "Cor",
@@ -33,7 +32,6 @@
     "refTol": "Tolerância",
     "refESeries": "Série E",
     "refTip": "Direção de leitura",
-
     "colBlack": "Preto",
     "colBrown": "Marrom",
     "colRed": "Vermelho",
@@ -47,7 +45,6 @@
     "colGold": "Ouro",
     "colSilver": "Prata",
     "colNone": "Nenhum",
-
     "eSeriesHint": "Valores padronizados por década (×1, ×10, ×100 …)",
     "eUseRough": "Aproximado",
     "eUseGeneral": "Geral",
@@ -56,13 +53,39 @@
     "eUsePrecise": "Preciso",
     "eUseHigh": "Alta precisão",
     "eUseUltra": "Ultra precisão",
-
     "tip4band": "4 faixas: Dígito · Dígito · Multiplicador · Tolerância",
     "tip5band": "5 faixas: Dígito · Dígito · Dígito · Multiplicador · Tolerância",
     "tip6band": "6 faixas: Dígito · Dígito · Dígito · Multiplicador · Tolerância · TCR",
     "tipDir": "Ler da esquerda → direita. Espaço ouro/prata = lado direito.",
-
     "support": "Suporte e Feedback",
     "privacyPolicy": "Política de Privacidade",
-    "aboutDev": "Apoiar o desenvolvimento"
+    "aboutDev": "Apoiar o desenvolvimento",
+    "designLabelText": "Design",
+    "themeDefault": "Padrão",
+    "themeCyber": "Cyber",
+    "themePlasma": "Plasma",
+    "themeAmoled": "AMOLED",
+    "general": "Geral",
+    "animations": "Animações",
+    "animationsDesc": "Transições e efeitos suaves",
+    "haptics": "Feedback háptico",
+    "hapticsDesc": "Vibração curta ao tocar",
+    "fullscreen": "Ecrã inteiro",
+    "fullscreenDesc": "Ocultar barras de estado e navegação",
+    "showRange": "Faixa de tolerância",
+    "showRangeDesc": "Mostrar valor mínimo e máximo",
+    "rememberState": "Lembrar última entrada",
+    "rememberStateDesc": "Restaurar valor e cores ao iniciar",
+    "resetSettings": "Repor definições",
+    "resetConfirm": "Repor todas as definições?",
+    "resetDone": "Definições repostas",
+    "yes": "Sim",
+    "cancel": "Cancelar",
+    "copied": "Copiado para a área de transferência",
+    "nearestStd": "Valor {0} mais próximo",
+    "roundedTo": "Arredondado a {0} algarismos significativos",
+    "enterValue": "Introduza um valor de resistência",
+    "invalidInput": "Entrada inválida – ex. 4.7, 470 ou 4k7",
+    "unavailable": "Esta função não está disponível de momento.",
+    "perDecade": "valores / década"
 }

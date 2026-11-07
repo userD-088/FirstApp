@@ -1,4 +1,4 @@
-﻿{
+{
     "title": "抵抗カラーコード計算機",
     "subtitle": "カラーコードと値の変換",
     "valToCol": "値 ➞ カラー",
@@ -24,7 +24,6 @@
     "outOfRange": "値が標準カラーコードの範囲外です。",
     "moreLangs": "言語をもっと見る",
     "lessLangs": "言語を閉じる",
-
     "refTitle": "リファレンス",
     "refColors": "カラーコード",
     "refColor": "色",
@@ -33,7 +32,6 @@
     "refTol": "許容差",
     "refESeries": "Eシリーズ",
     "refTip": "読み取り方向",
-
     "colBlack": "黒",
     "colBrown": "茶",
     "colRed": "赤",
@@ -47,7 +45,6 @@
     "colGold": "金",
     "colSilver": "銀",
     "colNone": "なし",
-
     "eSeriesHint": "各桁ごとの標準化された値 (×1, ×10, ×100 …)",
     "eUseRough": "粗い",
     "eUseGeneral": "一般",
@@ -56,13 +53,39 @@
     "eUsePrecise": "高精度",
     "eUseHigh": "高精度",
     "eUseUltra": "超高精度",
-
     "tip4band": "4バンド: 数字 · 数字 · 乗数 · 許容差",
     "tip5band": "5バンド: 数字 · 数字 · 数字 · 乗数 · 許容差",
     "tip6band": "6バンド: 数字 · 数字 · 数字 · 乗数 · 許容差 · TCR",
     "tipDir": "左 → 右に読む。金/銀の間隔 = 右側。",
-
     "support": "サポートとフィードバック",
     "privacyPolicy": "プライバシーポリシー",
-    "aboutDev": "開発を支援する"
+    "aboutDev": "開発を支援する",
+    "designLabelText": "デザイン",
+    "themeDefault": "標準",
+    "themeCyber": "Cyber",
+    "themePlasma": "Plasma",
+    "themeAmoled": "AMOLED",
+    "general": "一般",
+    "animations": "アニメーション",
+    "animationsDesc": "滑らかな遷移とエフェクト",
+    "haptics": "触覚フィードバック",
+    "hapticsDesc": "タップ時に短く振動",
+    "fullscreen": "全画面表示",
+    "fullscreenDesc": "ステータスバーとナビゲーションバーを隠す",
+    "showRange": "許容差範囲",
+    "showRangeDesc": "最小値と最大値を表示",
+    "rememberState": "最後の入力を記憶",
+    "rememberStateDesc": "次回起動時に値と色を復元",
+    "resetSettings": "設定をリセット",
+    "resetConfirm": "すべての設定を初期値に戻しますか？",
+    "resetDone": "設定をリセットしました",
+    "yes": "はい",
+    "cancel": "キャンセル",
+    "copied": "クリップボードにコピーしました",
+    "nearestStd": "最も近い{0}の値",
+    "roundedTo": "有効数字{0}桁に丸めました",
+    "enterValue": "抵抗値を入力してください",
+    "invalidInput": "無効な入力 – 例: 4.7、470、4k7",
+    "unavailable": "この機能は現在利用できません。",
+    "perDecade": "値 / ディケード"
 }
