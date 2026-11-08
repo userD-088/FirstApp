@@ -8,11 +8,21 @@ eine fertig signierte `.aab`.
 > ⚠️ Der früher ins Repo hochgeladene `resistor_calculator.keystore` ist öffentlich geworden – **nicht verwenden**.
 
 ## 1. Keystore erstellen (Windows, einmalig)
-Öffne **PowerShell** (Startmenü → „PowerShell“) und füge diesen Befehl ein. Er nutzt das Java, das Visual Studio
-für Android mitinstalliert hat:
+Öffne **PowerShell** (Startmenü → „PowerShell“ oder in Visual Studio: Ansicht → Terminal).
+Zuerst `keytool` suchen – das Java-Werkzeug, das Visual Studio für Android mitinstalliert (dauert bis zu 1 Minute):
 
 ```powershell
-$keytool = (Get-ChildItem "C:\Program Files\Microsoft\jdk-*\bin\keytool.exe" | Select-Object -Last 1).FullName
+$keytool = (Get-ChildItem "C:\Program Files", "C:\Program Files (x86)", "$env:LOCALAPPDATA", "$env:ProgramData" -Filter keytool.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+$keytool
+```
+
+Es muss ein Pfad erscheinen (z. B. `…\openjdk\jdk-17…\bin\keytool.exe`). Erscheint nichts: Visual Studio →
+Extras → Optionen → Xamarin/.NET MAUI → Android-Einstellungen → dort den Java-Pfad ablesen (oder das JDK
+installieren lassen) und `$keytool = "<Pfad>\bin\keytool.exe"` setzen.
+
+Dann den Keystore erstellen:
+
+```powershell
 & $keytool -genkeypair -v -storetype PKCS12 -keyalg RSA -keysize 4096 -validity 10000 -alias upload -keystore "$env:USERPROFILE\Documents\resistorcalc-upload.keystore"
 ```
 
@@ -23,8 +33,7 @@ Es folgen Fragen:
 - **Ländercode**: `DE`
 - „Ist CN=Daniel Horst … richtig?“ → `ja` (bzw. `yes`)
 
-Findet PowerShell `keytool.exe` nicht, ist das Java woanders installiert: Suche im Explorer nach `keytool.exe`
-und ersetze in der ersten Zeile den Pfad.
+Beim Passwort erscheinen beim Tippen keine Zeichen – das ist normal.
 
 ## 2. Sichern (wichtig!)
 Die Datei `Dokumente\resistorcalc-upload.keystore` **und** das Passwort an mindestens zwei Orten sichern,
