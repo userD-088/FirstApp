@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>net10.0-android</TargetFrameworks>
+		<!-- Android 7.0+: required by Google Play's automatic protection -->
+		<SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
 
 		<OutputType>Exe</OutputType>
 		<RootNamespace>FirstApp</RootNamespace>
