@@ -3,10 +3,18 @@
 	<application android:allowBackup="false" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true"></application>
 	<!-- Haptic feedback. No internet permission needed: the app works fully offline. -->
 	<uses-permission android:name="android.permission.VIBRATE" />
+	<!-- Android 11+ package visibility: e-mail app, web browser and Custom Tabs -->
 	<queries>
 		<intent>
 			<action android:name="android.intent.action.SENDTO" />
 			<data android:scheme="mailto" />
+		</intent>
+		<intent>
+			<action android:name="android.intent.action.VIEW" />
+			<data android:scheme="https" />
+		</intent>
+		<intent>
+			<action android:name="android.support.customtabs.action.CustomTabsService" />
 		</intent>
 	</queries>
 </manifest>

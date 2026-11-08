@@ -370,7 +370,23 @@ public sealed class SettingsView : ContentView
     {
         // German or English section of the same page
         string url = PrivacyUrl + (_vm.Lang == "de" ? "#de" : "#en");
-        try { await Launcher.Default.OpenAsync(new Uri(url)); }
-        catch { await _host.DisplayAlertAsync(T("privacyPolicy"), PrivacyUrl, "OK"); }
+        try
+        {
+            // In-app browser tab (Custom Tabs); falls back to the default browser
+            await Browser.Default.OpenAsync(url, new BrowserLaunchOptions
+            {
+                LaunchMode = BrowserLaunchMode.SystemPreferred,
+                PreferredToolbarColor = Theme.Current.HeaderBg[0].Alpha >= 1 ? Theme.Current.HeaderBg[0] : Theme.Current.PageBg[0],
+            });
+        }
+        catch
+        {
+            try { await Launcher.Default.OpenAsync(new Uri(url)); }
+            catch
+            {
+                await Clipboard.Default.SetTextAsync(PrivacyUrl);
+                await _host.DisplayAlertAsync(T("privacyPolicy"), $"{PrivacyUrl}\n\n{T("copied")}", "OK");
+            }
+        }
     }
 }
