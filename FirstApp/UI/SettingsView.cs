@@ -14,6 +14,7 @@ public sealed class SettingsView : ContentView
     private bool _aboutExpanded;
 
     private const string SupportEmail = "neutron.mail216@proton.me";
+    private const string PrivacyUrl = "https://userd-088.github.io/FirstApp/privacy.html";
 
     public SettingsView(MainPage host, ResistorViewModel vm)
     {
@@ -326,8 +327,7 @@ public sealed class SettingsView : ContentView
         {
             stack.Children.Add(Ui.Divider(6, 2));
             stack.Children.Add(LinkRow("✉️", T("support"), OpenSupportMail));
-            stack.Children.Add(LinkRow("🔒", T("privacyPolicy"), ShowUnavailable));
-            stack.Children.Add(LinkRow("🎁", T("aboutDev"), ShowUnavailable));
+            stack.Children.Add(LinkRow("🔒", T("privacyPolicy"), OpenPrivacyPolicy));
         }
         stack.Children.Add(Ui.Divider(6, 2));
         stack.Children.Add(new Label { Text = T("copyright"), FontSize = 11, TextColor = t.TextDim });
@@ -362,10 +362,15 @@ public sealed class SettingsView : ContentView
         }
         catch
         {
-            await _host.DisplayAlert(T("support"), SupportEmail, "OK");
+            await _host.DisplayAlertAsync(T("support"), SupportEmail, "OK");
         }
     }
 
-    private async void ShowUnavailable()
-        => await _host.DisplayAlert(T("warning"), T("unavailable"), "OK");
+    private async void OpenPrivacyPolicy()
+    {
+        // German or English section of the same page
+        string url = PrivacyUrl + (_vm.Lang == "de" ? "#de" : "#en");
+        try { await Launcher.Default.OpenAsync(new Uri(url)); }
+        catch { await _host.DisplayAlertAsync(T("privacyPolicy"), PrivacyUrl, "OK"); }
+    }
 }

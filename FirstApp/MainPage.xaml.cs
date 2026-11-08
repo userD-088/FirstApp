@@ -278,7 +278,7 @@ public partial class MainPage : ContentPage
         for (int i = 0; i < parts.Length; i++)
         {
             var p = parts[i];
-            var a = Task.WhenAll(p.FadeTo(1, ms, Easing.CubicOut), p.TranslateTo(0, 0, ms, Easing.CubicOut));
+            var a = Task.WhenAll(p.FadeToAsync(1, ms, Easing.CubicOut), p.TranslateToAsync(0, 0, ms, Easing.CubicOut));
             if (i == parts.Length - 1) await a; else await Task.Delay(55);
         }
     }
@@ -286,8 +286,8 @@ public partial class MainPage : ContentPage
     private async Task Bounce(View v)
     {
         if (!_anim || !Theme.Current.HasCyberFx) return;
-        await v.ScaleTo(0.86, 55, Easing.CubicIn);
-        await v.ScaleTo(1.0, 75, Easing.SpringOut);
+        await v.ScaleToAsync(0.86, 55, Easing.CubicIn);
+        await v.ScaleToAsync(1.0, 75, Easing.SpringOut);
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -304,10 +304,10 @@ public partial class MainPage : ContentPage
         int version = ++_toastVersion;
         ToastLabel.Text = text;
         Toast.IsVisible = true;
-        if (_anim) { Toast.Opacity = 0; await Toast.FadeTo(1, 140); } else Toast.Opacity = 1;
+        if (_anim) { Toast.Opacity = 0; await Toast.FadeToAsync(1, 140); } else Toast.Opacity = 1;
         await Task.Delay(1500);
         if (version != _toastVersion) return;
-        if (_anim) await Toast.FadeTo(0, 200);
+        if (_anim) await Toast.FadeToAsync(0, 200);
         if (version == _toastVersion) Toast.IsVisible = false;
     }
 
@@ -349,8 +349,8 @@ public partial class MainPage : ContentPage
         try
         {
             await Task.WhenAll(
-                ResistorView.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
-                ResistorView.FadeTo(0, SlideMs, Easing.CubicIn));
+                ResistorView.TranslateToAsync(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
+                ResistorView.FadeToAsync(0, SlideMs, Easing.CubicIn));
 
             _vm.SetMode(newMode);
             var active = newMode switch { 0 => ResTab0, 1 => ResTab1, _ => ResTab2 };
@@ -358,8 +358,8 @@ public partial class MainPage : ContentPage
 
             ResistorView.TranslationX = dir * w;
             await Task.WhenAll(
-                ResistorView.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
-                ResistorView.FadeTo(1, SlideMs, Easing.CubicOut));
+                ResistorView.TranslateToAsync(0, 0, SlideMs, Easing.CubicOut),
+                ResistorView.FadeToAsync(1, SlideMs, Easing.CubicOut));
         }
         finally
         {
@@ -399,8 +399,8 @@ public partial class MainPage : ContentPage
         try
         {
             await Task.WhenAll(
-                outgoing.TranslateTo(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
-                outgoing.FadeTo(0, SlideMs, Easing.CubicIn));
+                outgoing.TranslateToAsync(-dir * w * OutSlide, 0, SlideMs, Easing.CubicIn),
+                outgoing.FadeToAsync(0, SlideMs, Easing.CubicIn));
 
             _vm.SetInputMode(newMode);
             _ = Bounce(newMode == 0 ? InputTab0 : InputTab1);
@@ -408,8 +408,8 @@ public partial class MainPage : ContentPage
             incoming.TranslationX = dir * w;
             incoming.Opacity = 0;
             await Task.WhenAll(
-                incoming.TranslateTo(0, 0, SlideMs, Easing.CubicOut),
-                incoming.FadeTo(1, SlideMs, Easing.CubicOut));
+                incoming.TranslateToAsync(0, 0, SlideMs, Easing.CubicOut),
+                incoming.FadeToAsync(1, SlideMs, Easing.CubicOut));
         }
         finally
         {
@@ -597,8 +597,8 @@ public partial class MainPage : ContentPage
                 SheetPanel.TranslationY = h;
                 SheetOverlay.Opacity = 0;
                 await Task.WhenAll(
-                    SheetOverlay.FadeTo(1, 200, Easing.CubicOut),
-                    SheetPanel.TranslateTo(0, 0, 260, Easing.CubicOut));
+                    SheetOverlay.FadeToAsync(1, 200, Easing.CubicOut),
+                    SheetPanel.TranslateToAsync(0, 0, 260, Easing.CubicOut));
             }
             else
             {
@@ -620,8 +620,8 @@ public partial class MainPage : ContentPage
             {
                 double h = Height > 0 ? Height : 800;
                 await Task.WhenAll(
-                    SheetOverlay.FadeTo(0, 180, Easing.CubicIn),
-                    SheetPanel.TranslateTo(0, h, 220, Easing.CubicIn));
+                    SheetOverlay.FadeToAsync(0, 180, Easing.CubicIn),
+                    SheetPanel.TranslateToAsync(0, h, 220, Easing.CubicIn));
             }
             SheetOverlay.IsVisible = false;
             SheetOverlay.Opacity = 0;
@@ -642,7 +642,7 @@ public partial class MainPage : ContentPage
             case GestureStatus.Completed:
             case GestureStatus.Canceled:
                 if (SheetPanel.TranslationY > 110) _ = CloseSheet();
-                else _ = SheetPanel.TranslateTo(0, 0, 150, Easing.CubicOut);
+                else _ = SheetPanel.TranslateToAsync(0, 0, 150, Easing.CubicOut);
                 break;
         }
     }
@@ -702,7 +702,7 @@ public partial class MainPage : ContentPage
 
     internal async Task ResetSettings()
     {
-        bool ok = await DisplayAlert(_vm["resetSettings"], _vm["resetConfirm"], _vm["yes"], _vm["cancel"]);
+        bool ok = await DisplayAlertAsync(_vm["resetSettings"], _vm["resetConfirm"], _vm["yes"], _vm["cancel"]);
         if (!ok) return;
 
         AppSettings.ResetToDefaults();

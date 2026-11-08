@@ -8,8 +8,9 @@
 - Result with tolerance, min/max range, TCR (6-band) and colour names – tap to copy
 - IEC 60063 E-series (E3 … E192) with a "nearest standard value" hint
 - Reference sheet: colour table, reading direction, E-series overview
-- Settings: language, design (Default, Cyber, Plasma, AMOLED), animations, haptic feedback,
-  fullscreen, tolerance range, remember last input, reset
+- Settings: 60 languages, 5 designs (Midnight, Light, Cyber, Plasma, AMOLED), animations,
+  haptic feedback, fullscreen, tolerance range, remember last input, reset
+- Fully offline: no internet permission, no ads, no tracking
 
 ## Project layout
 | Path | Content |
@@ -19,14 +20,21 @@
 | `FirstApp/MainPage.xaml(.cs)` | Main screen, bottom sheet host, animations |
 | `FirstApp/UI/` | Theme palette, drawables, settings + reference sheets (built lazily in code) |
 | `FirstApp/Resources/Localization/` | One flat JSON per language (embedded; missing keys fall back to English) |
+| `docs/` | Website + privacy policy (GitHub Pages) |
+| `store/` | Google Play: listing texts, graphics, data-safety answers, signing guide, release checklist |
 
 ## Build
 ```bash
 dotnet workload install maui-android
-dotnet publish FirstApp/FirstApp.csproj -f net9.0-android -c Release
+dotnet publish FirstApp/FirstApp.csproj -f net10.0-android -c Release
 ```
 Release builds are arm64-only, fully trimmed (R8 + IL trimming) and use profiled AOT for fast startup.
-The GitHub Actions workflow builds the `.aab`/`.apk` on every push and reports the package size.
+Targets Android 16 (API 36) as required by Google Play since August 2026.
+The GitHub Actions workflow builds a signed `.aab` on every push once the signing secrets are set
+(see [store/SIGNING.md](store/SIGNING.md)) and reports the package size.
+
+## Publishing
+See [store/CHECKLIST.md](store/CHECKLIST.md).
 
 ## Adding a language
 1. Copy `Resources/Localization/en.json` to `<code>.json` and translate it.
