@@ -14,7 +14,7 @@
 		<Nullable>enable</Nullable>
 
 		<ApplicationTitle>Resistor Calculator</ApplicationTitle>
-		<ApplicationId>io.github.userd088.resistorcalculator</ApplicationId>
+		<ApplicationId>com.resistor_calculator</ApplicationId>
 
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
