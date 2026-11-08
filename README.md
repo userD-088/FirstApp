@@ -24,6 +24,9 @@
 | `store/` | Google Play: listing texts, graphics, data-safety answers, signing guide, release checklist |
 
 ## Build
+**Requires Visual Studio 2026** (or the .NET 10 SDK) with the *.NET MAUI* workload.
+Visual Studio 2022 cannot build .NET 10 projects (error: target platform identifier "android" not recognized).
+
 ```bash
 dotnet workload install maui-android
 dotnet publish FirstApp/FirstApp.csproj -f net10.0-android -c Release
