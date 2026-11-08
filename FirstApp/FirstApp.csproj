@@ -14,8 +14,8 @@
 		<ApplicationTitle>Resistor Calculator</ApplicationTitle>
 		<ApplicationId>com.companyname.firstapp</ApplicationId>
 
-		<ApplicationDisplayVersion>1.1</ApplicationDisplayVersion>
-		<ApplicationVersion>2</ApplicationVersion>
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
 
 		<!-- Compiled XAML bindings everywhere (faster + trimming-safe) -->
 		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>

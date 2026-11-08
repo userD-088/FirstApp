@@ -2,15 +2,36 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FirstApp.App">
-    <!-- Intentionally lean: all colours come from UI/Theme.cs, no template style dictionaries to parse at startup -->
+    <!--
+        Lean on purpose: no template style dictionaries.
+        Colours are pushed by UI/Theme.cs at runtime (DynamicResource), defaults below = Midnight.
+    -->
     <Application.Resources>
         <ResourceDictionary>
+            <Color x:Key="TextPrimary">White</Color>
+            <Color x:Key="TextSecondary">#A5B4CB</Color>
+            <Color x:Key="TextMuted">#6B7C96</Color>
+            <Color x:Key="PlaceholderColor">#4B5A73</Color>
+            <Color x:Key="DividerColor">#1C2B45</Color>
+            <Color x:Key="SurfaceColor">#081022</Color>
+            <Color x:Key="FieldColor">#0F1A2E</Color>
+            <Color x:Key="AccentBorderColor">#1E3A5F</Color>
+            <Color x:Key="HeaderButtonColor">#1AFFFFFF</Color>
+            <Color x:Key="ResultColor">#34D399</Color>
+            <Color x:Key="BackdropColor">#B3000000</Color>
+            <x:String x:Key="AppFont"></x:String>
+
             <Style TargetType="Label">
-                <Setter Property="TextColor" Value="White" />
+                <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
+                <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
+            </Style>
+            <Style TargetType="Entry">
+                <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
+                <Setter Property="PlaceholderColor" Value="{DynamicResource PlaceholderColor}" />
+                <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
             </Style>
             <Style TargetType="Page" ApplyToDerivedTypes="True">
                 <Setter Property="Padding" Value="0" />
-                <Setter Property="BackgroundColor" Value="Black" />
             </Style>
         </ResourceDictionary>
     </Application.Resources>

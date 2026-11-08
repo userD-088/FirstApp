@@ -61,7 +61,7 @@
     "privacyPolicy": "Política de Privacidade",
     "aboutDev": "Apoiar o desenvolvimento",
     "designLabelText": "Design",
-    "themeDefault": "Padrão",
+    "themeDefault": "Midnight",
     "themeCyber": "Cyber",
     "themePlasma": "Plasma",
     "themeAmoled": "AMOLED",
@@ -87,5 +87,6 @@
     "enterValue": "Introduza um valor de resistência",
     "invalidInput": "Entrada inválida – ex. 4.7, 470 ou 4k7",
     "unavailable": "Esta função não está disponível de momento.",
-    "perDecade": "valores / década"
+    "perDecade": "valores / década",
+    "themeLight": "Claro"
 }

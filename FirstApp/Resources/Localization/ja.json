@@ -61,7 +61,7 @@
     "privacyPolicy": "プライバシーポリシー",
     "aboutDev": "開発を支援する",
     "designLabelText": "デザイン",
-    "themeDefault": "標準",
+    "themeDefault": "Midnight",
     "themeCyber": "Cyber",
     "themePlasma": "Plasma",
     "themeAmoled": "AMOLED",
@@ -87,5 +87,6 @@
     "enterValue": "抵抗値を入力してください",
     "invalidInput": "無効な入力 – 例: 4.7、470、4k7",
     "unavailable": "この機能は現在利用できません。",
-    "perDecade": "値 / ディケード"
+    "perDecade": "値 / ディケード",
+    "themeLight": "ライト"
 }

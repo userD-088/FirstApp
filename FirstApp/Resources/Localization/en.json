@@ -62,7 +62,7 @@
     "aboutDev": "Support Development",
     "defaultAppDesign": "Default Design",
     "designLabelText": "App Design",
-    "themeDefault": "Default",
+    "themeDefault": "Midnight",
     "themeCyber": "Cyber",
     "themePlasma": "Plasma",
     "themeAmoled": "AMOLED",
@@ -88,5 +88,6 @@
     "enterValue": "Enter a resistance value",
     "invalidInput": "Invalid input – e.g. 4.7, 470 or 4k7",
     "unavailable": "This feature is currently unavailable.",
-    "perDecade": "values / decade"
+    "perDecade": "values / decade",
+    "themeLight": "Light"
 }

@@ -61,7 +61,7 @@
     "privacyPolicy": "隐私政策",
     "aboutDev": "支持开发",
     "designLabelText": "外观",
-    "themeDefault": "默认",
+    "themeDefault": "Midnight",
     "themeCyber": "Cyber",
     "themePlasma": "Plasma",
     "themeAmoled": "AMOLED",
@@ -87,5 +87,6 @@
     "enterValue": "请输入电阻值",
     "invalidInput": "输入无效 – 例如 4.7、470 或 4k7",
     "unavailable": "此功能目前不可用。",
-    "perDecade": "个值 / 十倍程"
+    "perDecade": "个值 / 十倍程",
+    "themeLight": "浅色"
 }

@@ -10,29 +10,44 @@ namespace FirstApp.Core;
 /// </summary>
 public static class Loc
 {
-    /// <summary>(code, flag emoji, short label). Empty flag → image "flag_{code}.png".</summary>
-    public static readonly (string Code, string Flag, string Short)[] PrimaryLanguages =
+    /// <summary>(code, flag emoji, native name). Empty flag → image "flag_{code}.png".</summary>
+    public static readonly (string Code, string Flag, string Name)[] PrimaryLanguages =
     {
-        ("en","🇬🇧","EN"), ("de","🇩🇪","DE"), ("es","🇪🇸","ES"), ("ru","🇷🇺","RU"), ("fr","🇫🇷","FR"),
-        ("pt","🇵🇹","PT"), ("ja","🇯🇵","JA"), ("zh","🇨🇳","ZH"),
+        ("en","🇬🇧","English"), ("de","🇩🇪","Deutsch"), ("es","🇪🇸","Español"), ("fr","🇫🇷","Français"),
+        ("pt","🇵🇹","Português"), ("ru","🇷🇺","Русский"), ("ja","🇯🇵","日本語"), ("zh","🇨🇳","中文"),
     };
 
-    public static readonly (string Code, string Flag, string Short)[] SecondaryLanguages =
+    /// <summary>Sorted alphabetically by English language name.</summary>
+    public static readonly (string Code, string Flag, string Name)[] SecondaryLanguages =
     {
-        ("af","🇿🇦","AF"),("am","🇪🇹","AM"),("ar","🇸🇦","AR"),("az","🇦🇿","AZ"),
-        ("bg","🇧🇬","BG"),("bn","🇧🇩","BN"),("cs","🇨🇿","CS"),("da","🇩🇰","DA"),
-        ("el","🇬🇷","EL"),("et","🇪🇪","ET"),("fa","🇮🇷","FA"),("fi","🇫🇮","FI"),
-        ("gu","🇮🇳","GU"),("ha","🇳🇬","HA"),("he","🇮🇱","HE"),("hi","🇮🇳","HI"),
-        ("hr","🇭🇷","HR"),("hu","🇭🇺","HU"),("hy","🇦🇲","HY"),("id","🇮🇩","ID"),
-        ("is","🇮🇸","IS"),("it","🇮🇹","IT"),("jv","🇮🇩","JV"),("ka","🇬🇪","KA"),
-        ("kn","🇮🇳","KN"),("ko","🇰🇷","KO"),("ku","","KU"),("la","🇻🇦","LA"),
-        ("lt","🇱🇹","LT"),("lv","🇱🇻","LV"),("ml","🇮🇳","ML"),("mr","🇮🇳","MR"),
-        ("ms","🇲🇾","MS"),("nl","🇳🇱","NL"),("no","🇳🇴","NO"),("pa","🇮🇳","PA"),
-        ("pl","🇵🇱","PL"),("ro","🇷🇴","RO"),("sk","🇸🇰","SK"),("sl","🇸🇮","SL"),
-        ("sq","🇦🇱","SQ"),("sr","🇷🇸","SR"),("sv","🇸🇪","SV"),("sw","🇰🇪","SW"),
-        ("ta","🇮🇳","TA"),("te","🇮🇳","TE"),("th","🇹🇭","TH"),("tl","🇵🇭","TL"),
-        ("tr","🇹🇷","TR"),("uk","🇺🇦","UK"),("ur","🇵🇰","UR"),("vi","🇻🇳","VI"),
+        ("af","🇿🇦","Afrikaans"), ("sq","🇦🇱","Shqip"), ("am","🇪🇹","አማርኛ"), ("ar","🇸🇦","العربية"),
+        ("hy","🇦🇲","Հայերեն"), ("az","🇦🇿","Azərbaycanca"), ("bn","🇧🇩","বাংলা"), ("bg","🇧🇬","Български"),
+        ("hr","🇭🇷","Hrvatski"), ("cs","🇨🇿","Čeština"), ("da","🇩🇰","Dansk"), ("nl","🇳🇱","Nederlands"),
+        ("et","🇪🇪","Eesti"), ("tl","🇵🇭","Tagalog"), ("fi","🇫🇮","Suomi"), ("ka","🇬🇪","ქართული"),
+        ("el","🇬🇷","Ελληνικά"), ("gu","🇮🇳","ગુજરાતી"), ("ha","🇳🇬","Hausa"), ("he","🇮🇱","עברית"),
+        ("hi","🇮🇳","हिन्दी"), ("hu","🇭🇺","Magyar"), ("is","🇮🇸","Íslenska"), ("id","🇮🇩","Bahasa Indonesia"),
+        ("it","🇮🇹","Italiano"), ("jv","🇮🇩","Basa Jawa"), ("kn","🇮🇳","ಕನ್ನಡ"), ("ko","🇰🇷","한국어"),
+        ("ku","","Kurdî"), ("la","🇻🇦","Latina"), ("lv","🇱🇻","Latviešu"), ("lt","🇱🇹","Lietuvių"),
+        ("ms","🇲🇾","Bahasa Melayu"), ("ml","🇮🇳","മലയാളം"), ("mr","🇮🇳","मराठी"), ("no","🇳🇴","Norsk"),
+        ("fa","🇮🇷","فارسی"), ("pl","🇵🇱","Polski"), ("pa","🇮🇳","ਪੰਜਾਬੀ"), ("ro","🇷🇴","Română"),
+        ("sr","🇷🇸","Српски"), ("sk","🇸🇰","Slovenčina"), ("sl","🇸🇮","Slovenščina"), ("sw","🇰🇪","Kiswahili"),
+        ("sv","🇸🇪","Svenska"), ("ta","🇮🇳","தமிழ்"), ("te","🇮🇳","తెలుగు"), ("th","🇹🇭","ไทย"),
+        ("tr","🇹🇷","Türkçe"), ("uk","🇺🇦","Українська"), ("ur","🇵🇰","اردو"), ("vi","🇻🇳","Tiếng Việt"),
     };
+
+    public static string NativeName(string code)
+    {
+        foreach (var l in PrimaryLanguages) if (l.Code == code) return l.Name;
+        foreach (var l in SecondaryLanguages) if (l.Code == code) return l.Name;
+        return code;
+    }
+
+    public static string FlagOf(string code)
+    {
+        foreach (var l in PrimaryLanguages) if (l.Code == code) return l.Flag;
+        foreach (var l in SecondaryLanguages) if (l.Code == code) return l.Flag;
+        return "";
+    }
 
     private static readonly Dictionary<string, Dictionary<string, string>> _cache = new();
     private static Dictionary<string, string> _current = new();

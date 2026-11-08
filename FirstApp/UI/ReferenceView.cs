@@ -24,12 +24,12 @@ public static class ReferenceView
         Text = text,
         FontSize = 14,
         FontAttributes = FontAttributes.Bold,
-        TextColor = Theme.TextSub,
+        TextColor = Theme.Current.TextSecondary,
     };
 
     private static Border Panel(View content, Thickness padding) => new()
     {
-        BackgroundColor = Theme.PanelDark,
+        BackgroundColor = Theme.Current.Panel,
         Stroke = Theme.Current.AccentBorder,
         StrokeThickness = 1,
         StrokeShape = Theme.Round(14),
@@ -42,11 +42,11 @@ public static class ReferenceView
         Spacing = 7,
         Children =
         {
-            new Label { Text = vm["tip4band"], FontSize = 12, TextColor = Theme.TextTan },
-            new Label { Text = vm["tip5band"], FontSize = 12, TextColor = Theme.TextSteel },
-            new Label { Text = vm["tip6band"], FontSize = 12, TextColor = Theme.TextSteel },
+            new Label { Text = vm["tip4band"], FontSize = 12, TextColor = Theme.Current.Warn },
+            new Label { Text = vm["tip5band"], FontSize = 12, TextColor = Theme.Current.Info },
+            new Label { Text = vm["tip6band"], FontSize = 12, TextColor = Theme.Current.Info },
             Ui.Divider(2, 2),
-            new Label { Text = vm["tipDir"], FontSize = 11.5, TextColor = Theme.TextYellow, FontAttributes = FontAttributes.Bold },
+            new Label { Text = vm["tipDir"], FontSize = 11.5, TextColor = Theme.Current.Warn, FontAttributes = FontAttributes.Bold },
         },
     }, new Thickness(14, 12));
 
@@ -85,7 +85,7 @@ public static class ReferenceView
         for (int c = 0; c < hdrs.Length; c++)
             grid.Add(new Label
             {
-                Text = hdrs[c], FontSize = 10, TextColor = Theme.TextMuted, FontAttributes = FontAttributes.Bold,
+                Text = hdrs[c], FontSize = 10, TextColor = Theme.Current.TextMuted, FontAttributes = FontAttributes.Bold,
                 HorizontalTextAlignment = TextAlignment.Center, MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation,
                 Margin = new Thickness(0, 0, 0, 4),
             }, c, 0);
@@ -96,26 +96,26 @@ public static class ReferenceView
             int ri = r + 1;
             grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
 
-            var bg = new BoxView { Color = r % 2 == 0 ? Theme.RowDark1 : Theme.RowDark2, CornerRadius = 6, Margin = new Thickness(-2, 1) };
+            var bg = new BoxView { Color = r % 2 == 0 ? Theme.Current.Row1 : Theme.Current.Row2, CornerRadius = 6, Margin = new Thickness(-2, 1) };
             grid.Add(bg, 0, ri);
             Grid.SetColumnSpan(bg, 6);
 
             grid.Add(new Border
             {
                 WidthRequest = 20, HeightRequest = 20,
-                BackgroundColor = row.C.IsNone ? Theme.ChipEmpty : row.C.Bg,
+                BackgroundColor = row.C.IsNone ? Theme.Current.ChipEmpty : row.C.Bg,
                 StrokeShape = Theme.Round(10),
-                Stroke = row.C.IsNone ? Theme.BorderNone : Colors.Transparent,
-                StrokeThickness = row.C.IsNone ? 1 : 0,
+                Stroke = row.C.IsNone ? Theme.Current.TextDim : Theme.Current.ChipOutline,
+                StrokeThickness = row.C.IsNone || Theme.Current.ChipOutline.Alpha > 0 ? 1 : 0,
                 HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center,
                 Margin = new Thickness(0, 3),
             }, 0, ri);
 
-            grid.Add(Cell(vm[row.C.Key], 12.5, Colors.White, false, TextAlignment.Start), 1, ri);
-            grid.Add(Cell(row.Digit, 13, Theme.TextLight, true), 2, ri);
-            grid.Add(Cell(row.Mult, 11.5, Theme.TextGreen, true), 3, ri);
-            grid.Add(Cell(row.Tol, 11, row.Tol == "–" ? Theme.TextDimmer : Theme.TextYellow, false), 4, ri);
-            grid.Add(Cell(row.Tcr, 11, row.Tcr == "–" ? Theme.TextDimmer : Theme.TextBlue, false), 5, ri);
+            grid.Add(Cell(vm[row.C.Key], 12.5, Theme.Current.TextPrimary, false, TextAlignment.Start), 1, ri);
+            grid.Add(Cell(row.Digit, 13, Theme.Current.TextPrimary, true), 2, ri);
+            grid.Add(Cell(row.Mult, 11.5, Theme.Current.Good, true), 3, ri);
+            grid.Add(Cell(row.Tol, 11, row.Tol == "–" ? Theme.Current.TextDim : Theme.Current.Warn, false), 4, ri);
+            grid.Add(Cell(row.Tcr, 11, row.Tcr == "–" ? Theme.Current.TextDim : Theme.Current.Info, false), 5, ri);
         }
 
         return Panel(grid, new Thickness(10, 8));
@@ -142,7 +142,7 @@ public static class ReferenceView
         };
 
         var stack = new VerticalStackLayout { Spacing = 6 };
-        stack.Children.Add(new Label { Text = vm["eSeriesHint"], FontSize = 11, TextColor = Theme.TextMuted, Margin = new Thickness(0, 0, 0, 4) });
+        stack.Children.Add(new Label { Text = vm["eSeriesHint"], FontSize = 11, TextColor = Theme.Current.TextMuted, Margin = new Thickness(0, 0, 0, 4) });
 
         var t = Theme.Current;
         foreach (var (n, use) in info)
@@ -164,26 +164,26 @@ public static class ReferenceView
             var badge = new Border
             {
                 StrokeShape = Theme.Round(8),
-                BackgroundColor = hl ? t.Accent : t.ChipAlt,
+                Background = hl ? Theme.AccentFill : new SolidColorBrush(t.ChipAlt),
                 StrokeThickness = 0,
                 WidthRequest = 44, HeightRequest = 26,
                 VerticalOptions = LayoutOptions.Center,
                 Content = new Label
                 {
                     Text = $"E{n}", FontSize = 11.5, FontAttributes = FontAttributes.Bold,
-                    TextColor = hl && t.HasCyberFx ? Colors.Black : Colors.White,
+                    TextColor = hl ? t.OnAccent : t.TextPrimary,
                     HorizontalTextAlignment = TextAlignment.Center, VerticalTextAlignment = TextAlignment.Center,
                 },
             };
             inner.Add(badge, 0, 0);
             Grid.SetRowSpan(badge, 2);
-            inner.Add(new Label { Text = $"{use}  ·  {n} {vm["perDecade"]}", FontSize = 12, TextColor = hl ? Theme.TextBlue : Theme.TextSub }, 1, 0);
-            inner.Add(new Label { Text = examples, FontSize = 10.5, TextColor = Theme.TextDim, LineBreakMode = LineBreakMode.WordWrap }, 1, 1);
+            inner.Add(new Label { Text = $"{use}  ·  {n} {vm["perDecade"]}", FontSize = 12, TextColor = hl ? Theme.Current.Info : Theme.Current.TextSecondary }, 1, 0);
+            inner.Add(new Label { Text = examples, FontSize = 10.5, TextColor = Theme.Current.TextDim, LineBreakMode = LineBreakMode.WordWrap }, 1, 1);
 
             stack.Children.Add(new Border
             {
                 StrokeShape = Theme.Round(12),
-                BackgroundColor = hl ? t.HighBg : Theme.PanelDark,
+                BackgroundColor = hl ? t.HighBg : Theme.Current.Panel,
                 Stroke = hl ? t.Accent : t.AccentBorder,
                 StrokeThickness = hl ? 1.5 : 1,
                 Padding = new Thickness(12, 9),

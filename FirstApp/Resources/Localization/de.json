@@ -61,7 +61,7 @@
     "privacyPolicy": "Datenschutzrichtlinie",
     "aboutDev": "Entwicklung unterstützen",
     "designLabelText": "App-Design",
-    "themeDefault": "Standard",
+    "themeDefault": "Midnight",
     "themeCyber": "Cyber",
     "themePlasma": "Plasma",
     "themeAmoled": "AMOLED",
@@ -87,5 +87,6 @@
     "enterValue": "Widerstandswert eingeben",
     "invalidInput": "Ungültige Eingabe – z. B. 4.7, 470 oder 4k7",
     "unavailable": "Diese Funktion ist derzeit nicht verfügbar.",
-    "perDecade": "Werte / Dekade"
+    "perDecade": "Werte / Dekade",
+    "themeLight": "Hell"
 }

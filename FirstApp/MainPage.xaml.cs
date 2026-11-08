@@ -59,19 +59,14 @@ public partial class MainPage : ContentPage
         InputCardCorners.Drawable = _inputCorners;
 
         BuildUnitTabs();
-        BuildSeriesChips();
-        RebuildToleranceChips();
-        if (_vm.IsColorMode) EnsureColorRows();
-        if (_vm.Mode == 2) RebuildTcrChips();
-
         SheetOverlay.Opacity = 0;
 
         _vm.RingsChanged += OnRingsChanged;
         _vm.PropertyChanged += OnVmPropertyChanged;
 
-        ApplyTheme();
-        UpdateStatusColor();
-        RefreshChipSelection();
+        ApplyTheme();                       // also builds series + tolerance chips
+        if (_vm.IsColorMode) EnsureColorRows();
+        if (_vm.Mode == 2) RebuildTcrChips();
     }
 
     /// <summary>Called by the app when it goes to the background.</summary>
@@ -124,7 +119,7 @@ public partial class MainPage : ContentPage
                 UpdateAllTabs();
                 UpdateStatusColor();
                 UpdateWindowTitle();
-                RebuildChipsForLanguage();
+                RebuildAllChips();
                 break;
             case nameof(ResistorViewModel.Mode):
                 RebuildToleranceChips();
@@ -148,7 +143,7 @@ public partial class MainPage : ContentPage
     }
 
     private void UpdateStatusColor()
-        => StatusLabel.TextColor = _vm.StatusIsError ? Theme.Error : Theme.TextSub;
+        => StatusLabel.TextColor = _vm.StatusIsError ? Theme.Current.Error : Theme.Current.TextSecondary;
 
     // ══════════════════════════════════════════════════════════════
     // THEME
@@ -161,29 +156,33 @@ public partial class MainPage : ContentPage
         Background = Theme.Gradient(t.PageBg, diagonal: true);
         HeaderBdr.Background = Theme.Gradient(t.HeaderBg, diagonal: false);
 
+        Shadow? shadow = t.CardShadow
+            ? new Shadow { Brush = Colors.Black, Opacity = 0.08f, Radius = 18, Offset = new Point(0, 6) }
+            : null;
         foreach (var card in new[] { ResCardBdr, InputCardBdr })
         {
-            card.Stroke = t.Accent;
-            card.StrokeThickness = cyber ? 2 : 1.5;
+            card.Stroke = t.CardStroke ?? new SolidColorBrush(t.Accent);
+            card.StrokeThickness = t.CardStrokeThickness;
             card.StrokeShape = Theme.Round(t.CardRadius);
+            card.Shadow = shadow!;
         }
         ResCardBdr.Background = Theme.Gradient(t.CardBg, diagonal: true);
         InputCardBdr.Background = new SolidColorBrush(t.InputCardBg);
 
-        foreach (var b in new[] { ResTabsBdr, InputTabsBdr, UnitTabsBdr })
-        {
-            b.Stroke = t.AccentBorder;
+        foreach (var b in new[] { ResTabsBdr, InputTabsBdr, UnitTabsBdr, EntryBdr })
             b.StrokeShape = Theme.Round(t.ControlRadius);
-        }
-        EntryBdr.Stroke = t.AccentBorder;
-        EntryBdr.StrokeShape = Theme.Round(t.ControlRadius);
         SuggestionBdr.Stroke = t.Accent;
         SuggestionBdr.BackgroundColor = t.HighBg;
         SuggestionBdr.StrokeShape = Theme.Round(t.ControlRadius);
 
         ResultLabel.TextColor = t.Result;
 
-        SheetPanel.Stroke = t.Accent;
+        SheetPanel.Stroke = t.CardStroke ?? new SolidColorBrush(t.Accent);
+        SheetPanel.StrokeThickness = Math.Max(1, t.CardStrokeThickness);
+        SheetPanel.StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle
+        {
+            CornerRadius = new CornerRadius(t.CardRadius + 2, t.CardRadius + 2, 0, 0),
+        };
         SheetPanel.Background = Theme.Gradient(new[] { t.SheetTop, t.SheetBottom }, diagonal: false);
 
         _resCorners.Accent = t.Accent;
@@ -197,8 +196,11 @@ public partial class MainPage : ContentPage
         StopCyberEffects();
         StartCyberEffects();
 
+        RebuildAllChips();
         UpdateAllTabs();
         UpdateSeriesChips();
+        UpdateStatusColor();
+        ResistorView.Invalidate();
         ApplySystemBars();
     }
 
@@ -213,7 +215,9 @@ public partial class MainPage : ContentPage
     {
         bool fs = AppSettings.Fullscreen;
         HeaderBdr.Padding = new Thickness(12, fs ? 40 : 14, 12, 18);
-        SystemUi.Apply(fs, Theme.Current.HeaderBg[0]);
+        var t = Theme.Current;
+        var bar = t.HeaderBg[0].Alpha >= 1 ? t.HeaderBg[0] : t.PageBg[0];
+        SystemUi.Apply(fs, bar, t.IsLight);
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -500,11 +504,12 @@ public partial class MainPage : ContentPage
         RefreshChipSelection();
     }
 
-    private void RebuildChipsForLanguage()
+    private void RebuildAllChips()
     {
-        // Only accessibility descriptions depend on the language
+        // Language (accessibility text) or theme (radius, empty-chip colour) changed
         if (_colorRowsBuilt) { _colorRowsBuilt = false; EnsureColorRows(); }
         _tolChipsMode = -1; RebuildToleranceChips();
+        BuildSeriesChips();
         if (_bandChips[5].Count > 0) { _bandChips[5].Clear(); RebuildTcrChips(); }
     }
 
