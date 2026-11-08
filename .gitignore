@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Signing keys – never commit (keep a private backup instead)
+*.keystore
+*.jks
+*.p12
+*.pfx
